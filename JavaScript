@@ -2,24 +2,28 @@ async function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const element = document.getElementById('content-container');
     
-    // On force l'élément à être pleinement visible pour la capture
-    const originalStyle = element.style.overflow;
-    element.style.overflow = 'visible';
+    // Étape 1 : Préparation de l'élément pour éviter le zoom
+    const originalStyles = {
+        borderRadius: element.style.borderRadius,
+        boxShadow: element.style.boxShadow,
+        transform: element.style.transform
+    };
+    
+    // On retire temporairement les arrondis et ombres qui perdent le script
+    element.style.borderRadius = "0px";
+    element.style.boxShadow = "none";
+    element.style.transform = "none";
 
     try {
         const canvas = await html2canvas(element, { 
-            scale: 2, // Haute définition
+            scale: 2, 
             useCORS: true, 
             backgroundColor: "#FFF5E1",
-            // Paramètres critiques pour corriger le bug "haut-gauche" :
-            scrollX: -window.scrollX,
+            // On force la capture à partir du haut de l'élément, peu importe le scroll
             scrollY: -window.scrollY,
+            scrollX: -window.scrollX,
             windowWidth: document.documentElement.offsetWidth,
-            windowHeight: document.documentElement.offsetHeight,
-            x: element.getBoundingClientRect().left + window.scrollX,
-            y: element.getBoundingClientRect().top + window.scrollY,
-            width: element.offsetWidth,
-            height: element.offsetHeight
+            windowHeight: document.documentElement.offsetHeight
         });
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -28,18 +32,20 @@ async function downloadPDF() {
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
         
-        // Calcul pour ajuster l'image à la largeur A4 (avec petites marges de 5mm)
-        const margin = 5;
-        const imgWidth = pageWidth - (margin * 2);
+        // Ajustement précis à la page A4
+        const imgWidth = pageWidth - 20; // 10mm de marge de chaque côté
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
-        pdf.save(`Journal-Page-${currentViewDate}.pdf`);
+        pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+        pdf.save(`Journal-${currentViewDate}.pdf`);
 
     } catch (err) {
         console.error("Erreur capture:", err);
-        alert("Erreur de rendu. Essayez d'utiliser le bouton 'Imprimer Tout' et choisissez 'Enregistrer en PDF' dans les options d'imprimante.");
+        alert("Utilisez le bouton 'Imprimer Tout' et choisissez 'Enregistrer en PDF' pour un résultat garanti.");
     } finally {
-        element.style.overflow = originalStyle;
+        // Étape 2 : On remet le joli design (arrondis et ombres)
+        element.style.borderRadius = originalStyles.borderRadius;
+        element.style.boxShadow = originalStyles.boxShadow;
+        element.style.transform = originalStyles.transform;
     }
 }
