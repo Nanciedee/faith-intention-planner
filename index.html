@@ -7,116 +7,187 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
-        :root {
-            --pastel-blue: #BFD8EB;
-            --pastel-lilac: #D9C1EB;
-            --blush: #F6D1D1;
-            --cream: #FFF5E1;
-        }
+        :root { --pastel-blue: #BFD8EB; --pastel-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; }
         .serif { font-family: 'Playfair Display', serif; }
-        .page-gradient { background: linear-gradient(135deg, #FFF5E1 0%, #fdfcfb 100%); }
-        .watercolor-accent { filter: blur(40px); opacity: 0.3; z-index: -1; }
+        .watercolor-accent { filter: blur(60px); opacity: 0.2; z-index: -1; position: fixed; border-radius: 50%; }
+        
+        /* Print/PDF Optimization */
+        @media print {
+            nav, .no-print { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; }
+            #content-container { 
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 100% !important;
+                background: white !important;
+            }
+            .watercolor-accent { display: none; }
+        }
+
+        .page-transition { transition: opacity 0.2s ease-in-out; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col md:flex-row">
+<body class="min-h-screen flex flex-col md:flex-row overflow-hidden">
 
-    <nav class="w-full md:w-64 bg-white border-r border-gray-200 p-6 flex-shrink-0">
-        <h1 class="serif text-2xl font-bold mb-8 text-indigo-900">2026 Journal</h1>
-        <ul class="space-y-4">
-            <li><button onclick="showPage('cover')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="book-open"></i> Cover</button></li>
-            <li><button onclick="showPage('december')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="sparkles"></i> Dec 2025 Intro</button></li>
-            <li><button onclick="showPage('q1focus')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="target"></i> Q1 Focus</button></li>
-            <li><hr class="border-gray-100 my-2"></li>
-            <li class="text-xs uppercase tracking-widest text-gray-400 font-bold">Monthly Tracker</li>
-            <li><button onclick="showPage('tracker')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="calendar"></i> Monthly Focus</button></li>
-            <li><button onclick="showPage('weekly')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="layers"></i> Weekly Rituals</button></li>
-            <li><button onclick="showPage('daily')" class="flex items-center gap-2 hover:text-purple-600 transition text-indigo-600 font-bold"><i data-lucide="sun"></i> Daily Micro-Tracker</button></li>
-            <li><button onclick="showPage('emotional')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="heart"></i> Emotional Success</button></li>
+    <div class="w-64 h-64 bg-blue-300 top-10 right-10 watercolor-accent"></div>
+    <div class="w-80 h-80 bg-pink-200 bottom-10 left-10 watercolor-accent"></div>
+
+    <nav class="w-full md:w-72 bg-white/70 backdrop-blur-md border-r border-gray-100 p-6 flex flex-col z-10 no-print">
+        <div class="mb-8">
+            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
+            <p class="text-xs tracking-widest uppercase text-gray-400">2026 Planner</p>
+        </div>
+        
+        <ul class="flex-1 space-y-1 overflow-y-auto text-sm">
+            <li><button onclick="showPage('cover')" class="nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white flex items-center gap-3"><i data-lucide="book-open" size="16"></i> Cover</button></li>
+            <li><button onclick="showPage('december')" class="nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white flex items-center gap-3"><i data-lucide="sparkles" size="16"></i> Dec 2025 Intro</button></li>
+            <li><button onclick="showPage('q1focus')" class="nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white flex items-center gap-3"><i data-lucide="compass" size="16"></i> Q1 Focus</button></li>
+            <li><button onclick="showPage('monthly')" class="nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white flex items-center gap-3"><i data-lucide="calendar" size="16"></i> Monthly Focus</button></li>
+            <li><button onclick="showPage('weekly')" class="nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white flex items-center gap-3"><i data-lucide="list-checks" size="16"></i> Weekly Rituals</button></li>
+            <li><button onclick="showPage('daily')" class="nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white flex items-center gap-3"><i data-lucide="sun" size="16"></i> Daily Tracker</button></li>
+            <li><button onclick="showPage('emotional')" class="nav-btn w-full text-left px-4 py-2 rounded-lg hover:bg-white flex items-center gap-3"><i data-lucide="heart" size="16"></i> Emotional Success</button></li>
         </ul>
+
+        <button onclick="downloadPDF()" class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition flex items-center justify-center gap-2">
+            <i data-lucide="download" size="18"></i> Save as PDF
+        </button>
     </nav>
 
-    <main class="flex-1 p-4 md:p-12 overflow-y-auto relative">
-        <div class="fixed top-0 right-0 w-64 h-64 bg-blue-200 rounded-full watercolor-accent"></div>
-        <div class="fixed bottom-0 left-64 w-96 h-96 bg-purple-200 rounded-full watercolor-accent"></div>
-
-        <div id="content-container" class="max-w-3xl mx-auto bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl p-8 min-h-[80vh] border border-white">
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+        <div id="content-container" class="max-w-4xl mx-auto bg-white/50 backdrop-blur-sm shadow-2xl rounded-3xl p-8 md:p-12 min-h-[90vh] border border-white relative page-transition">
             </div>
     </main>
 
     <script>
-        // Pages Data Structure
         const pages = {
             cover: `
                 <div class="text-center py-20">
-                    <i data-lucide="moon" class="mx-auto mb-6 text-indigo-300" size="48"></i>
-                    <h1 class="serif text-5xl font-bold mb-4">2026–2027<br>Faith & Intention Planner</h1>
-                    <p class="text-2xl text-gray-500 italic">By NancieDee</p>
-                    <div class="mt-20 flex justify-center gap-4">
-                        <div class="w-12 h-12 rounded-full" style="background-color: var(--pastel-blue)"></div>
-                        <div class="w-12 h-12 rounded-full" style="background-color: var(--pastel-lilac)"></div>
-                        <div class="w-12 h-12 rounded-full" style="background-color: var(--blush)"></div>
-                    </div>
+                    <i data-lucide="moon" class="mx-auto mb-8 text-indigo-200" size="64"></i>
+                    <h1 class="serif text-5xl font-bold mb-4">2026–2027<br>Faith & Intention</h1>
+                    <p class="text-2xl text-gray-400 italic">By NancieDee</p>
                 </div>`,
-            
-            daily: `
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="serif text-3xl">Daily Micro-Tracker</h2>
-                    <span class="text-gray-400">${new Date().toLocaleDateString()}</span>
-                </div>
-                <div class="space-y-6">
-                    <div class="p-4 rounded-lg bg-[#BFD8EB]/20 border-l-4 border-[#BFD8EB]">
-                        <label class="block font-bold mb-2">Energy Level</label>
-                        <input type="range" class="w-full accent-blue-400">
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <label class="flex items-center gap-3 p-4 border rounded-xl hover:bg-white transition cursor-pointer">
-                            <input type="checkbox" class="w-5 h-5 rounded-full border-gray-300"> <span>Movement</span>
-                        </label>
-                        <label class="flex items-center gap-3 p-4 border rounded-xl hover:bg-white transition cursor-pointer">
-                            <input type="checkbox" class="w-5 h-5 rounded-full border-gray-300"> <span>Prayer/Meditation</span>
-                        </label>
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-2">Daily Notes</label>
-                        <textarea class="w-full h-32 p-4 border rounded-xl bg-white/50 focus:ring-2 ring-purple-200 outline-none" placeholder="Write your thoughts here..."></textarea>
-                    </div>
+
+            december: `
+                <h2 class="serif text-3xl mb-8">December 2025 – Intro</h2>
+                <div class="grid gap-6">
+                    <div><label class="font-bold">Reflection</label><textarea id="d-ref" class="w-full h-32 p-3 mt-2 border rounded-xl"></textarea></div>
+                    <div><label class="font-bold">2026 Intentions</label><textarea id="d-int" class="w-full h-32 p-3 mt-2 border rounded-xl"></textarea></div>
                 </div>`,
-            
+
             q1focus: `
-                <h2 class="serif text-3xl mb-8">Q1 2026 Focus</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="p-6 rounded-2xl bg-[#BFD8EB]/30">
-                        <h3 class="font-bold border-b border-blue-200 mb-4 pb-2">January</h3>
-                        <textarea class="w-full bg-transparent outline-none h-40" placeholder="Set goals..."></textarea>
+                <h2 class="serif text-3xl text-center mb-10">Q1 2026 Focus</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-6 rounded-2xl bg-[#BFD8EB]/40"><h3>January</h3><textarea id="q-jan" class="w-full h-48 bg-transparent border-none"></textarea></div>
+                    <div class="p-6 rounded-2xl bg-[#D9C1EB]/40"><h3>February</h3><textarea id="q-feb" class="w-full h-48 bg-transparent border-none"></textarea></div>
+                    <div class="p-6 rounded-2xl bg-[#F6D1D1]/40"><h3>March</h3><textarea id="q-mar" class="w-full h-48 bg-transparent border-none"></textarea></div>
+                </div>`,
+
+            monthly: `
+                <h2 class="serif text-3xl mb-8">Monthly Focus Tracker</h2>
+                ${['Creative', 'Health', 'Family', 'Notes'].map(f => `
+                    <div class="flex items-center gap-4 mb-4 p-4 bg-white/60 rounded-xl">
+                        <input type="checkbox" id="m-${f}-c">
+                        <input type="text" id="m-${f}-t" class="flex-1 bg-transparent border-none font-bold" placeholder="${f} Focus...">
                     </div>
-                    <div class="p-6 rounded-2xl bg-[#D9C1EB]/30">
-                        <h3 class="font-bold border-b border-purple-200 mb-4 pb-2">February</h3>
-                        <textarea class="w-full bg-transparent outline-none h-40" placeholder="Set goals..."></textarea>
+                `).join('')}`,
+
+            weekly: `
+                <h2 class="serif text-3xl mb-8">Weekly Rituals</h2>
+                ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => `
+                    <div class="mb-4 p-4 border-l-4 border-indigo-200 bg-white/30">
+                        <span class="font-bold">${day}</span>
+                        <div class="flex gap-4 mt-2 text-xs">
+                            <label><input type="checkbox"> Spiritual</label>
+                            <label><input type="checkbox"> Fitness</label>
+                            <label><input type="checkbox"> Creative</label>
+                        </div>
                     </div>
-                    <div class="p-6 rounded-2xl bg-[#F6D1D1]/30">
-                        <h3 class="font-bold border-b border-pink-200 mb-4 pb-2">March</h3>
-                        <textarea class="w-full bg-transparent outline-none h-40" placeholder="Set goals..."></textarea>
+                `).join('')}`,
+
+            daily: `
+                <div class="bg-indigo-50 p-6 rounded-2xl mb-8">
+                    <h2 class="serif text-3xl">Daily Micro-Tracker</h2>
+                    <p class="text-indigo-400 font-bold">${new Date().toDateString()}</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        ${['Energy', 'Movement', 'Prayer', 'Connection'].map(i => `
+                            <div class="flex justify-between items-center border-b pb-2">
+                                <span>${i}</span> <input type="checkbox" id="dy-${i}">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <textarea id="dy-notes" class="h-64 p-4 border rounded-2xl" placeholder="Today's journaling..."></textarea>
+                </div>`,
+
+            emotional: `
+                <h2 class="serif text-3xl mb-8">Emotional Success</h2>
+                <div class="space-y-6">
+                    <div class="p-6 bg-pink-50 rounded-2xl">
+                        <p class="font-bold mb-4">Daily Gratitude</p>
+                        <textarea id="e-grat" class="w-full h-20 bg-transparent border-none"></textarea>
+                    </div>
+                    <div class="p-6 bg-purple-50 rounded-2xl">
+                        <p class="font-bold mb-4">Affirmation</p>
+                        <input type="text" id="e-aff" class="w-full bg-transparent border-none">
                     </div>
                 </div>`
         };
 
-        function showPage(pageId) {
+        function showPage(id) {
             const container = document.getElementById('content-container');
-            container.innerHTML = pages[pageId] || `<h2 class="serif text-3xl">Page coming soon...</h2>`;
-            lucide.createIcons();
-            
-            // Auto-save logic placeholder
-            const inputs = container.querySelectorAll('input, textarea');
-            inputs.forEach(input => {
-                input.addEventListener('change', () => {
-                    console.log('Progress Saved locally...');
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.innerHTML = pages[id];
+                lucide.createIcons();
+                loadData();
+                setupAutoSave();
+                container.style.opacity = '1';
+                // Active button styling
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-white', 'font-bold', 'shadow-sm'));
+                event?.currentTarget?.classList.add('bg-white', 'font-bold', 'shadow-sm');
+            }, 200);
+        }
+
+        function setupAutoSave() {
+            document.querySelectorAll('input, textarea').forEach(el => {
+                el.addEventListener('input', () => {
+                    const data = JSON.parse(localStorage.getItem('faithJournal') || '{}');
+                    data[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+                    localStorage.setItem('faithJournal', JSON.stringify(data));
                 });
             });
         }
 
-        // Initialize with cover
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('faithJournal') || '{}');
+            Object.keys(data).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.type === 'checkbox') el.checked = data[id];
+                    else el.value = data[id];
+                }
+            });
+        }
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById('content-container');
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`Journal-Entry-${new Date().toLocaleDateString()}.pdf`);
+        }
+
         showPage('cover');
     </script>
 </body>
