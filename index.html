@@ -1,178 +1,250 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Interactive</title>
+    <title>Faith & Intention Journal 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; }
         .serif { font-family: 'Playfair Display', serif; }
-        .level-btn.active { background-color: var(--p-lilac); border-color: #9f7aea; color: white; transform: scale(1.05); }
-        .ritual-slot { min-height: 40px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px dashed #D9C1EB; }
-        .sticker { cursor: pointer; transition: transform 0.2s; }
-        .sticker:hover { transform: translateY(-5px); }
+        .watercolor-bg { filter: blur(70px); opacity: 0.15; z-index: -1; position: fixed; border-radius: 50%; }
+        .level-btn.active { background-color: var(--p-lilac); border-color: #9f7aea; color: white; transform: scale(1.1); }
+        input, textarea { background: rgba(255, 255, 255, 0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.6); padding: 8px; }
+        .sticker-active { border: 2px solid #9f7aea; border-radius: 50%; padding: 4px; background: white; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row overflow-hidden">
 
-    <nav class="w-full md:w-72 bg-white/80 backdrop-blur-md border-r p-6 flex flex-col z-10">
-        <div class="mb-10 text-center">
-            <h1 class="serif text-2xl font-bold text-indigo-950">Intention 2026</h1>
-            <p class="text-xs tracking-widest text-gray-400">DAILY INTERACTIVE</p>
+    <div class="w-96 h-96 bg-blue-200 top-0 right-0 watercolor-bg"></div>
+    <div class="w-96 h-96 bg-purple-200 bottom-0 left-0 watercolor-bg"></div>
+
+    <nav class="w-full md:w-80 bg-white/70 backdrop-blur-lg border-r p-6 flex flex-col z-10 overflow-y-auto">
+        <div class="mb-10 text-center md:text-left">
+            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
+            <p class="text-[10px] tracking-[0.3em] uppercase text-gray-400">Dec 2025 - Q1 2026</p>
         </div>
-        <ul class="flex-1 space-y-2">
-            <li><button onclick="showPage('daily')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3 font-bold text-indigo-700 bg-white shadow-sm"><i data-lucide="sun"></i> Daily Micro-Tracker</button></li>
-            <li><button onclick="showPage('weekly')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="sparkles"></i> Weekly Rituals</button></li>
-            <li><button onclick="showPage('emotional')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="heart"></i> Emotional Success</button></li>
+        
+        <ul class="space-y-1 text-sm flex-1">
+            <li><button onclick="showPage('cover')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="book-open" size="18"></i> 1. Cover Page</button></li>
+            <li><button onclick="showPage('december')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="sparkles" size="18"></i> 2. Dec 2025 Intro</button></li>
+            <li><button onclick="showPage('q1focus')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="target" size="18"></i> 3. Q1 2026 Focus</button></li>
+            <li><button onclick="showPage('monthly')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="calendar" size="18"></i> 4. Monthly Tracker</button></li>
+            <li><button onclick="showPage('weekly')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> 5. Weekly Rituals</button></li>
+            <li><button onclick="showPage('daily')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3 bg-white font-bold text-indigo-700 shadow-sm"><i data-lucide="sun" size="18"></i> 6. Daily Tracker</button></li>
+            <li><button onclick="showPage('emotional')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="heart" size="18"></i> 7. Emotional Success</button></li>
         </ul>
     </nav>
 
-    <main class="flex-1 p-6 md:p-12 overflow-y-auto">
-        <div id="content-container" class="max-w-4xl mx-auto bg-white/60 shadow-2xl rounded-[3rem] p-10 min-h-[85vh] border border-white relative">
+    <main class="flex-1 p-4 md:p-10 overflow-y-auto">
+        <div id="content-container" class="max-w-5xl mx-auto bg-white/50 backdrop-blur-sm shadow-2xl rounded-[2.5rem] p-8 md:p-12 min-h-[90vh] border border-white">
             </div>
     </main>
 
     <script>
-        // Global State for Interactive Features
-        let journalState = JSON.parse(localStorage.getItem('faithJournal_v2')) || {
+        let state = JSON.parse(localStorage.getItem('faithState_v3')) || {
             moodHistory: [],
-            weeklyRituals: { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }
+            weeklyRituals: { Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [], Sun: [] }
         };
+        let activeSticker = null;
 
         const pages = {
-            daily: `
-                <div class="flex justify-between items-center mb-10">
-                    <h2 class="serif text-3xl">Daily Micro-Tracker</h2>
-                    <span class="text-indigo-400 font-bold underline decoration-indigo-200 underline-offset-8">${new Date().toLocaleDateString()}</span>
-                </div>
-                
-                <div class="grid gap-8">
-                    ${['Movement', 'Prayer', 'Connection', 'Creative'].map(item => `
-                        <div class="p-6 bg-white/40 rounded-2xl border border-white">
-                            <div class="flex justify-between items-center mb-4">
-                                <label class="font-bold text-lg text-indigo-900">${item}</label>
-                                <div class="flex gap-2">
-                                    ${['Low', 'Mid', 'High'].map(lvl => `
-                                        <button onclick="setLevel('${item}', '${lvl}')" id="btn-${item}-${lvl}" class="level-btn px-4 py-1 rounded-full border border-gray-200 text-xs transition-all bg-white">${lvl}</button>
-                                    `).join('')}
-                                </div>
+            cover: `
+                <div class="text-center py-24">
+                    <div class="mb-10 flex justify-center opacity-30"><i data-lucide="moon" size="80"></i></div>
+                    <h1 class="serif text-5xl md:text-6xl font-bold mb-6 text-indigo-950">2026–2027<br>Faith & Intention</h1>
+                    <p class="text-2xl text-gray-400 italic font-light tracking-wide">Planner By NancieDee</p>
+                    <div class="mt-24 flex justify-center gap-8">
+                        <div class="w-16 h-1 rounded-full bg-[#BFD8EB]"></div>
+                        <div class="w-16 h-1 rounded-full bg-[#D9C1EB]"></div>
+                        <div class="w-16 h-1 rounded-full bg-[#F6D1D1]"></div>
+                    </div>
+                </div>`,
+
+            december: `
+                <h2 class="serif text-3xl mb-2 text-center">December 2025</h2>
+                <p class="text-center text-gray-400 italic mb-10">Intro & Reflection</p>
+                <div class="space-y-8">
+                    <div class="p-6 rounded-2xl bg-white/40 border border-white shadow-sm">
+                        <label class="serif text-xl block mb-4">Space for Reflection</label>
+                        <textarea id="dec-reflect" class="w-full h-32 border-none focus:ring-0" placeholder="Look back at your year..."></textarea>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="p-6 rounded-2xl bg-[#D9C1EB]/20 border border-white">
+                            <label class="font-bold text-gray-500 uppercase text-xs tracking-widest block mb-4">Intentions for 2026</label>
+                            <textarea id="dec-intent" class="w-full h-40 bg-transparent border-none"></textarea>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-[#BFD8EB]/20 border border-white">
+                            <label class="font-bold text-gray-500 uppercase text-xs tracking-widest block mb-4">Big Goals</label>
+                            <textarea id="dec-goals" class="w-full h-40 bg-transparent border-none"></textarea>
+                        </div>
+                    </div>
+                </div>`,
+
+            q1focus: `
+                <h2 class="serif text-3xl text-center mb-10">Q1 2026 Focus</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    ${['January', 'February', 'March'].map((m, i) => {
+                        const colors = ['#BFD8EB', '#D9C1EB', '#F6D1D1'];
+                        return `
+                        <div class="p-6 rounded-3xl border border-white shadow-lg" style="background-color: ${colors[i]}44">
+                            <h3 class="serif text-2xl mb-6">${m}</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-2"><input type="checkbox" id="q1-${m}-1"> <input type="text" class="text-sm bg-transparent border-b border-black/10 w-full" placeholder="Goal 1"></div>
+                                <div class="flex items-center gap-2"><input type="checkbox" id="q1-${m}-2"> <input type="text" class="text-sm bg-transparent border-b border-black/10 w-full" placeholder="Goal 2"></div>
+                                <textarea class="w-full h-32 bg-transparent border-none mt-4 text-xs" placeholder="Notes..."></textarea>
                             </div>
-                            <textarea id="note-${item}" class="w-full bg-transparent border-none text-sm italic" placeholder="How did it go?"></textarea>
+                        </div>`;
+                    }).join('')}
+                </div>`,
+
+            monthly: `
+                <h2 class="serif text-3xl text-center mb-10">Monthly Focus Tracker</h2>
+                <div class="max-w-2xl mx-auto space-y-6">
+                    ${['Creative', 'Health', 'Family', 'Notes'].map(item => `
+                        <div class="flex items-center gap-6 p-6 bg-white/40 rounded-2xl border border-white group">
+                            <input type="checkbox" class="w-6 h-6 rounded-full border-indigo-200">
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-indigo-400 uppercase tracking-widest">${item}</label>
+                                <input type="text" class="w-full bg-transparent border-none p-0 text-lg font-medium" placeholder="What is your focus?">
+                            </div>
+                            <i data-lucide="leaf" class="text-green-200 opacity-0 group-hover:opacity-100 transition"></i>
                         </div>
                     `).join('')}
                 </div>`,
 
             weekly: `
-                <h2 class="serif text-3xl mb-4 text-center">Weekly Rituals</h2>
-                <p class="text-center text-gray-400 text-sm mb-8 italic">Click a sticker below, then click a day to place it.</p>
-                
-                <div class="space-y-4 mb-10">
-                    ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => `
-                        <div class="flex items-center gap-4 bg-white/40 p-3 rounded-lg">
-                            <span class="w-20 font-bold text-indigo-400">${day}</span>
-                            <div id="slot-${day}" onclick="placeSticker('${day}')" class="ritual-slot flex-1 p-2 rounded border-2 border-dashed border-indigo-100 bg-indigo-50/30">
+                <h2 class="serif text-3xl mb-2 text-center">Weekly Rituals</h2>
+                <p class="text-center text-gray-400 text-sm mb-8 italic">Choose a sticker, then click a day line to add it.</p>
+                <div class="space-y-3 mb-10">
+                    ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => `
+                        <div class="flex items-center gap-4 border-b border-indigo-50 py-3">
+                            <span class="w-16 font-bold text-gray-400 uppercase text-xs tracking-tighter">${day}</span>
+                            <div onclick="addSticker('${day}')" class="flex-1 min-h-[40px] flex gap-2 items-center px-4 rounded-full bg-white/30 cursor-pointer hover:bg-white/60 transition">
                                 ${renderStickers(day)}
                             </div>
                         </div>
                     `).join('')}
                 </div>
+                <div class="p-6 bg-white/80 rounded-3xl flex justify-center gap-8 shadow-inner">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map(s => `
+                        <button onclick="pickSticker('${s}', this)" class="sticker-btn text-3xl hover:scale-125 transition">${s}</button>
+                    `).join('')}
+                </div>`,
 
-                <div class="p-6 bg-white rounded-3xl shadow-inner text-center">
-                    <p class="text-xs uppercase font-bold text-gray-400 mb-4">Available Stickers</p>
-                    <div class="flex justify-center gap-6">
-                        <button onclick="activeSticker='🙏'" class="sticker text-3xl">🙏</button>
-                        <button onclick="activeSticker='🎨'" class="sticker text-3xl">🎨</button>
-                        <button onclick="activeSticker='🏃'" class="sticker text-3xl">🏃</button>
-                        <button onclick="activeSticker='📖'" class="sticker text-3xl">📖</button>
-                        <button onclick="activeSticker='🌿'" class="sticker text-3xl">🌿</button>
-                        <button onclick="activeSticker='✨'" class="sticker text-3xl">✨</button>
+            daily: `
+                <div class="flex justify-between items-center mb-10 p-6 bg-[#BFD8EB]/30 rounded-3xl border border-white">
+                    <h2 class="serif text-2xl">Daily Micro-Tracker</h2>
+                    <div class="text-right"><p class="text-xs uppercase font-bold text-indigo-500">${new Date().toLocaleDateString('fr-FR', {weekday: 'long'})}</p><p class="serif text-xl">${new Date().toLocaleDateString()}</p></div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div class="space-y-6">
+                        ${['Energy', 'Movement', 'Prayer', 'Connection'].map(cat => `
+                            <div class="p-4 bg-white/40 rounded-2xl border border-white">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold">${cat}</span>
+                                    <div class="flex gap-1">
+                                        ${['Low', 'Mid', 'High'].map(lvl => `
+                                            <button onclick="setLevel('${cat}','${lvl}')" id="btn-${cat}-${lvl}" class="level-btn text-[10px] px-3 py-1 border rounded-full bg-white">${lvl}</button>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <input type="text" class="w-full bg-transparent text-sm border-none italic" placeholder="Details...">
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="flex flex-col">
+                        <h3 class="serif text-xl mb-4">Journal Notes</h3>
+                        <textarea class="flex-1 p-6 rounded-3xl bg-white/60 border border-white shadow-inner" placeholder="3-4 lines for extra journaling..."></textarea>
                     </div>
                 </div>`,
 
             emotional: `
-                <h2 class="serif text-3xl mb-10">Emotional Success</h2>
-                
-                <div class="bg-indigo-900 text-white p-8 rounded-3xl shadow-xl mb-10">
-                    <h3 class="mb-6 opacity-80 uppercase tracking-widest text-xs">How are you feeling right now?</h3>
-                    <div class="flex justify-between mb-8">
-                        ${['🌈', '☀️', '☁️', '🌧️', '⛈️'].map(m => `
-                            <button onclick="saveMood('${m}')" class="text-4xl hover:scale-125 transition-transform drop-shadow-lg">${m}</button>
-                        `).join('')}
-                    </div>
-                    
-                    <div class="border-t border-indigo-700 pt-6">
-                        <h4 class="text-xs uppercase opacity-60 mb-4 font-bold">Past 7 Days Recap</h4>
-                        <div class="flex gap-4">
-                            ${journalState.moodHistory.slice(-7).map(entry => `
-                                <div class="text-center">
-                                    <div class="text-2xl">${entry.mood}</div>
-                                    <div class="text-[10px] opacity-40">${entry.date}</div>
-                                </div>
-                            `).join('') || '<p class="text-sm opacity-40">No history yet...</p>'}
+                <h2 class="serif text-3xl mb-10 text-center">Emotional Success</h2>
+                <div class="grid gap-8 max-w-2xl mx-auto">
+                    <div class="bg-indigo-900 text-white p-8 rounded-[2rem] shadow-xl">
+                        <p class="text-xs uppercase font-bold opacity-50 mb-6">Mood Tracker</p>
+                        <div class="flex justify-between mb-8">
+                            ${['🌈', '☀️', '☁️', '🌧️', '⛈️'].map(m => `
+                                <button onclick="saveMood('${m}')" class="text-4xl hover:scale-125 transition">${m}</button>
+                            `).join('')}
+                        </div>
+                        <div class="border-t border-indigo-700 pt-6">
+                            <p class="text-[10px] uppercase font-bold opacity-40 mb-3 tracking-widest">7 Day History</p>
+                            <div class="flex gap-4">
+                                ${state.moodHistory.slice(-7).map(h => `<div class="text-center"><div class="text-xl">${h.mood}</div><div class="text-[8px] opacity-40">${h.day}</div></div>`).join('') || '---'}
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="p-6 bg-pink-50/50 border border-pink-100 rounded-3xl">
-                    <label class="block serif text-xl mb-4">Daily Gratitude</label>
-                    <textarea class="w-full bg-transparent border-none italic text-lg h-32" placeholder="I am grateful for..."></textarea>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-[#F6D1D1]/30 rounded-xl border border-white">
+                            <label class="block font-bold mb-2">Gratitude</label>
+                            <input type="text" class="w-full bg-transparent" placeholder="Today I am grateful for...">
+                        </div>
+                        <div class="p-4 bg-[#D9C1EB]/30 rounded-xl border border-white">
+                            <label class="block font-bold mb-2">Affirmation</label>
+                            <input type="text" class="w-full bg-transparent" placeholder="I am...">
+                        </div>
+                    </div>
                 </div>`
         };
-
-        let activeSticker = null;
 
         function showPage(id) {
             const container = document.getElementById('content-container');
             container.innerHTML = pages[id];
             lucide.createIcons();
             
-            // Re-apply active levels on daily page
+            // Re-apply Level styles for Daily page
             if (id === 'daily') {
-                Object.keys(journalState).forEach(key => {
+                Object.keys(state).forEach(key => {
                     if (key.startsWith('lvl-')) {
-                        const [_, item, lvl] = key.split('-');
-                        document.getElementById(`btn-${item}-${lvl}`)?.classList.add('active');
+                        const [_, cat, lvl] = key.split('-');
+                        document.getElementById(`btn-${cat}-${lvl}`)?.classList.add('active');
                     }
                 });
             }
         }
 
-        function setLevel(item, lvl) {
-            // Remove active from others
-            ['Low', 'Mid', 'High'].forEach(l => document.getElementById(`btn-${item}-${l}`).classList.remove('active'));
-            // Add to current
-            document.getElementById(`btn-${item}-${lvl}`).classList.add('active');
-            journalState[`lvl-${item}-${lvl}`] = true;
-            saveState();
+        // --- Fonctions Interactives ---
+        function setLevel(cat, lvl) {
+            ['Low', 'Mid', 'High'].forEach(l => document.getElementById(`btn-${cat}-${l}`).classList.remove('active'));
+            document.getElementById(`btn-${cat}-${lvl}`).classList.add('active');
+            state[`lvl-${cat}-${lvl}`] = true;
+            save();
         }
 
-        function saveMood(moodEmoji) {
-            const today = new Date().toLocaleDateString('en-US', {weekday: 'short'});
-            journalState.moodHistory.push({ mood: moodEmoji, date: today });
-            saveState();
-            showPage('emotional'); // Refresh to show recap
+        function pickSticker(emoji, btn) {
+            activeSticker = emoji;
+            document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('sticker-active'));
+            btn.classList.add('sticker-active');
         }
 
-        function placeSticker(day) {
-            if (!activeSticker) return alert("Select a sticker from the bottom first!");
-            journalState.weeklyRituals[day].push(activeSticker);
-            saveState();
+        function addSticker(day) {
+            if (!activeSticker) return;
+            state.weeklyRituals[day].push(activeSticker);
+            save();
             showPage('weekly');
         }
 
         function renderStickers(day) {
-            return journalState.weeklyRituals[day].map(s => `<span class="text-xl">${s}</span>`).join('');
+            return state.weeklyRituals[day].map(s => `<span>${s}</span>`).join('');
         }
 
-        function saveState() {
-            localStorage.setItem('faithJournal_v2', JSON.stringify(journalState));
+        function saveMood(m) {
+            const d = new Date().toLocaleDateString('en-US', {weekday: 'short'});
+            state.moodHistory.push({mood: m, day: d});
+            save();
+            showPage('emotional');
         }
 
-        showPage('daily');
+        function save() {
+            localStorage.setItem('faithState_v3', JSON.stringify(state));
+        }
+
+        showPage('cover');
     </script>
 </body>
 </html>
