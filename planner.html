@@ -12,27 +12,43 @@
             width: 8.5in;
             height: 11in;
             background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        @media print {
+            .no-print { display: none; }
+            body { background: white; padding: 0; }
+            .planner-page { box-shadow: none; page-break-after: always; }
         }
         @media (max-width: 768px) {
             .planner-page {
                 width: 100%;
                 height: auto;
-                min-height: 500px;
+                min-height: 600px;
             }
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        textarea, input[type="text"] {
+            font-family: 'Lato', sans-serif;
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
     <div class="min-h-screen p-4">
         <!-- Header -->
-        <div class="bg-white shadow-md p-4 mb-8 rounded-lg">
-            <div class="max-w-7xl mx-auto flex items-center justify-between">
-                <h1 class="text-2xl font-bold text-gray-800">Faith & Intention Planner</h1>
+        <div class="bg-white shadow-lg p-4 mb-8 rounded-lg no-print">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Faith & Intention Planner 2026</h1>
                 <div class="flex items-center space-x-4">
-                    <span class="text-gray-600" id="pageInfo">Page 1 of 8</span>
-                    <button onclick="window.print()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                        Print
+                    <span class="text-gray-600 font-semibold" id="pageInfo">Page 1 of 8</span>
+                    <button onclick="saveProgress()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                        💾 Save
+                    </button>
+                    <button onclick="window.print()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
+                        🖨️ Print
                     </button>
                 </div>
             </div>
@@ -40,41 +56,19 @@
 
         <!-- Planner Display -->
         <div class="flex justify-center mb-8">
-            <div class="planner-page relative overflow-hidden" id="plannerPage">
-                <!-- Cover Page -->
-                <div class="w-full h-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center relative">
-                    <div class="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full opacity-20 blur-3xl"></div>
-                    <div class="absolute bottom-20 right-20 w-40 h-40 bg-purple-200 rounded-full opacity-20 blur-3xl"></div>
-                    <div class="absolute top-20 right-1/4 w-16 h-16 border-4 border-purple-200 rounded-full opacity-30"></div>
-                    <div class="absolute top-1/4 left-1/3 text-purple-300 opacity-40 text-2xl">✨</div>
-                    <div class="text-center z-10 px-8">
-                        <h1 class="text-6xl font-bold text-gray-800 mb-4" style="font-family: Georgia, serif;">2026–2027</h1>
-                        <h2 class="text-4xl font-bold text-gray-700 mb-8" style="font-family: Georgia, serif;">Faith & Intention Planner</h2>
-                        <p class="text-2xl text-gray-600">By NancieDee</p>
-                    </div>
-                </div>
-            </div>
+            <div class="planner-page relative overflow-auto" id="plannerPage"></div>
         </div>
 
         <!-- Navigation -->
-        <div class="bg-white border-t p-4 rounded-lg max-w-7xl mx-auto">
-            <div class="flex items-center justify-center space-x-4">
-                <button onclick="previousPage()" class="flex items-center space-x-2 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" id="prevBtn">
+        <div class="bg-white border-t p-4 rounded-lg max-w-7xl mx-auto no-print">
+            <div class="flex items-center justify-center space-x-4 flex-wrap gap-2">
+                <button onclick="previousPage()" class="flex items-center space-x-2 px-6 py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-semibold" id="prevBtn">
                     <span>← Previous</span>
                 </button>
                 
-                <div class="flex space-x-2" id="pageDots">
-                    <button class="w-3 h-3 rounded-full bg-purple-600"></button>
-                    <button class="w-3 h-3 rounded-full bg-gray-300"></button>
-                    <button class="w-3 h-3 rounded-full bg-gray-300"></button>
-                    <button class="w-3 h-3 rounded-full bg-gray-300"></button>
-                    <button class="w-3 h-3 rounded-full bg-gray-300"></button>
-                    <button class="w-3 h-3 rounded-full bg-gray-300"></button>
-                    <button class="w-3 h-3 rounded-full bg-gray-300"></button>
-                    <button class="w-3 h-3 rounded-full bg-gray-300"></button>
-                </div>
+                <div class="flex space-x-2" id="pageDots"></div>
                 
-                <button onclick="nextPage()" class="flex items-center space-x-2 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" id="nextBtn">
+                <button onclick="nextPage()" class="flex items-center space-x-2 px-6 py-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-semibold" id="nextBtn">
                     <span>Next →</span>
                 </button>
             </div>
@@ -85,114 +79,344 @@
         let currentPage = 0;
         const totalPages = 8;
 
+        // Save and load from localStorage
+        function saveProgress() {
+            const allInputs = document.querySelectorAll('input, textarea');
+            const data = {};
+            allInputs.forEach((input, index) => {
+                if (input.type === 'checkbox') {
+                    data[`page${currentPage}_input${index}`] = input.checked;
+                } else {
+                    data[`page${currentPage}_input${index}`] = input.value;
+                }
+            });
+            localStorage.setItem('plannerData', JSON.stringify(data));
+            alert('✅ Progress saved!');
+        }
+
+        function loadProgress() {
+            const data = JSON.parse(localStorage.getItem('plannerData') || '{}');
+            const allInputs = document.querySelectorAll('input, textarea');
+            allInputs.forEach((input, index) => {
+                const key = `page${currentPage}_input${index}`;
+                if (data[key] !== undefined) {
+                    if (input.type === 'checkbox') {
+                        input.checked = data[key];
+                    } else {
+                        input.value = data[key];
+                    }
+                }
+            });
+        }
+
         const pages = [
             // Page 1: Cover
-            `<div class="w-full h-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center relative">
+            () => `
+            <div class="w-full h-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center relative overflow-hidden">
                 <div class="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full opacity-20 blur-3xl"></div>
                 <div class="absolute bottom-20 right-20 w-40 h-40 bg-purple-200 rounded-full opacity-20 blur-3xl"></div>
+                <div class="absolute top-20 right-1/4 w-16 h-16 border-4 border-purple-200 rounded-full opacity-30"></div>
+                <div class="absolute top-1/4 left-1/3 text-purple-300 opacity-40 text-3xl">✨</div>
+                <div class="absolute bottom-1/3 right-1/3 text-blue-300 opacity-40 text-2xl">✨</div>
                 <div class="text-center z-10 px-8">
-                    <h1 class="text-6xl font-bold text-gray-800 mb-4" style="font-family: Georgia, serif;">2026–2027</h1>
-                    <h2 class="text-4xl font-bold text-gray-700 mb-8" style="font-family: Georgia, serif;">Faith & Intention Planner</h2>
-                    <p class="text-2xl text-gray-600">By NancieDee</p>
+                    <h1 class="text-6xl md:text-7xl font-bold text-gray-800 mb-4" style="font-family: Georgia, serif;">2026–2027</h1>
+                    <h2 class="text-4xl md:text-5xl font-bold text-gray-700 mb-8" style="font-family: Georgia, serif;">Faith & Intention Planner</h2>
+                    <p class="text-2xl md:text-3xl text-gray-600">By NancieDee</p>
+                    <div class="mt-12 text-purple-400 text-lg">🌿</div>
                 </div>
             </div>`,
             
             // Page 2: December Intro
-            `<div class="w-full h-full bg-amber-50 p-12 relative">
+            () => `
+            <div class="w-full h-full bg-amber-50 p-8 md:p-12 relative overflow-auto">
                 <div class="absolute top-0 right-0 w-48 h-48 bg-purple-200 rounded-bl-full opacity-20 blur-2xl"></div>
-                <h2 class="text-3xl font-bold text-gray-800 text-center mb-8" style="font-family: Georgia, serif;">December 2025 – Intro & Reflection</h2>
-                <div class="space-y-8 max-w-2xl mx-auto">
-                    <div class="bg-white bg-opacity-60 p-6 rounded-lg">
+                <div class="absolute bottom-0 left-0 w-40 h-40 bg-blue-200 rounded-tr-full opacity-20 blur-2xl"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6 relative z-10" style="font-family: Georgia, serif;">
+                    December 2025 – Intro & Reflection
+                </h2>
+                
+                <div class="space-y-6 max-w-2xl mx-auto relative z-10">
+                    <div class="bg-white bg-opacity-70 p-5 rounded-lg shadow-sm">
                         <h3 class="text-lg font-semibold text-gray-700 mb-3">Space for Reflection</h3>
-                        <textarea class="w-full h-32 p-2 border border-gray-300 rounded" placeholder="Write your reflections..."></textarea>
+                        <textarea class="w-full h-24 p-3 border-2 border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none resize-none" placeholder="What did 2025 teach me..."></textarea>
                     </div>
-                    <div class="bg-white bg-opacity-60 p-6 rounded-lg">
+                    
+                    <div class="bg-white bg-opacity-70 p-5 rounded-lg shadow-sm">
                         <h3 class="text-lg font-semibold text-gray-700 mb-3">Intentions for 2026</h3>
-                        <textarea class="w-full h-32 p-2 border border-gray-300 rounded" placeholder="What are your intentions?"></textarea>
+                        <textarea class="w-full h-24 p-3 border-2 border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none resize-none" placeholder="My intentions for the new year..."></textarea>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-70 p-5 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-3">Big Goals</h3>
+                        <textarea class="w-full h-24 p-3 border-2 border-gray-300 rounded-lg focus:border-purple-400 focus:outline-none resize-none" placeholder="What do I want to achieve..."></textarea>
                     </div>
                 </div>
+                
+                <div class="absolute bottom-8 right-12 text-purple-300 opacity-40 text-4xl">🌿</div>
             </div>`,
             
             // Page 3: Q1 Focus
-            `<div class="w-full h-full bg-amber-50 p-12">
-                <h2 class="text-3xl font-bold text-gray-800 text-center mb-10" style="font-family: Georgia, serif;">Q1 2026 Focus</h2>
-                <div class="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
-                    <div class="bg-blue-100 p-6 rounded-lg">
-                        <h3 class="text-xl font-bold mb-4">January</h3>
-                        <textarea class="w-full h-32 p-2 border rounded" placeholder="January goals..."></textarea>
+            () => `
+            <div class="w-full h-full bg-amber-50 p-8 md:p-12 overflow-auto">
+                <div class="absolute top-10 left-10 w-32 h-32 bg-purple-200 rounded-full opacity-15 blur-2xl"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-8" style="font-family: Georgia, serif;">
+                    Q1 2026 Focus
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div class="bg-blue-100 bg-opacity-80 p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4" style="font-family: Georgia, serif;">January</h3>
+                        <div class="space-y-3">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="flex items-start space-x-2">
+                                    <input type="checkbox" class="mt-1 flex-shrink-0">
+                                    <input type="text" class="flex-1 border-b-2 border-gray-400 bg-transparent focus:border-blue-600 focus:outline-none py-1" placeholder="Goal ${i}...">
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
-                    <div class="bg-purple-100 p-6 rounded-lg">
-                        <h3 class="text-xl font-bold mb-4">February</h3>
-                        <textarea class="w-full h-32 p-2 border rounded" placeholder="February goals..."></textarea>
+                    
+                    <div class="bg-purple-100 bg-opacity-80 p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4" style="font-family: Georgia, serif;">February</h3>
+                        <div class="space-y-3">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="flex items-start space-x-2">
+                                    <input type="checkbox" class="mt-1 flex-shrink-0">
+                                    <input type="text" class="flex-1 border-b-2 border-gray-400 bg-transparent focus:border-purple-600 focus:outline-none py-1" placeholder="Goal ${i}...">
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
-                    <div class="bg-pink-100 p-6 rounded-lg">
-                        <h3 class="text-xl font-bold mb-4">March</h3>
-                        <textarea class="w-full h-32 p-2 border rounded" placeholder="March goals..."></textarea>
+                    
+                    <div class="bg-pink-100 bg-opacity-80 p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4" style="font-family: Georgia, serif;">March</h3>
+                        <div class="space-y-3">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="flex items-start space-x-2">
+                                    <input type="checkbox" class="mt-1 flex-shrink-0">
+                                    <input type="text" class="flex-1 border-b-2 border-gray-400 bg-transparent focus:border-pink-600 focus:outline-none py-1" placeholder="Goal ${i}...">
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
-                    <div class="bg-blue-50 p-6 rounded-lg">
-                        <h3 class="text-xl font-bold mb-4">Quarter Overview</h3>
-                        <textarea class="w-full h-32 p-2 border rounded" placeholder="Overall Q1 goals..."></textarea>
+                    
+                    <div class="bg-blue-50 bg-opacity-80 p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4" style="font-family: Georgia, serif;">Quarter Overview</h3>
+                        <div class="space-y-3">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="flex items-start space-x-2">
+                                    <input type="checkbox" class="mt-1 flex-shrink-0">
+                                    <input type="text" class="flex-1 border-b-2 border-gray-400 bg-transparent focus:border-blue-600 focus:outline-none py-1" placeholder="Priority ${i}...">
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
+                
+                <div class="absolute bottom-12 right-12 w-12 h-12 border-3 border-purple-300 rounded-full opacity-30"></div>
             </div>`,
             
-            // Simplified remaining pages for brevity
-            `<div class="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 p-12 flex items-center justify-center">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold mb-4">Monthly Focus Tracker</h2>
-                    <p class="text-gray-600">Track your Creative, Health, Family, and Spiritual goals</p>
+            // Page 4: Monthly Focus - January
+            () => `
+            <div class="w-full h-full bg-gradient-to-br from-blue-50 to-blue-100 p-8 md:p-12 overflow-auto relative">
+                <div class="absolute top-0 left-0 right-0 h-32 bg-blue-200 opacity-30 blur-xl"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-8 relative z-10" style="font-family: Georgia, serif;">
+                    January 2026 – Monthly Focus Tracker
+                </h2>
+                
+                <div class="max-w-3xl mx-auto space-y-6 relative z-10">
+                    ${['Creative', 'Health', 'Family', 'Spiritual', 'Notes'].map(area => `
+                        <div class="bg-white bg-opacity-80 p-6 rounded-lg shadow-md">
+                            <div class="flex items-start space-x-4">
+                                <input type="checkbox" class="mt-2 flex-shrink-0">
+                                <div class="flex-1">
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-3">${area}</h3>
+                                    <div class="space-y-2">
+                                        ${[1,2,3].map(() => `
+                                            <input type="text" class="w-full border-b-2 border-gray-400 bg-transparent focus:border-blue-600 focus:outline-none py-2" placeholder="Add detail...">
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
+                
+                <div class="absolute bottom-12 right-12 text-blue-400 opacity-40 text-4xl">🌙</div>
             </div>`,
             
-            `<div class="w-full h-full bg-amber-50 p-12 flex items-center justify-center">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold mb-4">Weekly Rituals</h2>
-                    <p class="text-gray-600">Daily spiritual, creative, fitness, and reflection tracking</p>
+            // Page 5: Weekly Rituals
+            () => `
+            <div class="w-full h-full bg-amber-50 p-6 md:p-10 overflow-auto">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 text-center mb-6" style="font-family: Georgia, serif;">
+                    Week of January 6 – January 12, 2026
+                </h2>
+                
+                <div class="max-w-4xl mx-auto space-y-3">
+                    ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, idx) => `
+                        <div class="bg-${idx % 2 === 0 ? 'purple' : 'blue'}-50 bg-opacity-70 p-4 rounded-lg shadow-sm">
+                            <h3 class="text-base font-bold text-gray-700 mb-2">${day}</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox">
+                                    <span class="text-gray-600 font-medium">Spiritual:</span>
+                                    <input type="text" class="flex-1 border-b border-gray-300 bg-transparent focus:border-purple-500 focus:outline-none">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox">
+                                    <span class="text-gray-600 font-medium">Creative:</span>
+                                    <input type="text" class="flex-1 border-b border-gray-300 bg-transparent focus:border-purple-500 focus:outline-none">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox">
+                                    <span class="text-gray-600 font-medium">Fitness:</span>
+                                    <input type="text" class="flex-1 border-b border-gray-300 bg-transparent focus:border-purple-500 focus:outline-none">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox">
+                                    <span class="text-gray-600 font-medium">Reflection:</span>
+                                    <input type="text" class="flex-1 border-b border-gray-300 bg-transparent focus:border-purple-500 focus:outline-none">
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
+                
+                <div class="absolute bottom-8 right-10 text-purple-300 opacity-40 text-3xl">🌿</div>
             </div>`,
             
-            `<div class="w-full h-full bg-gradient-to-br from-pink-50 to-amber-50 p-12 flex items-center justify-center">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold mb-4">Daily Tracker</h2>
-                    <p class="text-gray-600">Track Energy, Movement, Prayer, and Connection</p>
+            // Page 6: Daily Tracker
+            () => `
+            <div class="w-full h-full bg-gradient-to-br from-pink-50 to-amber-50 p-8 md:p-12 overflow-auto relative">
+                <div class="absolute top-0 left-0 right-0 h-24 bg-pink-200 opacity-20 blur-xl"></div>
+                
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-8 relative z-10" style="font-family: Georgia, serif;">
+                    January 6, 2026 – Daily Tracker
+                </h2>
+                
+                <div class="max-w-2xl mx-auto space-y-6 relative z-10">
+                    ${['Energy', 'Movement', 'Prayer', 'Connection'].map(item => `
+                        <div class="bg-white bg-opacity-80 p-6 rounded-lg shadow-md">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="flex-shrink-0">
+                                <span class="font-semibold text-gray-700 w-32">${item}:</span>
+                                <input type="text" class="flex-1 border-b-2 border-gray-400 bg-transparent focus:border-pink-600 focus:outline-none py-2 text-lg" placeholder="How was it today?">
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    <div class="bg-white bg-opacity-80 p-6 rounded-lg shadow-md mt-8">
+                        <h3 class="text-base font-semibold text-gray-700 mb-3">Notes</h3>
+                        <textarea class="w-full h-32 p-3 border-2 border-gray-300 rounded-lg focus:border-pink-400 focus:outline-none resize-none" placeholder="Today I'm grateful for..."></textarea>
+                    </div>
                 </div>
+                
+                <div class="absolute bottom-12 right-12 text-pink-300 opacity-40 text-4xl">🌙</div>
             </div>`,
             
-            `<div class="w-full h-full bg-gradient-to-br from-purple-50 to-blue-50 p-12 flex items-center justify-center">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold mb-4">Emotional Success</h2>
-                    <p class="text-gray-600">Gratitude, Affirmations, and Mood Tracking</p>
+            // Page 7: Emotional Success
+            () => `
+            <div class="w-full h-full bg-gradient-to-br from-purple-50 to-blue-50 p-8 md:p-12 overflow-auto">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-8" style="font-family: Georgia, serif;">
+                    Emotional Success
+                </h2>
+                
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <div class="bg-purple-100 bg-opacity-70 p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Gratitude</h3>
+                        <div class="space-y-3">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox">
+                                    <input type="text" class="flex-1 border-b-2 border-gray-400 bg-transparent focus:border-purple-600 focus:outline-none py-2" placeholder="I'm grateful for...">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-100 bg-opacity-70 p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Affirmations</h3>
+                        <div class="space-y-3">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox">
+                                    <input type="text" class="flex-1 border-b-2 border-gray-400 bg-transparent focus:border-blue-600 focus:outline-none py-2" placeholder="I am...">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-pink-100 bg-opacity-70 p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Mood Tracker</h3>
+                        <div class="space-y-3">
+                            ${['Joy', 'Peace', 'Gratitude', 'Energy', 'Connection'].map(mood => `
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox">
+                                    <span class="text-gray-700 w-32 font-medium">${mood}:</span>
+                                    <input type="range" min="1" max="10" class="flex-1" value="5">
+                                    <span class="text-gray-600 w-8 text-center">5</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </div>
+                
+                <div class="absolute bottom-10 right-10 text-purple-300 opacity-40 text-4xl">🌿</div>
             </div>`,
             
-            `<div class="w-full h-full bg-gradient-to-br from-purple-100 to-pink-100 p-12 flex items-center justify-center">
-                <div class="text-center">
-                    <h1 class="text-4xl font-bold mb-4">Thank You!</h1>
-                    <p class="text-xl text-gray-700 mb-6">Continue your faith journey with intention</p>
-                    <p class="text-gray-600">By NancieDee</p>
+            // Page 8: Thank You
+            () => `
+            <div class="w-full h-full bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 p-12 flex items-center justify-center relative overflow-hidden">
+                <div class="absolute top-20 left-20 w-40 h-40 bg-purple-300 rounded-full opacity-20 blur-3xl"></div>
+                <div class="absolute bottom-20 right-20 w-48 h-48 bg-pink-300 rounded-full opacity-20 blur-3xl"></div>
+                
+                <div class="text-center z-10">
+                    <div class="text-6xl mb-6">🙏</div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gray-800" style="font-family: Georgia, serif;">Thank You!</h1>
+                    <p class="text-xl md:text-2xl text-gray-700 mb-6">Continue your faith journey with intention</p>
+                    <p class="text-lg text-gray-600 mb-8">May your days be filled with purpose and peace</p>
+                    <div class="text-purple-400 text-3xl mb-4">✨ 🌿 ✨</div>
+                    <p class="text-gray-600 text-lg" style="font-family: Georgia, serif;">By NancieDee</p>
                 </div>
             </div>`
         ];
 
         function updatePage() {
-            document.getElementById('plannerPage').innerHTML = pages[currentPage];
+            saveProgress(); // Save before changing page
+            document.getElementById('plannerPage').innerHTML = pages[currentPage]();
+            loadProgress(); // Load data for new page
             document.getElementById('pageInfo').textContent = `Page ${currentPage + 1} of ${totalPages}`;
             
             // Update dots
-            const dots = document.getElementById('pageDots').children;
-            for (let i = 0; i < dots.length; i++) {
-                dots[i].className = i === currentPage ? 'w-3 h-3 rounded-full bg-purple-600' : 'w-3 h-3 rounded-full bg-gray-300';
+            const dotsContainer = document.getElementById('pageDots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalPages; i++) {
+                const dot = document.createElement('button');
+                dot.className = i === currentPage ? 'w-3 h-3 rounded-full bg-purple-600' : 'w-3 h-3 rounded-full bg-gray-300';
+                dot.onclick = () => { currentPage = i; updatePage(); };
+                dotsContainer.appendChild(dot);
             }
             
             // Update buttons
             document.getElementById('prevBtn').disabled = currentPage === 0;
             document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+            
+            // Add range slider listeners
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                slider.addEventListener('input', (e) => {
+                    e.target.nextElementSibling.textContent = e.target.value;
+                });
+            });
         }
 
         function nextPage() {
             if (currentPage < totalPages - 1) {
                 currentPage++;
                 updatePage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
 
@@ -200,8 +424,12 @@
             if (currentPage > 0) {
                 currentPage--;
                 updatePage();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
+
+        // Initialize
+        updatePage();
     </script>
 </body>
 </html>
