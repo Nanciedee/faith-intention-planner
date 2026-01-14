@@ -1,0 +1,45 @@
+async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const element = document.getElementById('content-container');
+    
+    // On force l'élément à être pleinement visible pour la capture
+    const originalStyle = element.style.overflow;
+    element.style.overflow = 'visible';
+
+    try {
+        const canvas = await html2canvas(element, { 
+            scale: 2, // Haute définition
+            useCORS: true, 
+            backgroundColor: "#FFF5E1",
+            // Paramètres critiques pour corriger le bug "haut-gauche" :
+            scrollX: -window.scrollX,
+            scrollY: -window.scrollY,
+            windowWidth: document.documentElement.offsetWidth,
+            windowHeight: document.documentElement.offsetHeight,
+            x: element.getBoundingClientRect().left + window.scrollX,
+            y: element.getBoundingClientRect().top + window.scrollY,
+            width: element.offsetWidth,
+            height: element.offsetHeight
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        
+        // Calcul pour ajuster l'image à la largeur A4 (avec petites marges de 5mm)
+        const margin = 5;
+        const imgWidth = pageWidth - (margin * 2);
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
+        pdf.save(`Journal-Page-${currentViewDate}.pdf`);
+
+    } catch (err) {
+        console.error("Erreur capture:", err);
+        alert("Erreur de rendu. Essayez d'utiliser le bouton 'Imprimer Tout' et choisissez 'Enregistrer en PDF' dans les options d'imprimante.");
+    } finally {
+        element.style.overflow = originalStyle;
+    }
+}
