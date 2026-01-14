@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Journal 2026</title>
+    <title>Faith & Intention Journal v4</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; }
         .serif { font-family: 'Playfair Display', serif; }
-        .watercolor-bg { filter: blur(70px); opacity: 0.15; z-index: -1; position: fixed; border-radius: 50%; }
-        .level-btn.active { background-color: var(--p-lilac); border-color: #9f7aea; color: white; transform: scale(1.1); }
-        input, textarea { background: rgba(255, 255, 255, 0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.6); padding: 8px; }
-        .sticker-active { border: 2px solid #9f7aea; border-radius: 50%; padding: 4px; background: white; }
+        .watercolor-bg { filter: blur(80px); opacity: 0.2; z-index: -1; position: fixed; border-radius: 50%; }
+        
+        /* Sliders Styles */
+        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 5px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #9f7aea; cursor: pointer; }
+        
+        /* Sticker Animation */
+        .sticker-selected { border: 2px solid #9f7aea; transform: scale(1.2); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .life-bar { transition: width 0.5s ease-in-out; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row overflow-hidden">
@@ -22,228 +27,169 @@
     <div class="w-96 h-96 bg-blue-200 top-0 right-0 watercolor-bg"></div>
     <div class="w-96 h-96 bg-purple-200 bottom-0 left-0 watercolor-bg"></div>
 
-    <nav class="w-full md:w-80 bg-white/70 backdrop-blur-lg border-r p-6 flex flex-col z-10 overflow-y-auto">
-        <div class="mb-10 text-center md:text-left">
-            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
-            <p class="text-[10px] tracking-[0.3em] uppercase text-gray-400">Dec 2025 - Q1 2026</p>
+    <nav class="w-full md:w-80 bg-white/80 backdrop-blur-md border-r p-6 flex flex-col z-10 overflow-y-auto">
+        <div class="mb-10 text-center">
+            <h1 class="serif text-2xl font-bold text-indigo-950">Intention 2026</h1>
+            <p id="current-quarter-label" class="text-[10px] tracking-widest text-gray-400 font-bold uppercase"></p>
         </div>
-        
-        <ul class="space-y-1 text-sm flex-1">
-            <li><button onclick="showPage('cover')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="book-open" size="18"></i> 1. Cover Page</button></li>
-            <li><button onclick="showPage('december')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="sparkles" size="18"></i> 2. Dec 2025 Intro</button></li>
-            <li><button onclick="showPage('q1focus')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="target" size="18"></i> 3. Q1 2026 Focus</button></li>
-            <li><button onclick="showPage('monthly')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="calendar" size="18"></i> 4. Monthly Tracker</button></li>
-            <li><button onclick="showPage('weekly')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> 5. Weekly Rituals</button></li>
-            <li><button onclick="showPage('daily')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3 bg-white font-bold text-indigo-700 shadow-sm"><i data-lucide="sun" size="18"></i> 6. Daily Tracker</button></li>
-            <li><button onclick="showPage('emotional')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="heart" size="18"></i> 7. Emotional Success</button></li>
+        <ul class="space-y-2 flex-1 text-sm">
+            <li><button onclick="showPage('cover')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="book-open" size="18"></i> Couverture</button></li>
+            <li><button onclick="showPage('q-focus')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="target" size="18"></i> Focus Trimestriel</button></li>
+            <li><button onclick="showPage('monthly')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="calendar" size="18"></i> Tracker Mensuel</button></li>
+            <li><button onclick="showPage('weekly')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button></li>
+            <li><button onclick="showPage('daily')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3 bg-white shadow-sm font-bold text-indigo-600"><i data-lucide="sun" size="18"></i> Daily Tracker</button></li>
+            <li><button onclick="showPage('emotional')" class="w-full text-left p-3 rounded-xl hover:bg-white flex items-center gap-3"><i data-lucide="heart" size="18"></i> Emotional Success</button></li>
         </ul>
     </nav>
 
     <main class="flex-1 p-4 md:p-10 overflow-y-auto">
-        <div id="content-container" class="max-w-5xl mx-auto bg-white/50 backdrop-blur-sm shadow-2xl rounded-[2.5rem] p-8 md:p-12 min-h-[90vh] border border-white">
+        <div id="content-container" class="max-w-4xl mx-auto bg-white/50 backdrop-blur-sm shadow-2xl rounded-[3rem] p-8 md:p-12 min-h-[85vh] border border-white relative">
             </div>
     </main>
 
     <script>
-        let state = JSON.parse(localStorage.getItem('faithState_v3')) || {
-            moodHistory: [],
-            weeklyRituals: { Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [], Sun: [] }
+        // Data & Logic
+        let state = JSON.parse(localStorage.getItem('faithJournal_v4')) || {
+            rituals: { Mon: [], Tue: [], Wed: [], Thu: [], Fri: [], Sat: [], Sun: [] },
+            monthlyChecks: [false, false, false, false],
+            dailyLevels: { Energy: 50, Movement: 50, Prayer: 50, Connection: 50 }
         };
-        let activeSticker = null;
+
+        let selectedSticker = null;
+
+        const getQuarterInfo = () => {
+            const month = new Date().getMonth(); // 0-11
+            if (month <= 2) return { name: "Q1 2026", months: ["Janvier", "Février", "Mars"], colors: ["#BFD8EB", "#D9C1EB", "#F6D1D1"] };
+            if (month <= 5) return { name: "Q2 2026", months: ["Avril", "Mai", "Juin"], colors: ["#C6F6D5", "#FEEBC8", "#FED7D7"] };
+            return { name: "Focus 2026", months: ["Mois 1", "Mois 2", "Mois 3"], colors: ["#E2E8F0", "#E2E8F0", "#E2E8F0"] };
+        };
 
         const pages = {
-            cover: `
-                <div class="text-center py-24">
-                    <div class="mb-10 flex justify-center opacity-30"><i data-lucide="moon" size="80"></i></div>
-                    <h1 class="serif text-5xl md:text-6xl font-bold mb-6 text-indigo-950">2026–2027<br>Faith & Intention</h1>
-                    <p class="text-2xl text-gray-400 italic font-light tracking-wide">Planner By NancieDee</p>
-                    <div class="mt-24 flex justify-center gap-8">
-                        <div class="w-16 h-1 rounded-full bg-[#BFD8EB]"></div>
-                        <div class="w-16 h-1 rounded-full bg-[#D9C1EB]"></div>
-                        <div class="w-16 h-1 rounded-full bg-[#F6D1D1]"></div>
-                    </div>
-                </div>`,
+            cover: `<div class="text-center py-24"><i data-lucide="moon" class="mx-auto mb-8 text-indigo-200" size="64"></i><h1 class="serif text-6xl font-bold mb-4">Faith & Intention</h1><p class="text-2xl text-gray-400 italic font-light">By NancieDee</p></div>`,
 
-            december: `
-                <h2 class="serif text-3xl mb-2 text-center">December 2025</h2>
-                <p class="text-center text-gray-400 italic mb-10">Intro & Reflection</p>
-                <div class="space-y-8">
-                    <div class="p-6 rounded-2xl bg-white/40 border border-white shadow-sm">
-                        <label class="serif text-xl block mb-4">Space for Reflection</label>
-                        <textarea id="dec-reflect" class="w-full h-32 border-none focus:ring-0" placeholder="Look back at your year..."></textarea>
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div class="p-6 rounded-2xl bg-[#D9C1EB]/20 border border-white">
-                            <label class="font-bold text-gray-500 uppercase text-xs tracking-widest block mb-4">Intentions for 2026</label>
-                            <textarea id="dec-intent" class="w-full h-40 bg-transparent border-none"></textarea>
-                        </div>
-                        <div class="p-6 rounded-2xl bg-[#BFD8EB]/20 border border-white">
-                            <label class="font-bold text-gray-500 uppercase text-xs tracking-widest block mb-4">Big Goals</label>
-                            <textarea id="dec-goals" class="w-full h-40 bg-transparent border-none"></textarea>
-                        </div>
-                    </div>
-                </div>`,
-
-            q1focus: `
-                <h2 class="serif text-3xl text-center mb-10">Q1 2026 Focus</h2>
+            'q-focus': () => {
+                const q = getQuarterInfo();
+                return `<h2 class="serif text-3xl text-center mb-10">${q.name} Focus</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    ${['January', 'February', 'March'].map((m, i) => {
-                        const colors = ['#BFD8EB', '#D9C1EB', '#F6D1D1'];
-                        return `
-                        <div class="p-6 rounded-3xl border border-white shadow-lg" style="background-color: ${colors[i]}44">
-                            <h3 class="serif text-2xl mb-6">${m}</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-center gap-2"><input type="checkbox" id="q1-${m}-1"> <input type="text" class="text-sm bg-transparent border-b border-black/10 w-full" placeholder="Goal 1"></div>
-                                <div class="flex items-center gap-2"><input type="checkbox" id="q1-${m}-2"> <input type="text" class="text-sm bg-transparent border-b border-black/10 w-full" placeholder="Goal 2"></div>
-                                <textarea class="w-full h-32 bg-transparent border-none mt-4 text-xs" placeholder="Notes..."></textarea>
-                            </div>
-                        </div>`;
-                    }).join('')}
-                </div>`,
-
-            monthly: `
-                <h2 class="serif text-3xl text-center mb-10">Monthly Focus Tracker</h2>
-                <div class="max-w-2xl mx-auto space-y-6">
-                    ${['Creative', 'Health', 'Family', 'Notes'].map(item => `
-                        <div class="flex items-center gap-6 p-6 bg-white/40 rounded-2xl border border-white group">
-                            <input type="checkbox" class="w-6 h-6 rounded-full border-indigo-200">
-                            <div class="flex-1">
-                                <label class="block text-xs font-bold text-indigo-400 uppercase tracking-widest">${item}</label>
-                                <input type="text" class="w-full bg-transparent border-none p-0 text-lg font-medium" placeholder="What is your focus?">
-                            </div>
-                            <i data-lucide="leaf" class="text-green-200 opacity-0 group-hover:opacity-100 transition"></i>
+                    ${q.months.map((m, i) => `
+                        <div class="p-6 rounded-[2rem] border border-white shadow-lg" style="background-color: ${q.colors[i]}66">
+                            <h3 class="serif text-xl mb-4">${m}</h3>
+                            <textarea class="w-full h-40 bg-transparent border-none focus:ring-0 text-sm" placeholder="Mes objectifs..."></textarea>
                         </div>
                     `).join('')}
-                </div>`,
+                </div>`;
+            },
+
+            monthly: () => {
+                const count = state.monthlyChecks.filter(c => c).length;
+                const percent = (count / 4) * 100;
+                return `
+                <h2 class="serif text-3xl text-center mb-2">Monthly Tracker</h2>
+                <div class="max-w-md mx-auto mb-10">
+                    <p class="text-xs font-bold text-gray-400 uppercase text-center mb-2">Life Balance Score</p>
+                    <div class="w-full h-4 bg-gray-100 rounded-full overflow-hidden border border-white">
+                        <div class="life-bar h-full bg-green-400" style="width: ${percent}%"></div>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    ${['Créativité', 'Santé', 'Famille', 'Notes'].map((item, i) => `
+                        <div class="flex items-center gap-6 p-6 rounded-3xl border border-white shadow-sm transition-all ${state.monthlyChecks[i] ? 'bg-green-50/50 border-green-200' : 'bg-white/40'}">
+                            <input type="checkbox" onchange="updateMonthly(${i})" ${state.monthlyChecks[i] ? 'checked' : ''} class="w-6 h-6 rounded-full border-gray-300">
+                            <div class="flex-1">
+                                <label class="text-xs font-bold text-gray-400 uppercase">${item}</label>
+                                <input type="text" class="w-full bg-transparent border-none p-0 text-lg" placeholder="Focus pour ce mois...">
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+            },
 
             weekly: `
-                <h2 class="serif text-3xl mb-2 text-center">Weekly Rituals</h2>
-                <p class="text-center text-gray-400 text-sm mb-8 italic">Choose a sticker, then click a day line to add it.</p>
-                <div class="space-y-3 mb-10">
+                <h2 class="serif text-3xl mb-10 text-center">Weekly Rituals</h2>
+                <div class="space-y-2 mb-10">
                     ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => `
-                        <div class="flex items-center gap-4 border-b border-indigo-50 py-3">
-                            <span class="w-16 font-bold text-gray-400 uppercase text-xs tracking-tighter">${day}</span>
-                            <div onclick="addSticker('${day}')" class="flex-1 min-h-[40px] flex gap-2 items-center px-4 rounded-full bg-white/30 cursor-pointer hover:bg-white/60 transition">
-                                ${renderStickers(day)}
+                        <div class="flex items-center gap-4 py-3 border-b border-indigo-50">
+                            <span class="w-12 font-bold text-gray-300 uppercase text-[10px]">${day}</span>
+                            <div onclick="stampSticker('${day}')" class="flex-1 min-h-[44px] flex gap-2 items-center px-4 rounded-full bg-white/40 hover:bg-indigo-50 transition cursor-crosshair">
+                                <div id="stickers-${day}" class="flex gap-2"></div>
                             </div>
                         </div>
                     `).join('')}
                 </div>
-                <div class="p-6 bg-white/80 rounded-3xl flex justify-center gap-8 shadow-inner">
-                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map(s => `
-                        <button onclick="pickSticker('${s}', this)" class="sticker-btn text-3xl hover:scale-125 transition">${s}</button>
-                    `).join('')}
+                <div class="p-6 bg-white/80 rounded-[2rem] flex justify-center gap-6 shadow-xl border border-white">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map(s => `<button onclick="selectSticker('${s}', this)" class="sticker-opt text-4xl p-2 rounded-full transition">${s}</button>`).join('')}
                 </div>`,
 
             daily: `
-                <div class="flex justify-between items-center mb-10 p-6 bg-[#BFD8EB]/30 rounded-3xl border border-white">
-                    <h2 class="serif text-2xl">Daily Micro-Tracker</h2>
-                    <div class="text-right"><p class="text-xs uppercase font-bold text-indigo-500">${new Date().toLocaleDateString('fr-FR', {weekday: 'long'})}</p><p class="serif text-xl">${new Date().toLocaleDateString()}</p></div>
-                </div>
-                <div class="grid md:grid-cols-2 gap-10">
-                    <div class="space-y-6">
+                <h2 class="serif text-3xl mb-10">Daily Tracker</h2>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="space-y-8">
                         ${['Energy', 'Movement', 'Prayer', 'Connection'].map(cat => `
-                            <div class="p-4 bg-white/40 rounded-2xl border border-white">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="font-bold">${cat}</span>
-                                    <div class="flex gap-1">
-                                        ${['Low', 'Mid', 'High'].map(lvl => `
-                                            <button onclick="setLevel('${cat}','${lvl}')" id="btn-${cat}-${lvl}" class="level-btn text-[10px] px-3 py-1 border rounded-full bg-white">${lvl}</button>
-                                        `).join('')}
-                                    </div>
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <label class="font-bold text-indigo-900">${cat}</label>
+                                    <span id="val-${cat}" class="text-xs font-bold text-indigo-400">50%</span>
                                 </div>
-                                <input type="text" class="w-full bg-transparent text-sm border-none italic" placeholder="Details...">
+                                <input type="range" class="w-full" oninput="updateLevel('${cat}', this.value)" value="${state.dailyLevels[cat] || 50}">
                             </div>
                         `).join('')}
                     </div>
                     <div class="flex flex-col">
-                        <h3 class="serif text-xl mb-4">Journal Notes</h3>
-                        <textarea class="flex-1 p-6 rounded-3xl bg-white/60 border border-white shadow-inner" placeholder="3-4 lines for extra journaling..."></textarea>
-                    </div>
-                </div>`,
-
-            emotional: `
-                <h2 class="serif text-3xl mb-10 text-center">Emotional Success</h2>
-                <div class="grid gap-8 max-w-2xl mx-auto">
-                    <div class="bg-indigo-900 text-white p-8 rounded-[2rem] shadow-xl">
-                        <p class="text-xs uppercase font-bold opacity-50 mb-6">Mood Tracker</p>
-                        <div class="flex justify-between mb-8">
-                            ${['🌈', '☀️', '☁️', '🌧️', '⛈️'].map(m => `
-                                <button onclick="saveMood('${m}')" class="text-4xl hover:scale-125 transition">${m}</button>
-                            `).join('')}
-                        </div>
-                        <div class="border-t border-indigo-700 pt-6">
-                            <p class="text-[10px] uppercase font-bold opacity-40 mb-3 tracking-widest">7 Day History</p>
-                            <div class="flex gap-4">
-                                ${state.moodHistory.slice(-7).map(h => `<div class="text-center"><div class="text-xl">${h.mood}</div><div class="text-[8px] opacity-40">${h.day}</div></div>`).join('') || '---'}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="p-4 bg-[#F6D1D1]/30 rounded-xl border border-white">
-                            <label class="block font-bold mb-2">Gratitude</label>
-                            <input type="text" class="w-full bg-transparent" placeholder="Today I am grateful for...">
-                        </div>
-                        <div class="p-4 bg-[#D9C1EB]/30 rounded-xl border border-white">
-                            <label class="block font-bold mb-2">Affirmation</label>
-                            <input type="text" class="w-full bg-transparent" placeholder="I am...">
-                        </div>
+                        <h3 class="serif text-xl mb-4">Journaling</h3>
+                        <textarea class="flex-1 p-6 rounded-[2rem] bg-white border border-white shadow-inner" placeholder="Racontez votre journée..."></textarea>
                     </div>
                 </div>`
         };
 
         function showPage(id) {
             const container = document.getElementById('content-container');
-            container.innerHTML = pages[id];
+            const content = (typeof pages[id] === 'function') ? pages[id]() : pages[id];
+            container.innerHTML = content;
             lucide.createIcons();
             
-            // Re-apply Level styles for Daily page
-            if (id === 'daily') {
-                Object.keys(state).forEach(key => {
-                    if (key.startsWith('lvl-')) {
-                        const [_, cat, lvl] = key.split('-');
-                        document.getElementById(`btn-${cat}-${lvl}`)?.classList.add('active');
-                    }
-                });
-            }
-        }
-
-        // --- Fonctions Interactives ---
-        function setLevel(cat, lvl) {
-            ['Low', 'Mid', 'High'].forEach(l => document.getElementById(`btn-${cat}-${l}`).classList.remove('active'));
-            document.getElementById(`btn-${cat}-${lvl}`).classList.add('active');
-            state[`lvl-${cat}-${lvl}`] = true;
+            if (id === 'weekly') refreshAllStickers();
             save();
         }
 
-        function pickSticker(emoji, btn) {
-            activeSticker = emoji;
-            document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('sticker-active'));
-            btn.classList.add('sticker-active');
-        }
-
-        function addSticker(day) {
-            if (!activeSticker) return;
-            state.weeklyRituals[day].push(activeSticker);
+        // --- Interaction Logic ---
+        function updateLevel(cat, val) {
+            document.getElementById(`val-${cat}`).innerText = val + '%';
+            state.dailyLevels[cat] = val;
             save();
-            showPage('weekly');
         }
 
-        function renderStickers(day) {
-            return state.weeklyRituals[day].map(s => `<span>${s}</span>`).join('');
-        }
-
-        function saveMood(m) {
-            const d = new Date().toLocaleDateString('en-US', {weekday: 'short'});
-            state.moodHistory.push({mood: m, day: d});
+        function updateMonthly(index) {
+            state.monthlyChecks[index] = !state.monthlyChecks[index];
             save();
-            showPage('emotional');
+            showPage('monthly'); // Refresh for bar
+        }
+
+        function selectSticker(emoji, btn) {
+            selectedSticker = emoji;
+            document.querySelectorAll('.sticker-opt').forEach(b => b.classList.remove('sticker-selected'));
+            btn.classList.add('sticker-selected');
+        }
+
+        function stampSticker(day) {
+            if (!selectedSticker) return;
+            state.rituals[day].push(selectedSticker);
+            save();
+            refreshAllStickers();
+        }
+
+        function refreshAllStickers() {
+            Object.keys(state.rituals).forEach(day => {
+                const el = document.getElementById(`stickers-${day}`);
+                if (el) el.innerHTML = state.rituals[day].map(s => `<span class="text-2xl">${s}</span>`).join('');
+            });
         }
 
         function save() {
-            localStorage.setItem('faithState_v3', JSON.stringify(state));
+            localStorage.setItem('faithJournal_v4', JSON.stringify(state));
         }
 
+        // Init
+        document.getElementById('current-quarter-label').innerText = getQuarterInfo().name;
         showPage('cover');
     </script>
 </body>
