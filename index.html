@@ -3,180 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Planner 2026-2027</title>
+    <title>Faith & Intention Journal 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #BFD8EB 0%, #D9C1EB 50%, #F6D1D1 100%);
-            min-height: 100vh;
-            padding: 20px;
+        :root {
+            --pastel-blue: #BFD8EB;
+            --pastel-lilac: #D9C1EB;
+            --blush: #F6D1D1;
+            --cream: #FFF5E1;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 60px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-        }
-        header { text-align: center; margin-bottom: 60px; }
-        h1 {
-            font-family: Georgia, serif;
-            font-size: 3.5rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .subtitle { font-size: 1.5rem; color: #7f8c8d; margin-bottom: 20px; }
-        .hero {
-            background: linear-gradient(135deg, rgba(191,216,235,0.3) 0%, rgba(217,193,235,0.3) 100%);
-            padding: 40px;
-            border-radius: 15px;
-            margin-bottom: 50px;
-            text-align: center;
-        }
-        h2 {
-            font-family: Georgia, serif;
-            font-size: 2rem;
-            color: #2c3e50;
-            margin: 40px 0 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #D9C1EB;
-        }
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-        .feature-card {
-            background: linear-gradient(135deg, rgba(191,216,235,0.2) 0%, rgba(217,193,235,0.2) 100%);
-            padding: 25px;
-            border-radius: 12px;
-            border-left: 4px solid #D9C1EB;
-        }
-        .feature-card h3 { color: #2c3e50; margin-bottom: 10px; }
-        .color-palette { display: flex; gap: 20px; margin: 30px 0; flex-wrap: wrap; }
-        .color-box {
-            flex: 1;
-            min-width: 150px;
-            padding: 40px 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .color-blue { background: #BFD8EB; }
-        .color-lilac { background: #D9C1EB; }
-        .color-blush { background: #F6D1D1; }
-        .color-cream { background: #FFF5E1; }
-        .cta-section {
-            background: linear-gradient(135deg, #D9C1EB 0%, #BFD8EB 100%);
-            padding: 50px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 50px 0;
-        }
-        .cta-section h2 { color: white; border: none; margin: 0 0 20px; }
-        .cta-section p { color: white; font-size: 1.2rem; margin-bottom: 30px; }
-        .btn {
-            display: inline-block;
-            padding: 15px 40px;
-            background: white;
-            color: #8B5CF6;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: bold;
-            margin: 10px;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-        .btn-primary {
-            background: white;
-            color: #8B5CF6;
-        }
-        .btn-secondary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid white;
-        }
-        footer { text-align: center; margin-top: 60px; padding-top: 30px; border-top: 2px solid #eee; }
-        @media (max-width: 768px) {
-            .container { padding: 30px 20px; }
-            h1 { font-size: 2.5rem; }
-            .features { grid-template-columns: 1fr; }
-            .btn { display: block; margin: 10px 0; }
-        }
+        body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; }
+        .serif { font-family: 'Playfair Display', serif; }
+        .page-gradient { background: linear-gradient(135deg, #FFF5E1 0%, #fdfcfb 100%); }
+        .watercolor-accent { filter: blur(40px); opacity: 0.3; z-index: -1; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🌿 Faith & Intention Planner</h1>
-            <p class="subtitle">2026–2027 • By NancieDee</p>
-        </header>
-        
-        <div class="hero">
-            <p>A beautiful 8.5x11" digital planner designed for Etsy and personal use. Combines elegant design with practical tracking for spiritual growth, creative pursuits, health goals, and emotional wellness.</p>
-        </div>
-        
-        <section>
-            <h2>✨ Features</h2>
-            <div class="features">
-                <div class="feature-card">
-                    <h3>📖 Cover Page</h3>
-                    <p>Elegant watercolor design with faith-centered branding</p>
-                </div>
-                <div class="feature-card">
-                    <h3>🎯 December 2025 Intro</h3>
-                    <p>Reflection and transition page for the new year</p>
-                </div>
-                <div class="feature-card">
-                    <h3>📅 Q1 2026 Focus</h3>
-                    <p>Quarterly planning with monthly breakdowns</p>
-                </div>
-                <div class="feature-card">
-                    <h3>📊 Monthly Trackers</h3>
-                    <p>Track Creative, Health, Family, and Spiritual goals</p>
-                </div>
-                <div class="feature-card">
-                    <h3>🗓️ Weekly Rituals</h3>
-                    <p>Daily spiritual, creative, fitness, and reflection tracking</p>
-                </div>
-                <div class="feature-card">
-                    <h3>✅ Daily Trackers</h3>
-                    <p>Energy, Movement, Prayer, and Connection tracking</p>
-                </div>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+    <nav class="w-full md:w-64 bg-white border-r border-gray-200 p-6 flex-shrink-0">
+        <h1 class="serif text-2xl font-bold mb-8 text-indigo-900">2026 Journal</h1>
+        <ul class="space-y-4">
+            <li><button onclick="showPage('cover')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="book-open"></i> Cover</button></li>
+            <li><button onclick="showPage('december')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="sparkles"></i> Dec 2025 Intro</button></li>
+            <li><button onclick="showPage('q1focus')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="target"></i> Q1 Focus</button></li>
+            <li><hr class="border-gray-100 my-2"></li>
+            <li class="text-xs uppercase tracking-widest text-gray-400 font-bold">Monthly Tracker</li>
+            <li><button onclick="showPage('tracker')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="calendar"></i> Monthly Focus</button></li>
+            <li><button onclick="showPage('weekly')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="layers"></i> Weekly Rituals</button></li>
+            <li><button onclick="showPage('daily')" class="flex items-center gap-2 hover:text-purple-600 transition text-indigo-600 font-bold"><i data-lucide="sun"></i> Daily Micro-Tracker</button></li>
+            <li><button onclick="showPage('emotional')" class="flex items-center gap-2 hover:text-purple-600 transition"><i data-lucide="heart"></i> Emotional Success</button></li>
+        </ul>
+    </nav>
+
+    <main class="flex-1 p-4 md:p-12 overflow-y-auto relative">
+        <div class="fixed top-0 right-0 w-64 h-64 bg-blue-200 rounded-full watercolor-accent"></div>
+        <div class="fixed bottom-0 left-64 w-96 h-96 bg-purple-200 rounded-full watercolor-accent"></div>
+
+        <div id="content-container" class="max-w-3xl mx-auto bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl p-8 min-h-[80vh] border border-white">
             </div>
-        </section>
-        
-        <section>
-            <h2>🎨 Color Palette</h2>
-            <div class="color-palette">
-                <div class="color-box color-blue">Pastel Blue<br>#BFD8EB</div>
-                <div class="color-box color-lilac">Pastel Lilac<br>#D9C1EB</div>
-                <div class="color-box color-blush">Blush<br>#F6D1D1</div>
-                <div class="color-box color-cream">Cream<br>#FFF5E1</div>
-            </div>
-        </section>
-        
-        <div class="cta-section">
-            <h2>🚀 Get Started</h2>
-            <p>Ready to start your faith journey?</p>
-            <a href="planner.html" class="btn btn-primary">📖 Use Online Planner</a>
-            <a href="https://github.com/nanciedee/faith-intention-planner" class="btn btn-secondary">View on GitHub</a>
-        </div>
-        
-        <footer>
-            <p><strong>NancieDee</strong> | Faith & Intention Planner 2026-2027</p>
-            <p style="margin-top: 10px; color: #7f8c8d;">For Etsy sales and commercial use inquiries, please contact the author.</p>
-        </footer>
-    </div>
+    </main>
+
+    <script>
+        // Pages Data Structure
+        const pages = {
+            cover: `
+                <div class="text-center py-20">
+                    <i data-lucide="moon" class="mx-auto mb-6 text-indigo-300" size="48"></i>
+                    <h1 class="serif text-5xl font-bold mb-4">2026–2027<br>Faith & Intention Planner</h1>
+                    <p class="text-2xl text-gray-500 italic">By NancieDee</p>
+                    <div class="mt-20 flex justify-center gap-4">
+                        <div class="w-12 h-12 rounded-full" style="background-color: var(--pastel-blue)"></div>
+                        <div class="w-12 h-12 rounded-full" style="background-color: var(--pastel-lilac)"></div>
+                        <div class="w-12 h-12 rounded-full" style="background-color: var(--blush)"></div>
+                    </div>
+                </div>`,
+            
+            daily: `
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="serif text-3xl">Daily Micro-Tracker</h2>
+                    <span class="text-gray-400">${new Date().toLocaleDateString()}</span>
+                </div>
+                <div class="space-y-6">
+                    <div class="p-4 rounded-lg bg-[#BFD8EB]/20 border-l-4 border-[#BFD8EB]">
+                        <label class="block font-bold mb-2">Energy Level</label>
+                        <input type="range" class="w-full accent-blue-400">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="flex items-center gap-3 p-4 border rounded-xl hover:bg-white transition cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 rounded-full border-gray-300"> <span>Movement</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 border rounded-xl hover:bg-white transition cursor-pointer">
+                            <input type="checkbox" class="w-5 h-5 rounded-full border-gray-300"> <span>Prayer/Meditation</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-2">Daily Notes</label>
+                        <textarea class="w-full h-32 p-4 border rounded-xl bg-white/50 focus:ring-2 ring-purple-200 outline-none" placeholder="Write your thoughts here..."></textarea>
+                    </div>
+                </div>`,
+            
+            q1focus: `
+                <h2 class="serif text-3xl mb-8">Q1 2026 Focus</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-2xl bg-[#BFD8EB]/30">
+                        <h3 class="font-bold border-b border-blue-200 mb-4 pb-2">January</h3>
+                        <textarea class="w-full bg-transparent outline-none h-40" placeholder="Set goals..."></textarea>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-[#D9C1EB]/30">
+                        <h3 class="font-bold border-b border-purple-200 mb-4 pb-2">February</h3>
+                        <textarea class="w-full bg-transparent outline-none h-40" placeholder="Set goals..."></textarea>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-[#F6D1D1]/30">
+                        <h3 class="font-bold border-b border-pink-200 mb-4 pb-2">March</h3>
+                        <textarea class="w-full bg-transparent outline-none h-40" placeholder="Set goals..."></textarea>
+                    </div>
+                </div>`
+        };
+
+        function showPage(pageId) {
+            const container = document.getElementById('content-container');
+            container.innerHTML = pages[pageId] || `<h2 class="serif text-3xl">Page coming soon...</h2>`;
+            lucide.createIcons();
+            
+            // Auto-save logic placeholder
+            const inputs = container.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('change', () => {
+                    console.log('Progress Saved locally...');
+                });
+            });
+        }
+
+        // Initialize with cover
+        showPage('cover');
+    </script>
 </body>
 </html>
