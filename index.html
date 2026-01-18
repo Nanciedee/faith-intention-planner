@@ -118,30 +118,101 @@
 
             monthly: () => {
                 const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
-                const progress = (data.checks.filter(c => c).length / 4) * 100;
-                return `<div class="text-center mb-10"><h2 class="serif text-4xl mb-4">Focus Mensuel</h2><input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" class="p-2 glass rounded-xl"></div>
-                <div class="w-full h-4 bg-gray-200 rounded-full mb-12 overflow-hidden"><div class="h-full bg-indigo-500" style="width:${progress}%"></div></div>
-                <div class="grid md:grid-cols-2 gap-6">${['Créativité', 'Santé', 'Famille', 'Notes'].map((it, i) => `<div class="p-6 glass rounded-3xl flex gap-4"><input type="checkbox" onchange="toggleMonthly(${i})" ${data.checks[i]?'checked':''}><div><label class="text-xs font-bold uppercase">${it}</label><input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${data.texts[i]||''}" class="w-full bg-transparent border-none focus:ring-0"></div></div>`).join('')}</div>`;
+                const totalChecked = data.checks.filter(c => c).length;
+                const progress = (totalChecked / 4) * 100;
+                
+                // --- CORRECTION LOGIQUE TEMPS ---
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const [y, m] = currentMonth.split('-').map(Number);
+                const lastDayOfMonth = new Date(y, m, 0); 
+                
+                // Calcul de la différence en jours
+                const diffTime = lastDayOfMonth - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                return `
+                <div class="flex flex-col items-center mb-10 text-center animate-fade-in">
+                    <h2 class="serif text-4xl mb-4 text-indigo-950 font-bold">Focus Mensuel</h2>
+                    <input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" 
+                           class="p-2 glass rounded-xl font-bold text-indigo-600 no-print cursor-pointer border-none shadow-sm">
+                </div>
+                
+                <div class="max-w-xl mx-auto mb-12 bg-white/40 p-8 rounded-[3rem] border border-white shadow-sm">
+                    <div class="flex justify-between items-end mb-4 px-2">
+                        <div>
+                            <span class="text-[10px] font-black uppercase text-indigo-400 block tracking-widest">Progression</span>
+                            <span class="serif text-4xl italic text-indigo-600">${progress}%</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] font-black uppercase text-rose-400 block tracking-widest">Temps</span>
+                            <span class="font-bold text-slate-600 text-lg">
+                                ${diffDays > 0 ? diffDays + ' jours restants' : (diffDays === 0 ? "C'est aujourd'hui !" : "Mois passé")}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="w-full h-4 bg-gray-200/50 rounded-full overflow-hidden border border-white">
+                        <div class="h-full bg-indigo-500 transition-all duration-1000 ease-out" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `
+                        <div class="p-8 rounded-[3rem] border border-white shadow-sm flex items-start gap-5 transition-all ${data.checks[i] ? 'bg-indigo-50/60' : 'bg-white/40'}">
+                            <input type="checkbox" onchange="toggleMonthly(${i})" ${data.checks[i] ? 'checked' : ''} 
+                                   class="mt-1 w-7 h-7 rounded-full text-indigo-600 cursor-pointer">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-black text-indigo-300 uppercase block mb-1">${item}</label>
+                                <input type="text" oninput="updateMonthlyText(${i}, this.value)" 
+                                       value="${data.texts[i] || ''}" 
+                                       class="w-full bg-transparent border-none p-0 text-xl font-medium focus:ring-0 text-indigo-900 placeholder-indigo-200" 
+                                       placeholder="Inscrire ici...">
+                            </div>
+                        </div>`).join('')}
+                </div>`;
             },
 
             weekly: () => {
                 const wkID = getWeekID(currentDay);
                 const wData = state.weekly[wkID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[], reflection: "" };
+                const days = [
+                    {label: 'Lun', key: 'Mon'}, {label: 'Mar', key: 'Tue'}, {label: 'Mer', key: 'Wed'},
+                    {label: 'Jeu', key: 'Thu'}, {label: 'Ven', key: 'Fri'}, {label: 'Sam', key: 'Sat'}, {label: 'Dim', key: 'Sun'}
+                ];
+
                 return `
-                <h2 class="serif text-4xl text-center mb-10">Rituels Hebdo</h2>
-                <div class="grid lg:grid-cols-2 gap-10">
+                <h2 class="serif text-4xl text-center mb-2 text-indigo-950 font-bold">Rituels Hebdo</h2>
+                <p class="text-center text-indigo-400 font-black uppercase text-[10px] tracking-widest mb-10">Semaine du ${wkID}</p>
+                
+                <div class="grid lg:grid-cols-2 gap-10 mb-10">
                     <div class="space-y-4">
-                        ${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((d, i) => {
-                            const keys = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-                            return `<div class="flex items-center gap-4 group"><span class="w-10 text-[10px] font-bold text-indigo-300 uppercase">${d}</span><div onclick="addEmoji('${keys[i]}')" class="flex-1 h-14 glass rounded-xl flex items-center px-4 gap-2 cursor-pointer border-2 border-dashed border-indigo-100 hover:border-indigo-400">
-                                ${(wData[keys[i]]||[]).map((s, idx) => `<span onclick="remEmoji('${keys[i]}',${idx});event.stopPropagation()" class="text-2xl">${s}</span>`).join('')}
-                            </div></div>`;
-                        }).join('')}
+                        ${days.map(d => `
+                            <div class="flex items-center gap-4 group">
+                                <span class="w-12 text-[10px] font-black text-indigo-300 uppercase">${d.label}</span>
+                                <div onclick="addEmoji('${d.key}')" 
+                                     class="flex-1 min-h-[64px] glass rounded-2xl border-2 border-dashed border-indigo-100 flex flex-wrap items-center px-4 py-2 gap-2 cursor-pointer hover:border-indigo-400 transition-all shadow-sm">
+                                    ${(wData[d.key] || []).map((s, i) => `
+                                        <span onclick="remEmoji('${d.key}',${i});event.stopPropagation()" 
+                                              class="text-3xl hover:scale-120 transition-transform">${s}</span>
+                                    `).join('')}
+                                    ${(wData[d.key] || []).length === 0 ? '<span class="text-indigo-200 text-xs italic">Ajouter...</span>' : ''}
+                                </div>
+                            </div>`).join('')}
                     </div>
-                    <textarea oninput="updateWeeklyRef('${wkID}', this.value)" class="p-8 glass rounded-3xl h-full border-none focus:ring-0" placeholder="Bilan...">${wData.reflection || ''}</textarea>
+                    <div class="bg-white/40 p-8 rounded-[3rem] border border-white flex flex-col shadow-sm">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4 block italic text-center">Bilan & Gratitude</label>
+                        <textarea oninput="updateWeeklyRef('${wkID}', this.value)" 
+                                  class="flex-1 w-full bg-transparent border-none focus:ring-0 text-gray-700 italic text-lg leading-relaxed" 
+                                  placeholder="Écrivez vos victoires de la semaine...">${wData.reflection || ''}</textarea>
+                    </div>
                 </div>
-                <div class="mt-10 glass p-6 rounded-3xl flex justify-center gap-4">
-                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '🍎', '🧘'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl p-2 rounded-xl hover:bg-white transition-all">${s}</button>`).join('')}
+
+                <div class="glass p-6 rounded-[2.5rem] flex flex-wrap justify-center gap-6 no-print shadow-inner border border-white">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '🍎', '🧘'].map(s => `
+                        <button onclick="pickEmoji('${s}', this)" 
+                                class="emoji-btn text-4xl p-2 rounded-xl hover:bg-white transition-all duration-200 ${selectedEmoji === s ? 'bg-white shadow-md scale-110 ring-2 ring-indigo-200' : ''}">
+                            ${s}
+                        </button>`).join('')}
                 </div>`;
             },
 
