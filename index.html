@@ -49,28 +49,49 @@
     </main>
 
     <script>
-        // --- MOTEUR DE RÉCUPÉRATION DE TOUTES LES VERSIONS ---
+        const STORAGE_KEY = 'faithJournal_Master_2026';
+
+        // --- MOTEUR DE FUSION HISTORIQUE (Inspiré du CODE 1) ---
         function initData() {
-            const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
+            const legacyKeys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
+            
             let merged = {
                 global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "" },
-                daily: {}, monthly: {}, weekly: {}
+                daily: {}, monthly: {}, weekly: {},
+                wheel: { "Santé": 5, "Foi": 5, "Famille": 5, "Travail": 5, "Loisirs": 5, "Finance": 5, "Social": 5, "Mental": 5 }
             };
-            keys.forEach(k => {
-                const d = JSON.parse(localStorage.getItem(k));
-                if (d) {
-                    if (d.globalVision || d.global) merged.global = {...merged.global, ...(d.globalVision || d.global)};
-                    if (d.dailyLogs || d.daily) merged.daily = {...merged.daily, ...(d.dailyLogs || d.daily)};
-                    if (d.monthlyData || d.monthly) merged.monthly = {...merged.monthly, ...(d.monthlyData || d.monthly)};
-                    if (d.weeklyRituals || d.weekly) merged.weekly = {...merged.weekly, ...(d.weeklyRituals || d.weekly)};
-                    if (d.textData) {
-                        if (d.textData['t-dec-ref']) merged.global.decRef = d.textData['t-dec-ref'];
-                        if (d.textData['q-tx-0']) merged.global.q1 = d.textData['q-tx-0'];
-                        if (d.textData['q-tx-1']) merged.global.q2 = d.textData['q-tx-1'];
-                        if (d.textData['q-tx-2']) merged.global.q3 = d.textData['q-tx-2'];
+
+            // 1. Charger la sauvegarde principale actuelle si elle existe
+            const currentSaved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+            if (currentSaved) {
+                merged = { ...merged, ...currentSaved };
+            }
+
+            // 2. Scanner les anciennes clés pour récupérer l'historique manquant
+            legacyKeys.forEach(k => {
+                const oldData = JSON.parse(localStorage.getItem(k));
+                if (oldData) {
+                    // Fusion des textes globaux (Cover, Décembre, Trimestre)
+                    const g = oldData.globalVision || oldData.global || {};
+                    if (g) {
+                        for (let key in merged.global) {
+                            if (!merged.global[key] && g[key]) merged.global[key] = g[key];
+                        }
                     }
+                    // Récupération spécifique du format textData (Anciennes versions)
+                    if (oldData.textData) {
+                        if (!merged.global.decRef) merged.global.decRef = oldData.textData['t-dec-ref'] || "";
+                        if (!merged.global.q1) merged.global.q1 = oldData.textData['q-tx-0'] || "";
+                        if (!merged.global.q2) merged.global.q2 = oldData.textData['q-tx-1'] || "";
+                        if (!merged.global.q3) merged.global.q3 = oldData.textData['q-tx-2'] || "";
+                    }
+                    // Fusion des logs (Journal, Mois, Semaine)
+                    if (oldData.daily || oldData.dailyLogs) merged.daily = {...(oldData.daily || oldData.dailyLogs), ...merged.daily};
+                    if (oldData.monthly || oldData.monthlyData) merged.monthly = {...(oldData.monthly || oldData.monthlyData), ...merged.monthly};
+                    if (oldData.weekly || oldData.weeklyRituals) merged.weekly = {...(oldData.weekly || oldData.weeklyRituals), ...merged.weekly};
                 }
             });
+
             return merged;
         }
 
@@ -79,20 +100,20 @@
         let currentMonth = currentDay.substring(0, 7);
         let selectedEmoji = null;
 
-        function getWeekRange(date) {
+        function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+        function saveG(key, val) { state.global[key] = val; save(); }
+
+        function getWeekID(date) {
             let d = new Date(date);
-            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1);
-            let start = new Date(d.setDate(diff));
-            let end = new Date(d.setDate(start.getDate() + 6));
-            return { 
-                id: `${start.getFullYear()}-W${Math.ceil(diff/7)}`,
-                display: `Du ${start.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})} au ${end.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}`
-            };
+            let day = d.getDay();
+            let diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            let monday = new Date(d.setDate(diff));
+            return monday.toISOString().split('T')[0];
         }
 
         function renderWheelSVG() {
             const cats = Object.keys(state.wheel);
-            const size = 300, center = 150, radius = 100;
+            const center = 150, radius = 100;
             let points = [], grid = "";
             cats.forEach((cat, i) => {
                 const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
