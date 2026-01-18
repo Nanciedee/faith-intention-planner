@@ -59,110 +59,115 @@
     </main>
 
     <script>
-        // --- LOGIQUE DE DONNÉES ---
-        let state = JSON.parse(localStorage.getItem('faithJournal_vFull_2026_Final')) || {
-            global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "", emotionVictory: "", emotionFocus: "" },
-            daily: {}, monthly: {}, weekly: {}
-        };
+        // --- MOTEUR DE RÉCUPÉRATION DE TOUTES LES VERSIONS ---
+        function initData() {
+            const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
+            let merged = {
+                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "" },
+                daily: {}, monthly: {}, weekly: {}
+            };
+            keys.forEach(k => {
+                const d = JSON.parse(localStorage.getItem(k));
+                if (d) {
+                    if (d.globalVision || d.global) merged.global = {...merged.global, ...(d.globalVision || d.global)};
+                    if (d.dailyLogs || d.daily) merged.daily = {...merged.daily, ...(d.dailyLogs || d.daily)};
+                    if (d.monthlyData || d.monthly) merged.monthly = {...merged.monthly, ...(d.monthlyData || d.monthly)};
+                    if (d.weeklyRituals || d.weekly) merged.weekly = {...merged.weekly, ...(d.weeklyRituals || d.weekly)};
+                    if (d.textData) {
+                        if (d.textData['t-dec-ref']) merged.global.decRef = d.textData['t-dec-ref'];
+                        if (d.textData['q-tx-0']) merged.global.q1 = d.textData['q-tx-0'];
+                        if (d.textData['q-tx-1']) merged.global.q2 = d.textData['q-tx-1'];
+                        if (d.textData['q-tx-2']) merged.global.q3 = d.textData['q-tx-2'];
+                    }
+                }
+            });
+            return merged;
+        }
 
+        let state = initData();
         let currentDay = new Date().toISOString().split('T')[0];
         let currentMonth = currentDay.substring(0, 7);
         let selectedEmoji = null;
 
-        function save() { 
-            localStorage.setItem('faithJournal_vFull_2026_Final', JSON.stringify(state)); 
+        function getWeekRange(date) {
+            let d = new Date(date);
+            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1);
+            let start = new Date(d.setDate(diff));
+            let end = new Date(d.setDate(start.getDate() + 6));
+            return { 
+                id: `${start.getFullYear()}-W${Math.ceil(diff/7)}`,
+                display: `Du ${start.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})} au ${end.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}`
+            };
         }
 
-        // Calculer l'ID de la semaine (Lundi de la semaine en cours)
-        function getWeekID(date) { 
-            let d = new Date(date); 
-            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1); 
-            return new Date(d.setDate(diff)).toISOString().split('T')[0]; 
-        }
-
-        // --- PAGES DU JOURNAL ---
         const pages = {
             cover: () => `
-                <div class="text-center py-20">
-                    <h1 class="serif text-9xl font-bold text-indigo-950 mb-4">2026</h1>
-                    <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
-                    <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white">
-                        <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">Ma Pensée Maîtresse</label>
-                        <textarea oninput="state.global.coverThought=this.value; save()" class="w-full bg-transparent border-none text-center serif italic text-4xl text-indigo-800 focus:ring-0 leading-snug" rows="3" placeholder="Écrire ici...">${state.global.coverThought || ''}</textarea>
+                <div class="text-center py-10 relative">
+                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-pink-300/20 rounded-full blur-2xl"></div>
+                    <h1 class="serif text-7xl font-bold text-indigo-950 mb-4 tracking-tighter">2026</h1>
+                    <p class="text-2xl text-indigo-400 italic serif mb-12">Mon Année d'Intention</p>
+                    <div class="max-w-md mx-auto p-10 rounded-[3rem] bg-white/60 shadow-xl border border-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-100 rounded-bl-full opacity-50"></div>
+                        <label class="block text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-300 mb-4 font-bold">Citation ou Pensée du Jour</label>
+                        <textarea oninput="saveG('coverThought', this.value)" class="w-full bg-transparent border-none text-center serif italic text-2xl text-indigo-800 placeholder-indigo-200 focus:ring-0" rows="4" placeholder="Écrivez ici votre lumière...">${state.global.coverThought || ''}</textarea>
                     </div>
                 </div>`,
 
             december: () => `
-                <h2 class="serif text-4xl mb-12 text-center text-indigo-900 font-bold">Bilan Décembre 2025</h2>
+                <h2 class="serif text-3xl mb-8 text-center text-indigo-900">Décembre 2025</h2>
                 <div class="grid gap-8">
-                    <div class="p-8 rounded-[3rem] bg-white/40 border border-white">
-                        <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion sur l'année écoulée & Gratitude</label>
-                        <textarea oninput="state.global.decRef=this.value; save()" class="w-full h-48 bg-transparent border-none focus:ring-0 text-gray-700 text-lg leading-relaxed">${state.global.decRef || ''}</textarea>
+                    <div class="p-8 rounded-[2.5rem] bg-white/40 border border-white shadow-sm">
+                        <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion & Vision</label>
+                        <textarea oninput="saveG('decRef', this.value)" class="w-full h-48 bg-transparent border-none focus:ring-0 text-gray-700">${state.global.decRef || ''}</textarea>
                     </div>
                     <div class="grid md:grid-cols-2 gap-8">
-                        <div class="p-8 rounded-[3rem] bg-purple-50/50 border border-white">
-                            <label class="font-black text-[10px] uppercase tracking-widest text-purple-500 mb-4 block">Intentions Clés 2026</label>
-                            <textarea oninput="state.global.decInt=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decInt || ''}</textarea>
+                        <div class="p-8 rounded-[2.5rem] bg-[#D9C1EB]/30 border border-white">
+                            <label class="font-bold text-xs uppercase mb-4 block">Intentions 2026</label>
+                            <textarea oninput="saveG('decInt', this.value)" class="w-full h-40 bg-transparent border-none">${state.global.decInt || ''}</textarea>
                         </div>
-                        <div class="p-8 rounded-[3rem] bg-blue-50/50 border border-white">
-                            <label class="font-black text-[10px] uppercase tracking-widest text-blue-500 mb-4 block">Objectifs Prioritaires</label>
-                            <textarea oninput="state.global.decGoals=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decGoals || ''}</textarea>
+                        <div class="p-8 rounded-[2.5rem] bg-[#BFD8EB]/30 border border-white">
+                            <label class="font-bold text-xs uppercase mb-4 block">Objectifs 2026</label>
+                            <textarea oninput="saveG('decGoals', this.value)" class="w-full h-40 bg-transparent border-none">${state.global.decGoals || ''}</textarea>
                         </div>
                     </div>
                 </div>`,
 
             'q-focus': () => `
-                <h2 class="serif text-3xl text-center mb-10 text-indigo-900 uppercase font-black tracking-widest">Focus Trimestriel</h2>
+                <h2 class="serif text-3xl text-center mb-10 text-indigo-900 font-bold uppercase">Focus Trimestriel</h2>
                 <div class="grid md:grid-cols-3 gap-6">
                     ${[1,2,3].map(i => `
-                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg transition-all hover:scale-[1.02]">
-                            <h3 class="serif text-2xl mb-6 text-indigo-800 italic border-b border-indigo-100 pb-2">Trimestre ${i}</h3>
-                            <textarea oninput="state.global['q'+${i}]=this.value; save()" class="w-full h-64 bg-transparent border-none text-sm leading-relaxed focus:ring-0" placeholder="Mes visions...">${state.global['q'+i] || ''}</textarea>
-                        </div>
-                    `).join('')}
+                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg relative overflow-hidden">
+                            <div class="absolute -top-4 -right-4 w-16 h-16 bg-indigo-50 rounded-full"></div>
+                            <h3 class="serif text-2xl mb-6 text-indigo-800 italic">Trimestre ${i}</h3>
+                            <textarea oninput="saveG('q${i}', this.value)" class="w-full h-64 bg-transparent border-none text-sm leading-relaxed" placeholder="Vos objectifs...">${state.global['q'+i] || ''}</textarea>
+                        </div>`).join('')}
                 </div>`,
 
             monthly: () => {
                 const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
-                const totalChecked = data.checks.filter(c => c).length;
-                const progress = (totalChecked / 4) * 100;
-                const now = new Date();
-                const [y, m] = currentMonth.split('-').map(Number);
-                const lastDay = new Date(y, m, 0);
-                const diffDays = Math.ceil((lastDay - now) / (1000 * 60 * 60 * 24));
-
+                const progress = (data.checks.filter(c => c).length / 4) * 100;
                 return `
-                <div class="flex flex-col items-center mb-10 text-center">
-                    <h2 class="serif text-4xl mb-4 text-indigo-950 font-bold">Focus Mensuel</h2>
-                    <input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" class="p-2 glass rounded-xl font-bold text-indigo-600 no-print cursor-pointer">
+                <div class="flex flex-col items-center mb-10">
+                    <h2 class="serif text-4xl mb-4 text-indigo-950">Focus Mensuel</h2>
+                    <input type="month" value="${currentMonth}" onchange="changeM(this.value)" class="p-2 glass rounded-xl font-bold text-indigo-600 cursor-pointer">
                 </div>
-                <div class="max-w-xl mx-auto mb-12 bg-white/40 p-8 rounded-[3rem] border border-white shadow-sm">
-                    <div class="flex justify-between items-end mb-4 px-2">
-                        <div>
-                            <span class="text-[10px] font-black uppercase text-indigo-400 block tracking-widest">Progression</span>
-                            <span class="serif text-4xl italic text-indigo-600">${progress}%</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-[10px] font-black uppercase text-rose-400 block tracking-widest">Temps</span>
-                            <span class="font-bold text-slate-600 text-lg">${diffDays > 0 ? diffDays + ' jours restants' : 'Dernier jour !'}</span>
-                        </div>
-                    </div>
-                    <div class="w-full h-4 bg-gray-200/50 rounded-full overflow-hidden border border-white">
-                        <div class="h-full bg-indigo-500 transition-all duration-1000 ease-out" style="width: ${progress}%"></div>
+                <div class="max-w-md mx-auto mb-12">
+                    <div class="flex justify-between text-[10px] font-bold uppercase mb-2 text-indigo-400"><span>Progression</span><span>${progress}%</span></div>
+                    <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden border border-white shadow-inner">
+                        <div class="h-full bg-indigo-400 transition-all duration-700" style="width: ${progress}%"></div>
                     </div>
                 </div>
                 <div class="grid md:grid-cols-2 gap-6">
-                    ${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `
-                        <div class="p-8 rounded-[3rem] border border-white shadow-sm flex items-start gap-5 transition-all ${data.checks[i] ? 'bg-indigo-50/60' : 'bg-white/40'}">
-                            <input type="checkbox" onchange="toggleMonthly(${i})" ${data.checks[i] ? 'checked' : ''} class="mt-1 w-7 h-7 rounded-full text-indigo-600 cursor-pointer">
+                    ${['Créativité', 'Santé', 'Famille', 'Notes'].map((item, i) => `
+                        <div class="p-8 rounded-[2.5rem] border border-white shadow-sm flex items-start gap-4 ${data.checks[i] ? 'bg-indigo-50/50' : 'bg-white/40'}">
+                            <input type="checkbox" onchange="upMC(${i})" ${data.checks[i] ? 'checked' : ''} class="mt-1 w-6 h-6 rounded-full border-indigo-300 text-indigo-600 focus:ring-indigo-500">
                             <div class="flex-1">
-                                <label class="text-[10px] font-black text-indigo-300 uppercase block mb-1">${item}</label>
-                                <input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${data.texts[i] || ''}" class="w-full bg-transparent border-none p-0 text-xl font-medium focus:ring-0 text-indigo-900 placeholder-indigo-200" placeholder="...">
+                                <label class="text-[10px] font-bold text-indigo-300 uppercase block mb-1">${item}</label>
+                                <input type="text" oninput="upMT(${i}, this.value)" value="${data.texts[i] || ''}" class="w-full bg-transparent border-none p-0 text-xl font-medium focus:ring-0 text-indigo-900" placeholder="Mon intention...">
                             </div>
                         </div>`).join('')}
                 </div>`;
             },
-
             weekly: () => {
                 const wkID = getWeekID(currentDay);
                 const wData = state.weekly[wkID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[], reflection: "" };
