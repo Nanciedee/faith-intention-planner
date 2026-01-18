@@ -1,51 +1,29 @@
-async function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    const element = document.getElementById('content-container');
-    
-    // Étape 1 : Préparation de l'élément pour éviter le zoom
-    const originalStyles = {
-        borderRadius: element.style.borderRadius,
-        boxShadow: element.style.boxShadow,
-        transform: element.style.transform
-    };
-    
-    // On retire temporairement les arrondis et ombres qui perdent le script
-    element.style.borderRadius = "0px";
-    element.style.boxShadow = "none";
-    element.style.transform = "none";
-
-    try {
-        const canvas = await html2canvas(element, { 
-            scale: 2, 
-            useCORS: true, 
-            backgroundColor: "#FFF5E1",
-            // On force la capture à partir du haut de l'élément, peu importe le scroll
-            scrollY: -window.scrollY,
-            scrollX: -window.scrollX,
-            windowWidth: document.documentElement.offsetWidth,
-            windowHeight: document.documentElement.offsetHeight
-        });
-
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        
-        // Ajustement précis à la page A4
-        const imgWidth = pageWidth - 20; // 10mm de marge de chaque côté
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
-        pdf.save(`Journal-${currentViewDate}.pdf`);
-
-    } catch (err) {
-        console.error("Erreur capture:", err);
-        alert("Utilisez le bouton 'Imprimer Tout' et choisissez 'Enregistrer en PDF' pour un résultat garanti.");
-    } finally {
-        // Étape 2 : On remet le joli design (arrondis et ombres)
-        element.style.borderRadius = originalStyles.borderRadius;
-        element.style.boxShadow = originalStyles.boxShadow;
-        element.style.transform = originalStyles.transform;
-    }
-}
+weekly: () => {
+                const wkID = getWeekID(currentDay);
+                const wData = state.weekly[wkID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[], reflection: "" };
+                return `
+                <h2 class="serif text-4xl text-center mb-2 text-indigo-950">Rituels Hebdo</h2>
+                <p class="text-center text-indigo-400 font-black uppercase text-[10px] tracking-widest mb-10">Semaine du ${wkID}</p>
+                
+                <div class="grid lg:grid-cols-2 gap-10 mb-10">
+                    <div class="space-y-4">
+                        ${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, idx) => {
+                            const dayKeys = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                            const key = dayKeys[idx];
+                            return `<div class="flex items-center gap-4 group">
+                                <span class="w-12 text-[10px] font-black text-indigo-300 uppercase">${day}</span>
+                                <div onclick="addEmoji('${key}')" class="flex-1 h-16 glass rounded-2xl border-2 border-dashed border-indigo-100 flex items-center px-4 gap-2 cursor-pointer hover:border-indigo-400 transition-all">
+                                    ${(wData[key]||[]).map((s, i) => `<span onclick="remEmoji('${key}',${i});event.stopPropagation()" class="text-3xl">${s}</span>`).join('')}
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                    <div class="bg-white/40 p-8 rounded-[3rem] border border-white flex flex-col shadow-sm">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4 block italic">Bilan & Gratitude de la semaine</label>
+                        <textarea oninput="updateWeeklyRef('${wkID}', this.value)" class="flex-1 w-full bg-transparent border-none focus:ring-0 text-gray-700 leading-relaxed italic" placeholder="Qu'est-ce qui a bien fonctionné ?">${wData.reflection || ''}</textarea>
+                    </div>
+                </div>
+                <div class="glass p-6 rounded-[2.5rem] flex justify-center gap-6 no-print shadow-inner">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '🍎', '🧘'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl p-2 rounded-xl hover:bg-white transition-all hover:shadow-md">${s}</button>`).join('')}
+                </div>`;
+            },
