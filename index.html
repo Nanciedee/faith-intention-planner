@@ -59,44 +59,28 @@
     </main>
 
     <script>
-        // --- ÉTAT ET LOGIQUE ---
-        const DB_KEY = 'faithJournal_2026_master';
-        let state = JSON.parse(localStorage.getItem(DB_KEY)) || {
+        // --- LOGIQUE DE DONNÉES ---
+        let state = JSON.parse(localStorage.getItem('faithJournal_vFull_2026_Final')) || {
             global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "", emotionVictory: "", emotionFocus: "" },
-            daily: {}, monthly: {}, weekly: {},
-            wheel: { "Santé": 5, "Foi": 5, "Famille": 5, "Travail": 5, "Loisirs": 5, "Finance": 5, "Social": 5, "Mental": 5 }
+            daily: {}, monthly: {}, weekly: {}
         };
 
         let currentDay = new Date().toISOString().split('T')[0];
         let currentMonth = currentDay.substring(0, 7);
         let selectedEmoji = null;
 
-        function save() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
+        function save() { 
+            localStorage.setItem('faithJournal_vFull_2026_Final', JSON.stringify(state)); 
+        }
+
+        // Calculer l'ID de la semaine (Lundi de la semaine en cours)
         function getWeekID(date) { 
             let d = new Date(date); 
-            d.setDate(d.getDate() - d.getDay() + (d.getDay() === 0 ? -6 : 1)); 
-            return d.toISOString().split('T')[0]; 
+            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1); 
+            return new Date(d.setDate(diff)).toISOString().split('T')[0]; 
         }
 
-        function renderWheelSVG() {
-            const cats = Object.keys(state.wheel);
-            const size = 300, center = 150, radius = 100;
-            let points = [], grid = "";
-            for (let i = 1; i <= 10; i++) grid += `<circle cx="${center}" cy="${center}" r="${(radius / 10) * i}" fill="none" stroke="rgba(165,180,252,0.2)"/>`;
-            cats.forEach((cat, i) => {
-                const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
-                const val = state.wheel[cat];
-                const x = center + (radius * val / 10) * Math.cos(angle);
-                const y = center + (radius * val / 10) * Math.sin(angle);
-                points.push(`${x},${y}`);
-                const tx = center + (radius + 25) * Math.cos(angle);
-                const ty = center + (radius + 25) * Math.sin(angle);
-                grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="9" font-weight="bold" fill="#6366f1" class="serif">${cat}</text>`;
-            });
-            return `<svg viewBox="0 0 300 300" class="w-full h-full">${grid}<polygon points="${points.join(' ')}" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" class="wheel-poly" /></svg>`;
-        }
-
-        // --- LES PAGES ---
+        // --- PAGES DU JOURNAL ---
         const pages = {
             cover: () => `
                 <div class="text-center py-20">
