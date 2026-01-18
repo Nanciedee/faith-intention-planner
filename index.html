@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Journal 2026 - Master Full</title>
+    <title>Faith & Intention Journal 2026 - Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -11,34 +11,19 @@
         :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
         .serif { font-family: 'Playfair Display', serif; }
-        
-        /* Effets Aquarelle d'arrière-plan */
         .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
-        
-        /* Boutons de navigation */
         .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
         .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
-        
-        /* Conteneur Effet Verre */
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
-        
-        /* Sliders quotidiens personnalisés */
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; width: 100%; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; }
-
-        /* Styles Impression */
+        .wheel-poly { transition: all 0.5s ease-in-out; }
         @media print {
             .no-print { display: none !important; }
             body { background: white !important; overflow: visible !important; }
             #content-container { display: none !important; }
             #print-all-area { display: block !important; width: 100%; }
-            .print-page-break { 
-                page-break-after: always; 
-                padding: 60px; 
-                border-bottom: 2px solid #f3f4f6; 
-                min-height: 100vh;
-                background: white !important;
-            }
+            .print-page-break { page-break-after: always; padding: 60px; border-bottom: 2px solid #f3f4f6; min-height: 100vh; background: white !important; }
         }
         #print-all-area { display: none; }
     </style>
@@ -47,14 +32,12 @@
 
     <div class="watercolor w-96 h-96 bg-blue-300 -top-20 -right-20"></div>
     <div class="watercolor w-80 h-80 bg-purple-300 bottom-10 -left-20"></div>
-    <div class="watercolor w-64 h-64 bg-pink-200 top-1/2 left-1/4"></div>
 
     <nav class="w-full md:w-80 glass border-r p-6 flex flex-col z-10 overflow-y-auto no-print h-screen">
-        <div class="mb-10 px-2 text-center md:text-left">
+        <div class="mb-10 px-2">
             <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
             <p class="text-[10px] tracking-[0.3em] uppercase text-indigo-500 font-black mt-1">Master Edition 2026</p>
         </div>
-        
         <div class="flex-1 space-y-1">
             <button onclick="showPage('cover')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="book-open" size="18"></i> Couverture</button>
             <button onclick="showPage('december')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button>
@@ -64,18 +47,9 @@
             <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
             <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
         </div>
-
         <div class="mt-auto pt-6 border-t border-indigo-100 space-y-2 no-print">
-            <button onclick="prepareAndPrint()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-600 font-bold">
-                <i data-lucide="printer" size="18"></i> Imprimer Tout
-            </button>
-            <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-400">
-                <i data-lucide="download" size="18"></i> Sauvegarder (JSON)
-            </button>
-            <label class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-400 cursor-pointer">
-                <i data-lucide="upload" size="18"></i> Importer
-                <input type="file" onchange="importData(event)" class="hidden" accept=".json">
-            </label>
+            <button onclick="prepareAndPrint()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-600 font-bold"><i data-lucide="printer" size="18"></i> Imprimer Tout</button>
+            <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-400"><i data-lucide="download" size="18"></i> Sauvegarder JSON</button>
         </div>
     </nav>
 
@@ -85,304 +59,204 @@
     </main>
 
     <script>
-        // --- 1. INITIALISATION DE L'ÉTAT (BASE DE DONNÉES LOCALE) ---
-// Cette variable récupère vos données sauvegardées ou crée une structure vide
-let state = JSON.parse(localStorage.getItem('faithJournal_vFull_Final_2026')) || {
-    global: { 
-        decRef: "", decInt: "", decGoals: "", 
-        q1: "", q2: "", q3: "", 
-        grat: "", aff: "", 
-        coverThought: "", 
-        emotionVictory: "", 
-        emotionFocus: "" 
-    },
-    daily: {}, 
-    monthly: {}, 
-    weekly: {},
-    wheel: { 
-        "Santé": 5, "Foi": 5, "Famille": 5, "Travail": 5, 
-        "Loisirs": 5, "Finance": 5, "Social": 5, "Mental": 5 
-    }
-};
+        // --- ÉTAT ET LOGIQUE ---
+        const DB_KEY = 'faithJournal_2026_master';
+        let state = JSON.parse(localStorage.getItem(DB_KEY)) || {
+            global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "", emotionVictory: "", emotionFocus: "" },
+            daily: {}, monthly: {}, weekly: {},
+            wheel: { "Santé": 5, "Foi": 5, "Famille": 5, "Travail": 5, "Loisirs": 5, "Finance": 5, "Social": 5, "Mental": 5 }
+        };
 
-// --- 2. VARIABLES DE NAVIGATION ---
-let currentDay = new Date().toISOString().split('T')[0];
-let currentMonth = currentDay.substring(0, 7);
-let selectedEmoji = null;
+        let currentDay = new Date().toISOString().split('T')[0];
+        let currentMonth = currentDay.substring(0, 7);
+        let selectedEmoji = null;
 
-// --- 3. FONCTIONS DE SAUVEGARDE ET UTILITAIRES ---
-function save() { 
-    localStorage.setItem('faithJournal_vFull_Final_2026', JSON.stringify(state)); 
-}
+        function save() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
+        function getWeekID(date) { 
+            let d = new Date(date); 
+            d.setDate(d.getDate() - d.getDay() + (d.getDay() === 0 ? -6 : 1)); 
+            return d.toISOString().split('T')[0]; 
+        }
 
-function getWeekID(date) { 
-    let d = new Date(date); 
-    d.setDate(d.getDate() - d.getDay() + (d.getDay() === 0 ? -6 : 1)); 
-    return d.toISOString().split('T')[0]; 
-}
+        function renderWheelSVG() {
+            const cats = Object.keys(state.wheel);
+            const size = 300, center = 150, radius = 100;
+            let points = [], grid = "";
+            for (let i = 1; i <= 10; i++) grid += `<circle cx="${center}" cy="${center}" r="${(radius / 10) * i}" fill="none" stroke="rgba(165,180,252,0.2)"/>`;
+            cats.forEach((cat, i) => {
+                const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
+                const val = state.wheel[cat];
+                const x = center + (radius * val / 10) * Math.cos(angle);
+                const y = center + (radius * val / 10) * Math.sin(angle);
+                points.push(`${x},${y}`);
+                const tx = center + (radius + 25) * Math.cos(angle);
+                const ty = center + (radius + 25) * Math.sin(angle);
+                grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="9" font-weight="bold" fill="#6366f1" class="serif">${cat}</text>`;
+            });
+            return `<svg viewBox="0 0 300 300" class="w-full h-full">${grid}<polygon points="${points.join(' ')}" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" class="wheel-poly" /></svg>`;
+        }
 
-// --- 4. GÉNÉRATEUR VISUEL DE LA ROUE DE LA VIE (SVG) ---
-function renderWheelSVG() {
-    const categories = Object.keys(state.wheel);
-    const size = 300; 
-    const center = size / 2; 
-    const radius = 110;
-    let points = []; 
-    let grid = "";
-    
-    // Dessin de la grille radiale
-    for (let i = 1; i <= 10; i++) {
-        grid += `<circle cx="${center}" cy="${center}" r="${(radius / 10) * i}" fill="none" stroke="rgba(165,180,252,0.2)" />`;
-    }
-
-    // Calcul des coordonnées pour chaque catégorie
-    categories.forEach((cat, i) => {
-        const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
-        const val = state.wheel[cat];
-        const x = center + (radius * val / 10) * Math.cos(angle);
-        const y = center + (radius * val / 10) * Math.sin(angle);
-        points.push(`${x},${y}`);
-        
-        // Lignes de séparation
-        const lx = center + radius * Math.cos(angle); 
-        const ly = center + radius * Math.sin(angle);
-        grid += `<line x1="${center}" y1="${center}" x2="${lx}" y2="${ly}" stroke="rgba(165,180,252,0.2)" />`;
-        
-        // Noms des catégories
-        const tx = center + (radius + 20) * Math.cos(angle); 
-        const ty = center + (radius + 20) * Math.sin(angle);
-        grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="8" font-weight="bold" fill="#6366f1" class="serif">${cat}</text>`;
-    });
-
-    return `
-        <svg viewBox="0 0 ${size} ${size}" class="w-full h-full">
-            ${grid}
-            <polygon points="${points.join(' ')}" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" class="wheel-poly" />
-        </svg>`;
-}
-
-// --- 5. MOTEUR DE GÉNÉRATION DES PAGES (HTML DYNAMIQUE) ---
-const pages = {
-    ${state.global.coverThought || ''}
-
-    december: () => `
-        <h2 class="serif text-4xl mb-12 text-center text-indigo-900 font-bold">Bilan Décembre 2025</h2>
-        <div class="grid gap-8">
-            <div class="p-8 rounded-[3rem] bg-white/40 border border-white">
-                <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion & Gratitude</label>
-                <textarea oninput="state.global.decRef=this.value; save()" class="w-full h-48 bg-transparent border-none focus:ring-0 text-lg">${state.global.decRef || ''}</textarea>
-            </div>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="p-8 rounded-[3rem] bg-purple-50/50 border border-white">
-                    <label class="font-black text-[10px] uppercase tracking-widest text-purple-500 mb-4 block">Intentions Clés 2026</label>
-                    <textarea oninput="state.global.decInt=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decInt || ''}</textarea>
-                </div>
-                <div class="p-8 rounded-[3rem] bg-blue-50/50 border border-white">
-                    <label class="font-black text-[10px] uppercase tracking-widest text-blue-500 mb-4 block">Objectifs Prioritaires</label>
-                    <textarea oninput="state.global.decGoals=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decGoals || ''}</textarea>
-                </div>
-            </div>
-        </div>`,
-
-    'q-focus': () => `
-        <h2 class="serif text-3xl text-center mb-10 text-indigo-900 uppercase font-black tracking-widest">Focus Trimestriel</h2>
-        <div class="grid md:grid-cols-3 gap-6">
-            ${[1,2,3].map(i => `
-                <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg transition-all hover:scale-[1.02]">
-                    <h3 class="serif text-2xl mb-6 text-indigo-800 italic border-b border-indigo-100 pb-2">Trimestre ${i}</h3>
-                    <textarea oninput="state.global['q'+${i}]=this.value; save()" class="w-full h-64 bg-transparent border-none text-sm leading-relaxed focus:ring-0" placeholder="Mes visions...">${state.global['q'+i] || ''}</textarea>
-                </div>
-            `).join('')}
-        </div>`,
-
-    monthly: () => {
-        const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
-        const totalChecked = data.checks.filter(c => c).length;
-        const progress = (totalChecked / 4) * 100;
-        return `
-        <div class="flex flex-col items-center mb-10 text-center"><h2 class="serif text-4xl mb-4 text-indigo-950 font-bold">Focus Mensuel</h2><input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" class="p-2 glass rounded-xl font-bold text-indigo-600"></div>
-        <div class="max-w-xl mx-auto mb-12 bg-white/40 p-8 rounded-[3rem] border border-white shadow-sm">
-            <div class="flex justify-between items-end mb-4 px-2"><div><span class="text-[10px] font-black uppercase text-indigo-400 block tracking-widest">Progression</span><span class="serif text-4xl italic text-indigo-600">${progress}%</span></div></div>
-            <div class="w-full h-4 bg-gray-200/50 rounded-full overflow-hidden border border-white"><div class="h-full bg-indigo-500 transition-all duration-1000" style="width: ${progress}%"></div></div>
-        </div>
-        <div class="grid md:grid-cols-2 gap-6">
-            ${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `
-                <div class="p-8 rounded-[3rem] border border-white shadow-sm flex items-start gap-5 ${data.checks[i] ? 'bg-indigo-50/60' : 'bg-white/40'}">
-                    <input type="checkbox" onchange="toggleMonthly(${i})" ${data.checks[i] ? 'checked' : ''} class="mt-1 w-7 h-7 rounded-full text-indigo-600">
-                    <div class="flex-1">
-                        <label class="text-[10px] font-black text-indigo-300 uppercase block mb-1">${item}</label>
-                        <input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${data.texts[i] || ''}" class="w-full bg-transparent border-none p-0 text-xl font-medium focus:ring-0 text-indigo-900">
+        // --- LES PAGES ---
+        const pages = {
+            cover: () => `
+                <div class="text-center py-20">
+                    <h1 class="serif text-9xl font-bold text-indigo-950 mb-4">2026</h1>
+                    <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
+                    <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white">
+                        <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">Ma Pensée Maîtresse</label>
+                        <textarea oninput="state.global.coverThought=this.value; save()" class="w-full bg-transparent border-none text-center serif italic text-4xl text-indigo-800 focus:ring-0 leading-snug" rows="3">${state.global.coverThought || ''}</textarea>
                     </div>
-                </div>`).join('')}
-        </div>`;
-    },
+                </div>`,
 
-    weekly: () => {
-        const wkID = getWeekID(currentDay);
-        const wData = state.weekly[wkID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[], reflection: "" };
-        return `
-        <h2 class="serif text-4xl text-center mb-2 text-indigo-950 font-bold">Rituels Hebdo</h2>
-        <p class="text-center text-indigo-400 font-black uppercase text-[10px] tracking-widest mb-10">Semaine du ${wkID}</p>
-        <div class="grid lg:grid-cols-2 gap-10 mb-10">
-            <div class="space-y-4">
-                ${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, idx) => {
-                    const dayKeys = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; 
-                    const key = dayKeys[idx];
-                    return `<div class="flex items-center gap-4 group">
-                        <span class="w-12 text-[10px] font-black text-indigo-300 uppercase">${day}</span>
-                        <div onclick="addEmoji('${key}')" class="flex-1 h-16 glass rounded-2xl border-2 border-dashed border-indigo-100 flex items-center px-4 gap-2 cursor-pointer hover:border-indigo-400 transition-all">
-                            ${(wData[key]||[]).map((s, i) => `<span onclick="remEmoji('${key}',${i});event.stopPropagation()" class="text-3xl">${s}</span>`).join('')}
+            december: () => `
+                <h2 class="serif text-4xl mb-12 text-center text-indigo-900 font-bold">Bilan Décembre 2025</h2>
+                <div class="grid gap-8">
+                    <div class="p-8 rounded-[3rem] bg-white/40 border border-white">
+                        <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion & Gratitude</label>
+                        <textarea oninput="state.global.decRef=this.value; save()" class="w-full h-48 bg-transparent border-none focus:ring-0 text-lg">${state.global.decRef || ''}</textarea>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="p-8 rounded-[3rem] bg-purple-50/50 border border-white">
+                            <label class="font-black text-[10px] uppercase tracking-widest text-purple-500 mb-4 block">Intentions Clés 2026</label>
+                            <textarea oninput="state.global.decInt=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decInt || ''}</textarea>
                         </div>
-                    </div>`;
-                }).join('')}
-            </div>
-            <div class="bg-white/40 p-8 rounded-[3rem] border border-white flex flex-col shadow-sm">
-                <label class="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4 block italic">Bilan & Gratitude de la semaine</label>
-                <textarea oninput="updateWeeklyRef('${wkID}', this.value)" class="flex-1 w-full bg-transparent border-none focus:ring-0 text-gray-700 leading-relaxed italic text-lg">${wData.reflection || ''}</textarea>
-            </div>
-        </div>
-        <div class="glass p-6 rounded-[2.5rem] flex justify-center gap-6 no-print shadow-inner">
-            ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '🍎', '🧘'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl p-2 rounded-xl hover:bg-white transition-all">${s}</button>`).join('')}
-        </div>`;
-    },
-
-    daily: () => {
-        const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
-        return `
-        <div class="flex justify-between items-center mb-10"><h2 class="serif text-4xl text-indigo-950 font-bold">Le Quotidien</h2><input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-3 rounded-2xl glass font-bold text-indigo-600 no-print"></div>
-        <div class="grid lg:grid-cols-2 gap-12">
-            <div class="space-y-12 bg-white/20 p-10 rounded-[3rem] border border-white">
-                ${['energy', 'move', 'pray', 'conn'].map(cat => `
-                    <div>
-                        <div class="flex justify-between mb-4 items-center">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">${cat}</span>
-                            <span class="serif italic text-indigo-600 text-xl font-bold">${d[cat]||50}%</span>
+                        <div class="p-8 rounded-[3rem] bg-blue-50/50 border border-white">
+                            <label class="font-black text-[10px] uppercase tracking-widest text-blue-500 mb-4 block">Objectifs Prioritaires</label>
+                            <textarea oninput="state.global.decGoals=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decGoals || ''}</textarea>
                         </div>
-                        <input type="range" value="${d[cat]||50}" onchange="updateDaily('${cat}', this.value)">
-                    </div>`).join('')}
-            </div>
-            <textarea oninput="updateDaily('note', this.value)" class="w-full h-[450px] p-10 rounded-[3.5rem] bg-white/80 border border-white focus:ring-0 text-gray-700 text-lg leading-relaxed shadow-inner" placeholder="Notes...">${d.note || ""}</textarea>
-        </div>`;
-    },
+                    </div>
+                </div>`,
 
-    emotional: () => `
-        <h2 class="serif text-4xl text-center mb-10 text-indigo-950 font-bold">Succès Émotionnel</h2>
-        <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 bg-white/30 p-10 rounded-[4rem] border border-white shadow-xl">
-            <div id="wheel-container" class="w-full max-w-sm mx-auto">${renderWheelSVG()}</div>
-            <div class="grid grid-cols-2 gap-4">
-                ${Object.keys(state.wheel).map(cat => `
-                    <div class="p-4 rounded-3xl bg-white/60 border border-indigo-50">
-                        <label class="text-[9px] font-black uppercase text-indigo-400 block mb-1">${cat}</label>
-                        <div class="flex items-center gap-3">
-                            <input type="range" min="1" max="10" step="1" value="${state.wheel[cat]}" oninput="updateWheel('${cat}', this.value)" class="flex-1 h-2 bg-indigo-100 rounded-lg appearance-none cursor-pointer">
-                            <span class="font-bold text-indigo-600 w-4 text-xs">${state.wheel[cat]}</span>
-                        </div>
-                    </div>`).join('')}
-            </div>
-        </div>
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="p-10 rounded-[3.5rem] bg-white/40 border border-white shadow-lg space-y-8">
-                <div>
-                    <label class="font-black block mb-4 text-indigo-900 uppercase text-[10px] tracking-widest italic">Gratitude Permanente</label>
-                    <textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none serif italic text-3xl text-indigo-800 focus:ring-0 leading-snug" rows="3">${state.global.grat || ''}</textarea>
+            'q-focus': () => `
+                <h2 class="serif text-3xl text-center mb-10 text-indigo-900 uppercase font-black tracking-widest">Focus Trimestriel</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    ${[1,2,3].map(i => `
+                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg">
+                            <h3 class="serif text-2xl mb-6 text-indigo-800 italic border-b border-indigo-100 pb-2">Trimestre ${i}</h3>
+                            <textarea oninput="state.global['q'+${i}]=this.value; save()" class="w-full h-64 bg-transparent border-none text-sm focus:ring-0">${state.global['q'+i] || ''}</textarea>
+                        </div>`).join('')}
+                </div>`,
+
+            weekly: () => {
+                const wkID = getWeekID(currentDay);
+                const wData = state.weekly[wkID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[], reflection: "" };
+                return `
+                <h2 class="serif text-4xl text-center mb-2 text-indigo-950 font-bold">Rituels Hebdo</h2>
+                <p class="text-center text-indigo-400 font-black uppercase text-[10px] tracking-widest mb-10">Semaine du ${wkID}</p>
+                <div class="grid lg:grid-cols-2 gap-10 mb-10">
+                    <div class="space-y-4">
+                        ${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, idx) => {
+                            const keys = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                            return `<div class="flex items-center gap-4"><span class="w-12 text-[10px] font-black text-indigo-300 uppercase">${day}</span><div onclick="addEmoji('${keys[idx]}')" class="flex-1 h-16 glass rounded-2xl border-2 border-dashed border-indigo-100 flex items-center px-4 gap-2 cursor-pointer hover:border-indigo-400 transition-all">${(wData[keys[idx]]||[]).map((s, i) => `<span onclick="remEmoji('${keys[idx]}',${i});event.stopPropagation()" class="text-3xl">${s}</span>`).join('')}</div></div>`;
+                        }).join('')}
+                    </div>
+                    <div class="bg-white/40 p-8 rounded-[3rem] border border-white shadow-sm flex flex-col">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4 block italic">Bilan & Gratitude</label>
+                        <textarea oninput="updateWeeklyRef('${wkID}', this.value)" class="flex-1 w-full bg-transparent border-none focus:ring-0 text-gray-700 italic text-lg">${wData.reflection || ''}</textarea>
+                    </div>
                 </div>
-                <div class="pt-8 border-t border-indigo-100">
-                    <label class="font-black block mb-4 text-indigo-900 uppercase text-[10px] tracking-widest">Affirmation</label>
-                    <input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none text-2xl font-bold text-indigo-600 focus:ring-0">
+                <div class="glass p-6 rounded-[2.5rem] flex justify-center gap-6 no-print">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '🍎', '🧘'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl p-2 rounded-xl hover:bg-white transition-all">${s}</button>`).join('')}
+                </div>`;
+            },
+
+            daily: () => {
+                const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
+                return `
+                <div class="flex justify-between items-center mb-10"><h2 class="serif text-4xl text-indigo-950 font-bold">Le Quotidien</h2><input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-3 rounded-2xl glass font-bold text-indigo-600 no-print"></div>
+                <div class="grid lg:grid-cols-2 gap-12"><div class="space-y-12 bg-white/20 p-10 rounded-[3rem] border border-white">
+                    ${['energy', 'move', 'pray', 'conn'].map(cat => `<div><div class="flex justify-between mb-2"><span class="text-[10px] font-black uppercase text-indigo-400">${cat}</span><span class="serif italic text-indigo-600 font-bold">${d[cat]||50}%</span></div><input type="range" value="${d[cat]||50}" onchange="updateDaily('${cat}', this.value)"></div>`).join('')}
+                </div><textarea oninput="updateDaily('note', this.value)" class="w-full h-[450px] p-10 rounded-[3.5rem] bg-white/80 border border-white focus:ring-0 text-gray-700 text-lg leading-relaxed shadow-inner" placeholder="Notes...">${d.note || ""}</textarea></div>`;
+            },
+
+            emotional: () => `
+                <h2 class="serif text-4xl text-center mb-10 text-indigo-950 font-bold">Succès Émotionnel</h2>
+                <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 bg-white/30 p-10 rounded-[4rem] border border-white shadow-xl">
+                    <div id="wheel-container">${renderWheelSVG()}</div>
+                    <div class="grid grid-cols-2 gap-4">
+                        ${Object.keys(state.wheel).map(cat => `<div class="p-4 rounded-3xl bg-white/60 border border-indigo-50"><label class="text-[9px] font-black uppercase text-indigo-400 block mb-1">${cat}</label><div class="flex items-center gap-3"><input type="range" min="1" max="10" step="1" value="${state.wheel[cat]}" oninput="updateWheel('${cat}', this.value)" class="flex-1 h-2"><span class="font-bold text-indigo-600 text-xs">${state.wheel[cat]}</span></div></div>`).join('')}
+                    </div>
                 </div>
-            </div>
-            <div class="space-y-6">
-                <div class="p-8 rounded-[3rem] bg-indigo-50/50 border border-white shadow-sm">
-                    <label class="font-black block mb-4 text-indigo-500 uppercase text-[10px] tracking-widest italic">Focus du Mois</label>
-                    <textarea oninput="state.global.emotionFocus=this.value; save()" class="w-full bg-transparent border-none focus:ring-0 text-indigo-900 font-medium text-lg" rows="2">${state.global.emotionFocus || ''}</textarea>
-                </div>
-                <div class="p-8 rounded-[3rem] bg-rose-50/50 border border-white shadow-sm">
-                    <label class="font-black block mb-4 text-rose-500 uppercase text-[10px] tracking-widest italic">Victoire Récente</label>
-                    <textarea oninput="state.global.emotionVictory=this.value; save()" class="w-full bg-transparent border-none focus:ring-0 text-rose-900 font-medium text-lg" rows="2">${state.global.emotionVictory || ''}</textarea>
-                </div>
-            </div>
-        </div>`
-};
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="p-10 rounded-[3.5rem] bg-white/40 border border-white shadow-lg space-y-8">
+                        <div><label class="font-black text-indigo-900 text-[10px] uppercase block mb-4 italic">Gratitude Permanente</label><textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none serif italic text-3xl text-indigo-800 focus:ring-0">${state.global.grat || ''}</textarea></div>
+                        <div class="pt-8 border-t border-indigo-100"><label class="font-black text-indigo-900 text-[10px] uppercase block mb-4">Affirmation</label><input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none text-2xl font-bold text-indigo-600 focus:ring-0"></div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="p-8 rounded-[3rem] bg-indigo-50/50 border border-white"><label class="text-indigo-500 font-black text-[10px] uppercase block mb-4 italic">Focus du Mois</label><textarea oninput="state.global.emotionFocus=this.value; save()" class="w-full bg-transparent border-none focus:ring-0 text-indigo-900 text-lg" rows="2">${state.global.emotionFocus || ''}</textarea></div>
+                        <div class="p-8 rounded-[3rem] bg-rose-50/50 border border-white"><label class="text-rose-500 font-black text-[10px] uppercase block mb-4 italic">Victoire Récente</label><textarea oninput="state.global.emotionVictory=this.value; save()" class="w-full bg-transparent border-none focus:ring-0 text-rose-900 text-lg" rows="2">${state.global.emotionVictory || ''}</textarea></div>
+                    </div>
+                </div>`,
+                
+            monthly: () => {
+                const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
+                const total = data.checks.filter(c => c).length;
+                return `<div class="text-center mb-10"><h2 class="serif text-4xl mb-4 text-indigo-950 font-bold">Focus Mensuel</h2><input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" class="p-2 glass rounded-xl font-bold text-indigo-600"></div><div class="max-w-xl mx-auto mb-12 bg-white/40 p-8 rounded-[3rem] border border-white"><div class="w-full h-4 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-indigo-500 transition-all" style="width: ${total*25}%"></div></div></div><div class="grid md:grid-cols-2 gap-6">${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `<div class="p-8 rounded-[3rem] border border-white flex items-center gap-5 ${data.checks[i] ? 'bg-indigo-50' : 'bg-white/40'}"><input type="checkbox" onchange="toggleMonthly(${i})" ${data.checks[i] ? 'checked' : ''} class="w-7 h-7 text-indigo-600"><div class="flex-1"><label class="text-[10px] font-black text-indigo-300 uppercase block">${item}</label><input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${data.texts[i] || ''}" class="w-full bg-transparent border-none text-xl font-medium focus:ring-0"></div></div>`).join('')}</div>`;
+            }
+        };
 
-// --- 6. FONCTIONS D'ACTION (LOGIQUE MÉTIER) ---
-function showPage(id) { 
-    document.getElementById('content-container').innerHTML = pages[id](); 
-    if (window.lucide) lucide.createIcons(); 
-    window.scrollTo(0,0);
-}
+        // --- FONCTIONS ACTIONS ---
+        function showPage(id) { 
+            document.getElementById('content-container').innerHTML = pages[id](); 
+            if (window.lucide) lucide.createIcons(); 
+        }
 
-function updateWheel(cat, val) {
-    state.wheel[cat] = parseInt(val);
-    save();
-    document.getElementById('wheel-container').innerHTML = renderWheelSVG();
-}
+        function updateWheel(cat, val) { 
+            state.wheel[cat] = parseInt(val); save(); 
+            document.getElementById('wheel-container').innerHTML = renderWheelSVG(); 
+        }
 
-function toggleMonthly(i) { 
-    if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; 
-    state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; 
-    save(); showPage('monthly'); 
-}
+        function updateDaily(k, v) { 
+            if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""};
+            state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); save(); 
+            if(k !== 'note') showPage('daily');
+        }
 
-function updateMonthlyText(i, v) { 
-    if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; 
-    state.monthly[currentMonth].texts[i] = v; 
-    save(); 
-}
+        function toggleMonthly(i) { 
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+            state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly');
+        }
 
-function updateDaily(k, v) { 
-    if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""}; 
-    state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); 
-    save(); if(k !== 'note') showPage('daily'); 
-}
+        function updateMonthlyText(i, v) { 
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+            state.monthly[currentMonth].texts[i] = v; save();
+        }
 
-function updateWeeklyRef(id, v) { 
-    if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""}; 
-    state.weekly[id].reflection = v; save(); 
-}
+        function updateWeeklyRef(id, v) { 
+            if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+            state.weekly[id].reflection = v; save();
+        }
 
-function pickEmoji(s, b) { 
-    selectedEmoji = s; 
-    document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md')); 
-    b.classList.add('bg-white','shadow-md'); 
-}
+        function pickEmoji(s, b) { 
+            selectedEmoji = s; 
+            document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md'));
+            b.classList.add('bg-white','shadow-md'); 
+        }
 
-function addEmoji(day) { 
-    const wk = getWeekID(currentDay); 
-    if(!selectedEmoji) return; 
-    if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""}; 
-    state.weekly[wk][day].push(selectedEmoji); 
-    save(); showPage('weekly'); 
-}
+        function addEmoji(day) { 
+            const wk = getWeekID(currentDay); if(!selectedEmoji) return;
+            if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+            state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly');
+        }
 
-function remEmoji(day, i) { 
-    const wk = getWeekID(currentDay); 
-    state.weekly[wk][day].splice(i,1); 
-    save(); showPage('weekly'); 
-}
+        function remEmoji(day, i) { 
+            const wk = getWeekID(currentDay); state.weekly[wk][day].splice(i,1); save(); showPage('weekly');
+        }
 
-function exportData() { 
-    const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); 
-    const a = document.createElement('a'); 
-    a.href = URL.createObjectURL(blob); 
-    a.download = `Faith_Journal_2026_${currentDay}.json`; 
-    a.click(); 
-}
+        function exportData() { 
+            const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Mon_Journal_2026.json'; a.click();
+        }
 
-function prepareAndPrint() { 
-    const area = document.getElementById('print-all-area'); 
-    area.innerHTML = ''; 
-    ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(k => { 
-        const s = document.createElement('div'); 
-        s.className = 'print-page-break'; 
-        s.innerHTML = pages[k](); 
-        area.appendChild(s); 
-    }); 
-    if (window.lucide) lucide.createIcons(); 
-    setTimeout(() => { window.print(); }, 1000); 
-}
+        function prepareAndPrint() { 
+            const area = document.getElementById('print-all-area'); area.innerHTML = '';
+            ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(k => {
+                const s = document.createElement('div'); s.className = 'print-page-break'; s.innerHTML = pages[k](); area.appendChild(s);
+            });
+            lucide.createIcons(); setTimeout(() => { window.print(); }, 800);
+        }
 
-// --- 7. DÉMARRAGE ---
-window.onload = () => showPage('cover');
+        window.onload = () => showPage('cover');
     </script>
 </body>
 </html>
