@@ -247,16 +247,65 @@
                 </div>`
         };
 
+        // --- Fonctions de Navigation et Action ---
         function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); if (window.lucide) lucide.createIcons(); }
+        
         function updateWheel(cat, val) { state.wheel[cat] = parseInt(val); save(); document.getElementById('wheel-container').innerHTML = renderWheelSVG(); }
-        function toggleMonthly(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
-        function updateMonthlyText(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
-        function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""}; state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); save(); if(k !== 'note') showPage('daily'); }
-        function updateWeeklyRef(id, v) { if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""}; state.weekly[id].reflection = v; save(); }
-        function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md')); b.classList.add('bg-white','shadow-md'); }
-        function addEmoji(day) { const wk = getWeekID(currentDay); if(!selectedEmoji) return; if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); }
+        
+        function toggleMonthly(i) { 
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+            state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; 
+            save(); showPage('monthly'); 
+        }
+
+        function updateMonthlyText(i, v) { 
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+            state.monthly[currentMonth].texts[i] = v; save(); 
+        }
+
+        function updateDaily(k, v) { 
+            if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""};
+            state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); save(); 
+            if(k !== 'note') showPage('daily'); 
+        }
+
+        function updateWeeklyRef(id, v) { 
+            if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+            state.weekly[id].reflection = v; save(); 
+        }
+
+        function pickEmoji(s, b) { 
+            selectedEmoji = s; 
+            document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md','ring-2','ring-indigo-200'));
+            b.classList.add('bg-white','shadow-md','ring-2','ring-indigo-200'); 
+        }
+
+        function addEmoji(day) { 
+            const wk = getWeekID(currentDay); 
+            if(!selectedEmoji) return;
+            if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+            state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); 
+        }
+
         function remEmoji(day, i) { const wk = getWeekID(currentDay); state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
-        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_2026.json'; a.click(); }
+
+        // --- IMPRESSION & APERÇU ---
+        function previewPrint() {
+            const modal = document.getElementById('print-modal');
+            const content = document.getElementById('print-content');
+            content.innerHTML = "";
+            ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(pageKey => {
+                const section = document.createElement('div');
+                section.className = "print-page glass mb-10 p-10 rounded-3xl";
+                section.innerHTML = pages[pageKey]();
+                content.appendChild(section);
+            });
+            modal.style.display = "block";
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closePreview() { document.getElementById('print-modal').style.display = "none"; }
+        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_Master_2026.json'; a.click(); }
 
         window.onload = () => showPage('cover');
     </script>
