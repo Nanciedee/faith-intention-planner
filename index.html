@@ -49,17 +49,29 @@
     </main>
 
     <script>
-        const DB_KEY = 'faithJournal_Master_2026';
-        
+        // --- MOTEUR DE RÉCUPÉRATION DE TOUTES LES VERSIONS ---
         function initData() {
-            const saved = localStorage.getItem(DB_KEY);
-            if (saved) return JSON.parse(saved);
-            
-            return {
-                global: { coverThought: "", decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", emotionFocus: "", emotionVictory: "" },
-                daily: {}, monthly: {}, weekly: {},
-                wheel: { "Santé": 5, "Foi": 5, "Famille": 5, "Travail": 5, "Loisirs": 5, "Finance": 5, "Social": 5, "Mental": 5 }
+            const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
+            let merged = {
+                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "" },
+                daily: {}, monthly: {}, weekly: {}
             };
+            keys.forEach(k => {
+                const d = JSON.parse(localStorage.getItem(k));
+                if (d) {
+                    if (d.globalVision || d.global) merged.global = {...merged.global, ...(d.globalVision || d.global)};
+                    if (d.dailyLogs || d.daily) merged.daily = {...merged.daily, ...(d.dailyLogs || d.daily)};
+                    if (d.monthlyData || d.monthly) merged.monthly = {...merged.monthly, ...(d.monthlyData || d.monthly)};
+                    if (d.weeklyRituals || d.weekly) merged.weekly = {...merged.weekly, ...(d.weeklyRituals || d.weekly)};
+                    if (d.textData) {
+                        if (d.textData['t-dec-ref']) merged.global.decRef = d.textData['t-dec-ref'];
+                        if (d.textData['q-tx-0']) merged.global.q1 = d.textData['q-tx-0'];
+                        if (d.textData['q-tx-1']) merged.global.q2 = d.textData['q-tx-1'];
+                        if (d.textData['q-tx-2']) merged.global.q3 = d.textData['q-tx-2'];
+                    }
+                }
+            });
+            return merged;
         }
 
         let state = initData();
@@ -67,12 +79,15 @@
         let currentMonth = currentDay.substring(0, 7);
         let selectedEmoji = null;
 
-        function save() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
-
-        function getWeekID(date) {
+        function getWeekRange(date) {
             let d = new Date(date);
-            d.setDate(d.getDate() - d.getDay() + (d.getDay() === 0 ? -6 : 1));
-            return d.toISOString().split('T')[0];
+            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1);
+            let start = new Date(d.setDate(diff));
+            let end = new Date(d.setDate(start.getDate() + 6));
+            return { 
+                id: `${start.getFullYear()}-W${Math.ceil(diff/7)}`,
+                display: `Du ${start.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})} au ${end.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}`
+            };
         }
 
         function renderWheelSVG() {
