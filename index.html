@@ -11,10 +11,23 @@
         :root { --cream: #FFF5E1; }
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
         .serif { font-family: 'Playfair Display', serif; }
+        /* Style Écolier / Script */
+        .handwritten { font-family: 'Caveat', cursive; font-weight: 500; }
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
         .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
+        
+        /* Effet Papier Ligné */
+        .paper-effect {
+            background-color: #fdfaf0;
+            background-image: linear-gradient(#e1d9c3 1px, transparent 1px);
+            background-size: 100% 2.2rem;
+            line-height: 2.2rem;
+            padding-top: 0.5rem;
+        }
+
         .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
         .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
+        
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; width: 100%; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; }
         @media print { .no-print { display: none !important; } body { overflow: visible !important; } }
@@ -141,7 +154,9 @@
                     <div class="max-w-md mx-auto p-10 rounded-[3rem] bg-white/60 shadow-xl border border-white relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-100 rounded-bl-full opacity-50"></div>
                         <label class="block text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-300 mb-4 font-bold">Citation ou Pensée du Jour</label>
-                        <textarea oninput="saveG('coverThought', this.value)" class="w-full bg-transparent border-none text-center serif italic text-2xl text-indigo-800 placeholder-indigo-200 focus:ring-0" rows="4" placeholder="Écrivez ici votre lumière...">${state.global.coverThought || ''}</textarea>
+                        <textarea oninput="updateDaily('note', this.value)" 
+    class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-4xl text-indigo-900 shadow-inner" 
+    placeholder="Cher journal...">${d.note || ""}</textarea>
                     </div>
                 </div>`,
 
