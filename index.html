@@ -652,46 +652,41 @@
 
             emotional: () => `
 
-                <div class="text-center mb-10">
-        <h2 class="serif text-4xl text-indigo-950 font-bold uppercase tracking-widest">Succès Émotionnel</h2>
-        <p class="handwritten text-2xl text-amber-600 italic">Équilibre & Harmonie</p>
-    </div>
+                <h2 class="serif text-4xl text-center mb-10">Succès Émotionnel</h2>
 
-    <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 glass p-10 rounded-[4rem] border border-white/60 shadow-2xl">
-        <div id="wheel-container" class="bg-white/30 rounded-full p-4 shadow-inner">
-            ${renderWheelSVG()}
-        </div>
+                <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 glass p-10 rounded-[4rem]">
 
-        <div class="grid grid-cols-2 gap-4">
-            ${Object.keys(state.wheel).map(cat => `
-                <div class="p-4 glass rounded-2xl border border-amber-100/50 hover:border-amber-400 transition-colors">
-                    <label class="text-[9px] font-black uppercase block text-indigo-400 mb-1 tracking-widest">${cat}</label>
-                    <input type="range" min="1" max="10" value="${state.wheel[cat]}" 
-                           class="accent-amber-500"
-                           oninput="updateWheel('${cat}', this.value)">
-                    <div class="text-right text-[10px] font-bold text-amber-600">${state.wheel[cat]}/10</div>
+                    <div id="wheel-container">${renderWheelSVG()}</div>
+
+                    <div class="grid grid-cols-2 gap-4">
+
+                        ${Object.keys(state.wheel).map(cat => `<div class="p-4 glass rounded-2xl"><label class="text-[9px] font-bold uppercase block">${cat}</label><input type="range" min="1" max="10" value="${state.wheel[cat]}" oninput="updateWheel('${cat}', this.value)"></div>`).join('')}
+
+                    </div>
+
                 </div>
-            `).join('')}
-        </div>
-    </div>
 
-    <div class="grid md:grid-cols-2 gap-8">
-        <div class="p-8 glass rounded-[3rem] border border-white paper-effect shadow-lg">
-            <label class="block text-[10px] font-black mb-4 uppercase tracking-[0.3em] text-indigo-300">Gratitude du Cœur</label>
-            <textarea oninput="state.global.grat=this.value; save()" 
-                      class="w-full bg-transparent border-none handwritten text-4xl focus:ring-0 text-indigo-900" 
-                      rows="3" placeholder="Aujourd'hui, je suis reconnaissante pour...">${state.global.grat || ''}</textarea>
-        </div>
-        
-        <div class="p-8 glass rounded-[3rem] border border-white shadow-lg flex flex-col justify-center bg-gradient-to-br from-white/40 to-amber-50/40">
-            <label class="block text-[10px] font-black mb-4 uppercase tracking-[0.3em] text-indigo-300">Mon Affirmation Maîtresse</label>
-            <input type="text" oninput="state.global.aff=this.value; save()" 
-                   value="${state.global.aff || ''}" 
-                   class="w-full bg-transparent border-none handwritten text-5xl text-indigo-900 focus:ring-0 text-center"
-                   placeholder="Je suis...">
-            <div class="h-px w-20 bg-amber-300 mx-auto mt-4"></div>
-        </div>
-    </div>`
+                <div class="grid md:grid-cols-2 gap-8">
+
+                    <div class="p-8 glass rounded-3xl">
+
+                        <label class="block text-xs font-bold mb-4 uppercase">Gratitude</label>
+
+                        <textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none serif italic text-2xl focus:ring-0" rows="3">${state.global.grat || ''}</textarea>
+
+                    </div>
+
+                    <div class="p-8 glass rounded-3xl">
+
+                        <label class="block text-xs font-bold mb-4 uppercase">Affirmation</label>
+
+                        <input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none text-xl font-bold text-indigo-600 focus:ring-0">
+
+                    </div>
+
+                </div>`
+
+        };
 
 
         // --- Fonctions de Navigation et Action ---
