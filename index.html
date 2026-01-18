@@ -183,6 +183,7 @@
                         </div>`).join('')}
                 </div>`;
             },
+            
             weekly: () => {
                 const wkID = getWeekID(currentDay);
                 const wData = state.weekly[wkID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[], reflection: "" };
@@ -193,15 +194,20 @@
                     <div class="space-y-4">
                         ${['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, idx) => {
                             const keys = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-                            return `<div class="flex items-center gap-4"><span class="w-12 text-[10px] font-black text-indigo-300 uppercase">${day}</span><div onclick="addEmoji('${keys[idx]}')" class="flex-1 h-16 glass rounded-2xl border-2 border-dashed border-indigo-100 flex items-center px-4 gap-2 cursor-pointer hover:border-indigo-400 transition-all">${(wData[keys[idx]]||[]).map((s, i) => `<span onclick="remEmoji('${keys[idx]}',${i});event.stopPropagation()" class="text-3xl">${s}</span>`).join('')}</div></div>`;
+                            return `<div class="flex items-center gap-4 group">
+                                <span class="w-12 text-[10px] font-black text-indigo-300 uppercase">${day}</span>
+                                <div onclick="addEmoji('${keys[idx]}')" class="flex-1 h-16 glass rounded-2xl border-2 border-dashed border-indigo-100 flex items-center px-4 gap-2 cursor-pointer hover:border-indigo-400 transition-all">
+                                    ${(wData[keys[idx]]||[]).map((s, i) => `<span onclick="remEmoji('${keys[idx]}',${i});event.stopPropagation()" class="text-3xl">${s}</span>`).join('')}
+                                </div>
+                            </div>`;
                         }).join('')}
                     </div>
-                    <div class="bg-white/40 p-8 rounded-[3rem] border border-white shadow-sm flex flex-col">
+                    <div class="bg-white/40 p-8 rounded-[3rem] border border-white flex flex-col shadow-sm">
                         <label class="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4 block italic">Bilan & Gratitude</label>
-                        <textarea oninput="updateWeeklyRef('${wkID}', this.value)" class="flex-1 w-full bg-transparent border-none focus:ring-0 text-gray-700 italic text-lg">${wData.reflection || ''}</textarea>
+                        <textarea oninput="updateWeeklyRef('${wkID}', this.value)" class="flex-1 w-full bg-transparent border-none focus:ring-0 text-gray-700 italic text-lg" placeholder="Bilan...">${wData.reflection || ''}</textarea>
                     </div>
                 </div>
-                <div class="glass p-6 rounded-[2.5rem] flex justify-center gap-6 no-print">
+                <div class="glass p-6 rounded-[2.5rem] flex justify-center gap-6 no-print shadow-inner">
                     ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '🍎', '🧘'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl p-2 rounded-xl hover:bg-white transition-all">${s}</button>`).join('')}
                 </div>`;
             },
