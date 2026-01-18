@@ -158,25 +158,49 @@
                 </div>`,
 
             monthly: () => {
-                const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
-                return `
-                <div class="flex flex-col items-center mb-10">
-                    <h2 class="serif text-4xl mb-4 text-indigo-950">Focus Mensuel</h2>
-                    <input type="month" value="${currentMonth}" onchange="changeM(this.value)" class="p-2 glass rounded-xl font-bold text-indigo-600 no-print">
-                    <p class="mt-2 font-bold text-indigo-900 print-only">${currentMonth}</p>
+    const data = state.monthly[currentMonth] || { checks: [false, false, false, false], texts: {} };
+    
+    // Calcul de la progression
+    const totalChecked = data.checks.filter(c => c === true).length;
+    const progress = (totalChecked / 4) * 100;
+    const colors = ['#F6D1D1', '#D9C1EB', '#BFD8EB', '#6366f1']; // Couleurs dynamiques
+    const progressColor = colors[totalChecked - 1] || '#e2e8f0';
+
+    return `
+    <div class="flex flex-col items-center mb-10">
+        <h2 class="serif text-4xl mb-4 text-indigo-950">Focus Mensuel</h2>
+        <input type="month" value="${currentMonth}" onchange="changeM(this.value)" class="p-2 glass rounded-xl font-bold text-indigo-600 no-print">
+    </div>
+
+    <div class="max-w-md mx-auto mb-12">
+        <div class="flex justify-between items-end mb-2">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Progression du mois</span>
+            <span class="serif text-2xl italic text-indigo-600">${progress}%</span>
+        </div>
+        <div class="w-full h-4 bg-gray-100 rounded-full border border-white shadow-inner overflow-hidden">
+            <div class="h-full transition-all duration-1000 ease-out" 
+                 style="width: ${progress}%; background-color: ${progressColor}; shadow: 0 0 10px ${progressColor}66">
+            </div>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+        ${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `
+            <div class="group p-8 rounded-[2.5rem] border border-white shadow-sm flex items-start gap-4 transition-all duration-500 ${data.checks[i] ? 'bg-white shadow-md' : 'bg-white/30'}">
+                <div class="relative flex items-center">
+                    <input type="checkbox" onchange="upMC(${i})" ${data.checks[i] ? 'checked' : ''} 
+                           class="w-8 h-8 rounded-full border-2 border-indigo-200 text-indigo-600 focus:ring-indigo-500 transition-transform active:scale-90">
                 </div>
-                <div class="grid md:grid-cols-2 gap-6">
-                    ${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `
-                        <div class="p-8 rounded-[2.5rem] border border-white shadow-sm flex items-start gap-4 ${data.checks[i] ? 'bg-indigo-50/50' : 'bg-white/40'}">
-                            <input type="checkbox" onchange="upMC(${i})" ${data.checks[i] ? 'checked' : ''} class="mt-1 w-6 h-6">
-                            <div class="flex-1">
-                                <label class="text-[10px] font-bold text-indigo-300 uppercase block mb-1">${item}</label>
-                                <input type="text" oninput="upMT(${i}, this.value)" value="${data.texts[i] || ''}" class="w-full bg-transparent border-none p-0 text-xl font-medium text-indigo-900">
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>`;
-            },
+                <div class="flex-1">
+                    <label class="text-[10px] font-bold text-indigo-300 uppercase block mb-1 tracking-tighter">${item}</label>
+                    <input type="text" oninput="upMT(${i}, this.value)" value="${data.texts[i] || ''}" 
+                           placeholder="Définir une intention..."
+                           class="w-full bg-transparent border-none p-0 text-xl font-medium text-indigo-900 focus:ring-0 placeholder:text-indigo-200">
+                </div>
+            </div>
+        `).join('')}
+    </div>`;
+},
 
             weekly: () => {
                 const range = getWeekRange(currentDay);
