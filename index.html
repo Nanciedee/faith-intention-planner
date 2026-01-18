@@ -3,140 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Journal 2026 - Master</title>
+    <title>Faith & Intention 2026 - Version Finale Consolidée</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
+        :root { --cream: #FFF5E1; }
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; }
         .serif { font-family: 'Playfair Display', serif; }
-        .watercolor-bg { filter: blur(80px); opacity: 0.15; z-index: -1; position: fixed; border-radius: 50%; }
+        .watercolor-bg { filter: blur(80px); opacity: 0.15; z-index: -1; position: fixed; border-radius: 50%; width: 400px; height: 400px; }
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 6px; border-radius: 5px; width: 100%; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #9f7aea; cursor: pointer; }
-        .sticker-selected { border: 2px solid #9f7aea !important; transform: scale(1.1); background: white; border-radius: 50%; }
         .nav-btn { width: 100%; text-align: left; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
         .nav-btn:hover { background: white; transform: translateX(5px); }
+        .sticker-selected { border: 2px solid #9f7aea !important; background: white; border-radius: 50%; transform: scale(1.1); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row overflow-hidden">
 
-    <div class="w-96 h-96 bg-blue-200 top-0 right-0 watercolor-bg"></div>
-    <div class="w-96 h-96 bg-purple-200 bottom-0 left-0 watercolor-bg"></div>
+    <div class="bg-blue-200 top-0 right-0 watercolor-bg"></div>
+    <div class="bg-purple-200 bottom-0 left-0 watercolor-bg"></div>
 
     <nav class="w-full md:w-80 bg-white/70 backdrop-blur-md border-r p-6 flex flex-col z-10 overflow-y-auto no-print">
-        <div class="mb-8 text-center md:text-left">
-            <h1 class="serif text-2xl font-bold text-indigo-900">Faith & Intention</h1>
-            <p class="text-[10px] tracking-[0.3em] uppercase text-gray-400">Journal 2026</p>
+        <div class="mb-8"><h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1><p class="text-[10px] tracking-[0.3em] uppercase text-gray-400">Journal 2026</p></div>
+        <div class="space-y-1 text-sm flex-1">
+            <button onclick="showPage('cover')" class="nav-btn"><i data-lucide="book-open" size="18"></i> Couverture</button>
+            <button onclick="showPage('december')" class="nav-btn"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button>
+            <button onclick="showPage('q-focus')" class="nav-btn"><i data-lucide="target" size="18"></i> Focus Trimestriel</button>
+            <button onclick="showPage('monthly')" class="nav-btn"><i data-lucide="calendar" size="18"></i> Tracker Mensuel</button>
+            <button onclick="showPage('weekly')" class="nav-btn"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
+            <button onclick="showPage('daily')" class="nav-btn"><i data-lucide="sun" size="18"></i> Daily Tracker</button>
+            <button onclick="showPage('emotional')" class="nav-btn"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
         </div>
-        
-        <ul class="space-y-1 text-sm flex-1">
-            <li><button onclick="showPage('cover')" class="nav-btn"><i data-lucide="book-open" size="18"></i> Couverture</button></li>
-            <li><button onclick="showPage('december')" class="nav-btn"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button></li>
-            <li><button onclick="showPage('q-focus')" class="nav-btn"><i data-lucide="target" size="18"></i> Focus Trimestriel</button></li>
-            <li><button onclick="showPage('monthly')" class="nav-btn"><i data-lucide="calendar" size="18"></i> Tracker Mensuel</button></li>
-            <li><button onclick="showPage('weekly')" class="nav-btn"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button></li>
-            <li><button onclick="showPage('daily')" class="nav-btn"><i data-lucide="sun" size="18"></i> Daily Tracker</button></li>
-            <li><button onclick="showPage('emotional')" class="nav-btn"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button></li>
-        </ul>
-        <p class="text-[9px] text-gray-400 mt-4 italic text-center">Mémoire Multi-Format Active</p>
     </nav>
 
-    <main class="flex-1 p-4 md:p-10 overflow-y-auto">
+    <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen">
         <div id="content-container" class="max-w-5xl mx-auto bg-white/50 backdrop-blur-sm shadow-2xl rounded-[2.5rem] p-8 md:p-12 min-h-[90vh] border border-white"></div>
     </main>
 
     <script>
-        // --- 1. RÉCUPÉRATION PROFONDE DES DONNÉES ---
-        function loadState() {
-            const keys = ['faithJournal_v2026', 'faithJournal_vFinal_Master', 'faithJournal_vDateSafe', 'faithJournal_vFinal'];
-            let baseState = {
-                globalVision: { decRef: "", decInt: "", decGoals: "", q1:"", q2:"", q3:"", grat:"", aff:"" },
-                dailyLogs: {},
-                monthlyData: {},
-                weeklyRituals: {},
-                moodHistory: []
+        // --- MOTEUR DE FUSION ET RÉCUPÉRATION ---
+        function getMergedState() {
+            const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
+            let master = {
+                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "" },
+                daily: {}, monthly: {}, weekly: {}, mood: []
             };
 
-            keys.forEach(key => {
-                try {
-                    const saved = JSON.parse(localStorage.getItem(key));
-                    if (saved) {
-                        // Fusion intelligente
-                        if (saved.globalVision) baseState.globalVision = {...baseState.globalVision, ...saved.globalVision};
-                        if (saved.dailyLogs) baseState.dailyLogs = {...baseState.dailyLogs, ...saved.dailyLogs};
-                        if (saved.monthlyData) baseState.monthlyData = {...baseState.monthlyData, ...saved.monthlyData};
-                        if (saved.weeklyRituals) baseState.weeklyRituals = {...baseState.weeklyRituals, ...saved.weeklyRituals};
-                        if (saved.moodHistory) baseState.moodHistory = [...baseState.moodHistory, ...saved.moodHistory];
-                        // Ancien format textData
-                        if (saved.textData) {
-                            if (saved.textData['t-dec-ref']) baseState.globalVision.decRef = saved.textData['t-dec-ref'];
-                            if (saved.textData['t-dec-int']) baseState.globalVision.decInt = saved.textData['t-dec-int'];
-                            if (saved.textData['t-dec-goals']) baseState.globalVision.decGoals = saved.textData['t-dec-goals'];
-                        }
-                    }
-                } catch(e) {}
+            keys.forEach(k => {
+                const data = JSON.parse(localStorage.getItem(k));
+                if (!data) return;
+                // Fusion des textes globaux
+                if (data.globalVision) master.global = {...master.global, ...data.globalVision};
+                if (data.textData) {
+                    if (data.textData['t-dec-ref']) master.global.decRef = data.textData['t-dec-ref'];
+                    if (data.textData['t-dec-int']) master.global.decInt = data.textData['t-dec-int'];
+                    if (data.textData['t-dec-goals']) master.global.decGoals = data.textData['t-dec-goals'];
+                }
+                // Fusion des logs datés
+                if (data.dailyLogs) master.daily = {...master.daily, ...data.dailyLogs};
+                if (data.monthlyData) master.monthly = {...master.monthly, ...data.monthlyData};
+                if (data.weeklyRituals) master.weekly = {...master.weekly, ...data.weeklyRituals};
             });
-            return baseState;
+            return master;
         }
 
-        let state = loadState();
-        let currentViewDate = new Date().toISOString().split('T')[0];
-        let currentMonthKey = currentViewDate.substring(0, 7);
-        let selectedSticker = null;
+        let state = getMergedState();
+        let currentDay = new Date().toISOString().split('T')[0];
+        let currentMonth = currentDay.substring(0, 7);
+        let activeSticker = null;
 
-        // Aide pour la semaine
-        function getWeekKey(dateStr) {
-            const d = new Date(dateStr); d.setHours(0,0,0,0); d.setDate(d.getDate()+4-(d.getDay()||7));
+        function getWeekID(date) {
+            const d = new Date(date); d.setHours(0,0,0,0); d.setDate(d.getDate()+4-(d.getDay()||7));
             return `${d.getFullYear()}-W${Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7).toString().padStart(2,'0')}`;
         }
 
         const pages = {
-            cover: () => `<div class="text-center py-24"><h1 class="serif text-6xl font-bold text-indigo-950 uppercase">2026<br>Faith & Intention</h1><p class="text-2xl text-gray-400 italic">By NancieDee</p></div>`,
+            cover: () => `<div class="text-center py-24"><h1 class="serif text-6xl font-bold text-indigo-950 uppercase">2026</h1><p class="text-2xl text-gray-400 italic">Faith & Intention</p></div>`,
             
-            december: () => `<h2 class="serif text-3xl mb-10 text-center">Décembre 2025 – Réflexion</h2>
+            december: () => `
+                <h2 class="serif text-3xl mb-10 text-center">Décembre 2025</h2>
                 <div class="space-y-8">
-                    <div class="p-8 rounded-3xl bg-white/40 border border-white"><label class="serif text-xl block mb-4 italic text-indigo-900">Vision Permanente</label>
-                    <textarea oninput="saveGlobal('decRef', this.value)" class="w-full h-48 bg-transparent border-none focus:ring-0">${state.globalVision.decRef || ''}</textarea></div>
+                    <div class="p-8 rounded-3xl bg-white/40 border border-white"><label class="serif text-xl block mb-4 italic text-indigo-900">Réflexion Visionnaire</label>
+                    <textarea oninput="upG('decRef', this.value)" class="w-full h-48 bg-transparent border-none focus:ring-0">${state.global.decRef || ''}</textarea></div>
                     <div class="grid md:grid-cols-2 gap-8">
-                        <div class="p-8 rounded-3xl bg-[#D9C1EB]/20 border border-white"><label class="font-bold text-xs mb-4 block uppercase">Intentions</label><textarea oninput="saveGlobal('decInt', this.value)" class="w-full h-40 bg-transparent border-none">${state.globalVision.decInt || ''}</textarea></div>
-                        <div class="p-8 rounded-3xl bg-[#BFD8EB]/20 border border-white"><label class="font-bold text-xs mb-4 block uppercase">Objectifs</label><textarea oninput="saveGlobal('decGoals', this.value)" class="w-full h-40 bg-transparent border-none">${state.globalVision.decGoals || ''}</textarea></div>
+                        <div class="p-8 rounded-3xl bg-[#D9C1EB]/20 border border-white"><label class="font-bold text-xs mb-4 block uppercase tracking-widest">Intentions 2026</label><textarea oninput="upG('decInt', this.value)" class="w-full h-40 bg-transparent border-none">${state.global.decInt || ''}</textarea></div>
+                        <div class="p-8 rounded-3xl bg-[#BFD8EB]/20 border border-white"><label class="font-bold text-xs mb-4 block uppercase tracking-widest">Objectifs 2026</label><textarea oninput="upG('decGoals', this.value)" class="w-full h-40 bg-transparent border-none">${state.global.decGoals || ''}</textarea></div>
                     </div>
                 </div>`,
 
-            'q-focus': () => `<h2 class="serif text-3xl text-center mb-10">Focus Trimestriel</h2>
+            'q-focus': () => `
+                <h2 class="serif text-3xl text-center mb-10">Focus Trimestriel</h2>
                 <div class="grid md:grid-cols-3 gap-6">
-                    ${[1,2,3].map(i => `<div class="p-8 bg-white/40 rounded-[2.5rem] border border-white shadow-sm"><h3 class="serif text-xl mb-4 text-indigo-900 italic">Trimestre ${i}</h3>
-                    <textarea oninput="saveGlobal('q${i}', this.value)" class="w-full h-48 bg-transparent border-none text-sm">${state.globalVision['q'+i] || ''}</textarea></div>`).join('')}
+                    ${[1,2,3].map(i => `<div class="p-8 bg-white/40 rounded-[2.5rem] border border-white shadow-sm"><h3 class="serif text-xl mb-4 italic">Trimestre ${i}</h3>
+                    <textarea oninput="upG('q${i}', this.value)" class="w-full h-48 bg-transparent border-none text-sm">${state.global['q'+i] || ''}</textarea></div>`).join('')}
                 </div>`,
 
             monthly: () => {
-                const data = state.monthlyData[currentMonthKey] || { checks: [false,false,false,false], texts: {} };
-                return `<div class="flex flex-col items-center mb-10"><h2 class="serif text-3xl mb-4">Tracker Mensuel</h2>
-                <input type="month" value="${currentMonthKey}" onchange="changeMonth(this.value)" class="p-2 bg-white rounded-xl text-indigo-600 font-bold shadow-sm"></div>
-                <div class="max-w-2xl mx-auto space-y-6">
+                const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
+                return `
+                <div class="text-center mb-10"><h2 class="serif text-3xl mb-4">Focus Mensuel</h2><input type="month" value="${currentMonth}" onchange="changeM(this.value)" class="p-2 bg-white rounded-xl text-indigo-600 font-bold"></div>
+                <div class="max-w-2xl mx-auto space-y-4">
                     ${['Créativité', 'Santé', 'Famille', 'Notes'].map((item, i) => `
-                        <div class="flex items-center gap-6 p-8 bg-white/40 rounded-[2rem] border border-white">
-                            <input type="checkbox" onchange="updateMonthlyCheck(${i})" ${data.checks[i]?'checked':''} class="w-6 h-6">
+                        <div class="flex items-center gap-4 p-6 bg-white/40 rounded-2xl border border-white">
+                            <input type="checkbox" onchange="upMC(${i})" ${data.checks[i]?'checked':''} class="w-6 h-6">
                             <div class="flex-1"><label class="text-[10px] font-bold uppercase text-indigo-400">${item}</label>
-                            <input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${data.texts[i]||''}" class="w-full bg-transparent border-none text-xl"></div>
+                            <input type="text" oninput="upMT(${i}, this.value)" value="${data.texts[i]||''}" class="w-full bg-transparent border-none"></div>
                         </div>`).join('')}
                 </div>`;
             },
 
             weekly: () => {
-                const wk = getWeekKey(currentViewDate);
-                const wkData = state.weeklyRituals[wk] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[] };
-                return `<h2 class="serif text-3xl text-center mb-8">Rituels – Semaine ${wk}</h2>
+                const wID = getWeekID(currentDay);
+                const wData = state.weekly[wID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[] };
+                return `
+                <h2 class="serif text-3xl text-center mb-8">Rituels Hebdo (Semaine ${wID})</h2>
                 <div class="space-y-4 mb-10">
                     ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => `
                         <div class="flex items-center gap-4 py-3 border-b border-indigo-50">
                             <span class="w-16 font-bold text-xs text-gray-300">${day}</span>
-                            <div onclick="addSticker('${day}')" class="flex-1 min-h-[50px] bg-white/30 rounded-2xl border border-dashed flex items-center px-6 gap-3">
-                                ${(wkData[day]||[]).map((s, idx) => `<span onclick="removeSticker('${day}', ${idx}); event.stopPropagation();" class="text-2xl cursor-pointer hover:opacity-40 transition">${s}</span>`).join('')}
+                            <div onclick="addS('${day}')" class="flex-1 min-h-[50px] bg-white/30 rounded-2xl border border-dashed flex items-center px-4 gap-2 cursor-pointer">
+                                ${(wData[day]||[]).map((s, idx) => `<span onclick="remS('${day}', ${idx}); event.stopPropagation();" class="text-2xl hover:opacity-30">${s}</span>`).join('')}
                             </div>
                         </div>`).join('')}
                 </div>
-                <div class="flex justify-center gap-6 p-6 bg-white/80 rounded-[3rem] shadow-xl no-print">
-                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map
+                <div class="flex justify-center gap-4 p-4 bg-white/80 rounded-full shadow-lg no-print">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map(s => `<button onclick="pickS('${s}', this)" class="stick-btn text-4xl p-2 rounded-full">${s}</button>`).join('')}
+                </div>`;
+            },
+
+            daily: () => {
+                const d = state.daily[currentDay] || { energy:50, move:50, prayer:50, conn:50, note:"" };
+                return `
+                <div class="flex justify-between items-center mb-10 p-8 bg-[#BFD8EB]/30 rounded-[2.5rem] border border-white">
+                    <div><h2 class="serif text-3xl mb-2">Journal du Jour</h2><input type="date" value="${currentDay}" onchange="changeD(this.value)" class="p-2 rounded-lg font-bold text-indigo-600"></div>
+                    <button onclick="changeD(new Date().toISOString().split('T')[0])" class="p-3 bg-indigo-600 text-white rounded-xl text-xs font-bold no-print text-white uppercase">Aujourd'hui</button>
+                </div>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="space-y-8">
+                        ${['energy', 'move', 'prayer', 'conn'].map(cat => `<div><div class="flex justify-between mb-2 capitalize font-bold">${cat} <span>${d[cat]||50}%</span></div><input type="range" value="${d[cat]||50}" onchange="upD('${cat}', this.value)"></div>`).join('')}
+                    </div>
+                    <textarea oninput="upD('note', this.value)" class="p-8 rounded-[2.5rem] bg-white border border-white shadow-inner min-h-[300px]" placeholder="Ecrivez ici...">${d.note || ""}</textarea>
+                </div>`;
+            },
+
+            emotional: () => `
+                <h2 class="serif text-3xl text-center mb-10">Succès Émotionnel</h2>
+                <div class="max-w-xl mx-auto space-y-8">
+                    <div class="p-8 bg-indigo-950 rounded-[3rem] text-center"><div class="flex justify-around">${['🌈', '☀️', '☁️', '🌧️'].map(m => `<button onclick="upG('mood', '${m}')" class="text-5xl hover:scale-110 transition">${m}</button>`).join('')}</div></div>
+                    <div class="p-6 bg-white/40 rounded-2xl border border-white"><label class="font-bold block mb-2">Gratitude</label><textarea oninput="upG('grat', this.value)" class="w-full bg-transparent border-none italic">${state.global.grat || ''}</textarea></div>
+                    <div class="p-6 bg-white/40 rounded-2xl border border-white"><label class="font-bold block mb-2">Mon Affirmation</label><input type="text" oninput="upG('aff', this.value)" value="${state.global.aff || ''}" class="w-full bg-transparent border-none"></div>
+                </div>`
+        };
+
+        // --- FONCTIONS DE SAUVEGARDE ---
+        function save() { localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state)); }
+        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
+        function upG(k, v) { state.global[k] = v; save(); }
+        function upD(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, prayer:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
+        function changeD(d) { currentDay = d; currentMonth = d.substring(0,7); showPage('daily'); }
+        function changeM(m) { currentMonth = m; showPage('monthly'); }
+        function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
+        function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
+        function pickS(s, b) { activeSticker = s; document.querySelectorAll('.stick-btn').forEach(x => x.classList.remove('sticker-selected')); b.classList.add('sticker-selected'); }
+        function addS(day) { const wID = getWeekID(currentDay); if(activeSticker) { if(!state.weekly[wID]) state.weekly[wID] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wID][day].push(activeSticker); save(); showPage('weekly'); } }
+        function remS(day, i) { const wID = getWeekID(currentDay); state.weekly[wID][day].splice(i,1); save(); showPage('weekly'); }
+
+        window.onload = () => showPage('cover');
+    </script>
+</body>
+</html>
