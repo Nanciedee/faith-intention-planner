@@ -12,7 +12,10 @@
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
         .serif { font-family: 'Playfair Display', serif; }
         /* Style Écolier / Script */
-        .handwritten { font-family: 'Caveat', cursive; font-weight: 500; }
+        .handwritten { 
+    font-family: 'Caveat', cursive; 
+    font-weight: 500; 
+}
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
         .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
         
@@ -57,8 +60,11 @@
         </div>
     </nav>
 
-    <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen">
-        <div id="content-container" class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
+    <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
+    <button onclick="window.print()" class="no-print absolute top-6 right-10 p-4 bg-white/60 hover:bg-white rounded-full shadow-lg text-indigo-600 transition-all z-20">
+        <i data-lucide="printer"></i>
+    </button>
+    <div id="content-container" ... > class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
     </main>
 
     <script>
@@ -147,18 +153,14 @@
 
         const pages = {
             cover: () => `
-                <div class="text-center py-10 relative">
-                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-pink-300/20 rounded-full blur-2xl"></div>
-                    <h1 class="serif text-7xl font-bold text-indigo-950 mb-4 tracking-tighter">2026</h1>
-                    <p class="text-2xl text-indigo-400 italic serif mb-12">Mon Année d'Intention</p>
-                    <div class="max-w-md mx-auto p-10 rounded-[3rem] bg-white/60 shadow-xl border border-white relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-100 rounded-bl-full opacity-50"></div>
-                        <label class="block text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-300 mb-4 font-bold">Citation ou Pensée du Jour</label>
-                        <textarea oninput="updateDaily('note', this.value)" 
-    class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-4xl text-indigo-900 shadow-inner" 
-    placeholder="Cher journal...">${d.note || ""}</textarea>
-                    </div>
-                </div>`,
+    <div class="text-center py-10">
+        <h1 class="serif text-9xl font-bold text-indigo-950 mb-2">2026</h1>
+        <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
+        <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white paper-effect">
+            <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6 font-bold">Ma Pensée Maîtresse</label>
+            <textarea oninput="saveG('coverThought', this.value)" class="w-full bg-transparent border-none text-center focus:ring-0 leading-relaxed handwritten text-4xl text-indigo-900 italic" rows="4">${state.global.coverThought || ''}</textarea>
+        </div>
+    </div>`,
 
             december: () => `
                 <h2 class="serif text-3xl mb-8 text-center text-indigo-900">Décembre 2025</h2>
@@ -306,8 +308,8 @@
                         }).join('')}
                     </div>
                     <textarea oninput="updateDaily('note', this.value)" 
-                        class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-4xl text-indigo-900 shadow-inner" 
-                        placeholder="Cher journal...">${d.note || ""}</textarea>
+    class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-4xl text-indigo-900 shadow-inner italic" 
+    placeholder="Cher journal...">${d.note || ""}</textarea>
                 </div>
                 <div class="mt-10 p-10 rounded-[3rem] bg-[#f4f1ea] border-l-8 border-indigo-200 shadow-md relative">
                     <div class="absolute top-4 right-8 opacity-10 font-black text-6xl serif">2026</div>
