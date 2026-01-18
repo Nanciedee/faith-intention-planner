@@ -3,152 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Journal 2026</title>
+    <title>Faith & Intention Journal 2026 - Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        :root { --cream: #FFF5E1; }
-        body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; margin: 0; }
+        :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
+        body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; }
         .serif { font-family: 'Playfair Display', serif; }
-        .watercolor-bg { filter: blur(80px); opacity: 0.15; z-index: -1; position: fixed; width: 400px; height: 400px; border-radius: 50%; }
-        input[type=range] { width: 100%; height: 6px; background: #e2e8f0; border-radius: 5px; cursor: pointer; }
+        .watercolor-bg { filter: blur(80px); opacity: 0.15; z-index: -1; position: fixed; border-radius: 50%; }
+        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 6px; border-radius: 5px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #9f7aea; cursor: pointer; }
+        .sticker-selected { border: 2px solid #9f7aea !important; transform: scale(1.1); background: white; border-radius: 50%; }
         .nav-btn { width: 100%; text-align: left; padding: 12px; border-radius: 12px; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
-        .nav-btn:hover { background: rgba(255,255,255,0.8); }
-        .sticker-selected { border: 2px solid #9f7aea !important; background: white; border-radius: 50%; }
+        .nav-btn:hover { background: white; transform: translateX(5px); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col md:flex-row">
+<body class="min-h-screen flex flex-col md:flex-row overflow-hidden">
 
-    <div class="bg-blue-200 top-0 right-0 watercolor-bg"></div>
-    <div class="bg-purple-200 bottom-0 left-0 watercolor-bg"></div>
+    <div class="w-96 h-96 bg-blue-200 top-0 right-0 watercolor-bg"></div>
+    <div class="w-96 h-96 bg-purple-200 bottom-0 left-0 watercolor-bg"></div>
 
-    <nav class="w-full md:w-80 bg-white/70 backdrop-blur-md border-r p-6 flex flex-col z-10 no-print overflow-y-auto h-screen">
-        <div class="mb-8">
-            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
+    <nav class="w-full md:w-80 bg-white/70 backdrop-blur-md border-r p-6 flex flex-col z-10 overflow-y-auto no-print">
+        <div class="mb-8 text-center md:text-left">
+            <h1 class="serif text-2xl font-bold text-indigo-900">Faith & Intention</h1>
             <p class="text-[10px] tracking-[0.3em] uppercase text-gray-400">Journal 2026</p>
         </div>
         
-        <div class="space-y-1 text-sm flex-1">
-            <button onclick="showPage('cover')" class="nav-btn"><i data-lucide="book-open" size="18"></i> Couverture</button>
-            <button onclick="showPage('december')" class="nav-btn"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button>
-            <button onclick="showPage('q-focus')" class="nav-btn"><i data-lucide="target" size="18"></i> Focus Trimestriel</button>
-            <button onclick="showPage('monthly')" class="nav-btn"><i data-lucide="calendar" size="18"></i> Tracker Mensuel</button>
-            <button onclick="showPage('weekly')" class="nav-btn"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
-            <button onclick="showPage('daily')" class="nav-btn"><i data-lucide="sun" size="18"></i> Daily Tracker</button>
-            <button onclick="showPage('emotional')" class="nav-btn"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
-        </div>
-        <p class="text-[9px] text-gray-400 mt-4 italic text-center">Auto-sauvegarde active</p>
+        <ul class="space-y-1 text-sm flex-1">
+            <li><button onclick="showPage('cover')" class="nav-btn"><i data-lucide="book-open" size="18"></i> Couverture</button></li>
+            <li><button onclick="showPage('december')" class="nav-btn"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button></li>
+            <li><button onclick="showPage('q-focus')" class="nav-btn"><i data-lucide="target" size="18"></i> Focus Trimestriel</button></li>
+            <li><button onclick="showPage('monthly')" class="nav-btn"><i data-lucide="calendar" size="18"></i> Tracker Mensuel</button></li>
+            <li><button onclick="showPage('weekly')" class="nav-btn"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button></li>
+            <li><button onclick="showPage('daily')" class="nav-btn"><i data-lucide="sun" size="18"></i> Daily Tracker</button></li>
+            <li><button onclick="showPage('emotional')" class="nav-btn"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button></li>
+        </ul>
+        <p class="text-[9px] text-gray-400 mt-4 italic text-center">Mémoire Multi-Format Active</p>
     </nav>
 
-    <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen">
-        <div id="content-container" class="max-w-5xl mx-auto bg-white/60 shadow-2xl rounded-[2.5rem] p-8 md:p-12 min-h-[85vh] border border-white">
-            </div>
+    <main class="flex-1 p-4 md:p-10 overflow-y-auto">
+        <div id="content-container" class="max-w-5xl mx-auto bg-white/50 backdrop-blur-sm shadow-2xl rounded-[2.5rem] p-8 md:p-12 min-h-[90vh] border border-white"></div>
     </main>
 
     <script>
-        // --- GESTION DE LA MÉMOIRE ---
-        let state = JSON.parse(localStorage.getItem('faithJournal_v2026')) || {
-            globalVision: { decRef: "", decInt: "", decGoals: "", q1:"", q2:"", q3:"", grat:"", aff:"" },
-            dailyLogs: {},
-            monthlyData: {},
-            weeklyRituals: {},
-            moodHistory: []
-        };
+        // --- 1. RÉCUPÉRATION PROFONDE DES DONNÉES ---
+        function loadState() {
+            const keys = ['faithJournal_v2026', 'faithJournal_vFinal_Master', 'faithJournal_vDateSafe', 'faithJournal_vFinal'];
+            let baseState = {
+                globalVision: { decRef: "", decInt: "", decGoals: "", q1:"", q2:"", q3:"", grat:"", aff:"" },
+                dailyLogs: {},
+                monthlyData: {},
+                weeklyRituals: {},
+                moodHistory: []
+            };
 
-        let currentDate = new Date().toISOString().split('T')[0];
+            keys.forEach(key => {
+                try {
+                    const saved = JSON.parse(localStorage.getItem(key));
+                    if (saved) {
+                        // Fusion intelligente
+                        if (saved.globalVision) baseState.globalVision = {...baseState.globalVision, ...saved.globalVision};
+                        if (saved.dailyLogs) baseState.dailyLogs = {...baseState.dailyLogs, ...saved.dailyLogs};
+                        if (saved.monthlyData) baseState.monthlyData = {...baseState.monthlyData, ...saved.monthlyData};
+                        if (saved.weeklyRituals) baseState.weeklyRituals = {...baseState.weeklyRituals, ...saved.weeklyRituals};
+                        if (saved.moodHistory) baseState.moodHistory = [...baseState.moodHistory, ...saved.moodHistory];
+                        // Ancien format textData
+                        if (saved.textData) {
+                            if (saved.textData['t-dec-ref']) baseState.globalVision.decRef = saved.textData['t-dec-ref'];
+                            if (saved.textData['t-dec-int']) baseState.globalVision.decInt = saved.textData['t-dec-int'];
+                            if (saved.textData['t-dec-goals']) baseState.globalVision.decGoals = saved.textData['t-dec-goals'];
+                        }
+                    }
+                } catch(e) {}
+            });
+            return baseState;
+        }
+
+        let state = loadState();
+        let currentViewDate = new Date().toISOString().split('T')[0];
+        let currentMonthKey = currentViewDate.substring(0, 7);
         let selectedSticker = null;
 
+        // Aide pour la semaine
+        function getWeekKey(dateStr) {
+            const d = new Date(dateStr); d.setHours(0,0,0,0); d.setDate(d.getDate()+4-(d.getDay()||7));
+            return `${d.getFullYear()}-W${Math.ceil((((d-new Date(d.getFullYear(),0,1))/86400000)+1)/7).toString().padStart(2,'0')}`;
+        }
+
         const pages = {
-            cover: () => `<div class="text-center py-20"><h1 class="serif text-6xl font-bold text-indigo-950">2026</h1><p class="text-2xl text-gray-400 italic">Faith & Intention Journal</p></div>`,
+            cover: () => `<div class="text-center py-24"><h1 class="serif text-6xl font-bold text-indigo-950 uppercase">2026<br>Faith & Intention</h1><p class="text-2xl text-gray-400 italic">By NancieDee</p></div>`,
             
-            december: () => `
-                <h2 class="serif text-3xl mb-8 text-center">Décembre 2025</h2>
-                <div class="space-y-6">
-                    <div class="p-6 bg-white/40 rounded-2xl border border-white">
-                        <label class="block font-bold mb-2">Réflexion & Vision</label>
-                        <textarea oninput="saveGlobal('decRef', this.value)" class="w-full h-40 bg-transparent border-none">${state.globalVision.decRef || ''}</textarea>
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="p-6 bg-purple-50 rounded-2xl"><label class="block text-xs font-bold uppercase mb-2">Intentions</label><textarea oninput="saveGlobal('decInt', this.value)" class="w-full h-32 bg-transparent border-none">${state.globalVision.decInt || ''}</textarea></div>
-                        <div class="p-6 bg-blue-50 rounded-2xl"><label class="block text-xs font-bold uppercase mb-2">Objectifs</label><textarea oninput="saveGlobal('decGoals', this.value)" class="w-full h-32 bg-transparent border-none">${state.globalVision.decGoals || ''}</textarea></div>
+            december: () => `<h2 class="serif text-3xl mb-10 text-center">Décembre 2025 – Réflexion</h2>
+                <div class="space-y-8">
+                    <div class="p-8 rounded-3xl bg-white/40 border border-white"><label class="serif text-xl block mb-4 italic text-indigo-900">Vision Permanente</label>
+                    <textarea oninput="saveGlobal('decRef', this.value)" class="w-full h-48 bg-transparent border-none focus:ring-0">${state.globalVision.decRef || ''}</textarea></div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="p-8 rounded-3xl bg-[#D9C1EB]/20 border border-white"><label class="font-bold text-xs mb-4 block uppercase">Intentions</label><textarea oninput="saveGlobal('decInt', this.value)" class="w-full h-40 bg-transparent border-none">${state.globalVision.decInt || ''}</textarea></div>
+                        <div class="p-8 rounded-3xl bg-[#BFD8EB]/20 border border-white"><label class="font-bold text-xs mb-4 block uppercase">Objectifs</label><textarea oninput="saveGlobal('decGoals', this.value)" class="w-full h-40 bg-transparent border-none">${state.globalVision.decGoals || ''}</textarea></div>
                     </div>
                 </div>`,
 
-            'q-focus': () => `
-                <h2 class="serif text-3xl text-center mb-8">Focus Trimestriel</h2>
+            'q-focus': () => `<h2 class="serif text-3xl text-center mb-10">Focus Trimestriel</h2>
                 <div class="grid md:grid-cols-3 gap-6">
-                    ${['Q1', 'Q2', 'Q3'].map((q, i) => `
-                        <div class="p-6 bg-white rounded-3xl shadow-sm border border-white">
-                            <h3 class="serif text-xl mb-4">${q}</h3>
-                            <textarea oninput="saveGlobal('q'+(i+1), this.value)" class="w-full h-40 bg-transparent border-none text-sm">${state.globalVision['q'+(i+1)] || ''}</textarea>
-                        </div>`).join('')}
+                    ${[1,2,3].map(i => `<div class="p-8 bg-white/40 rounded-[2.5rem] border border-white shadow-sm"><h3 class="serif text-xl mb-4 text-indigo-900 italic">Trimestre ${i}</h3>
+                    <textarea oninput="saveGlobal('q${i}', this.value)" class="w-full h-48 bg-transparent border-none text-sm">${state.globalVision['q'+i] || ''}</textarea></div>`).join('')}
                 </div>`,
 
-            monthly: () => `
-                <h2 class="serif text-3xl text-center mb-8">Tracker Mensuel</h2>
-                <div class="max-w-2xl mx-auto space-y-4">
+            monthly: () => {
+                const data = state.monthlyData[currentMonthKey] || { checks: [false,false,false,false], texts: {} };
+                return `<div class="flex flex-col items-center mb-10"><h2 class="serif text-3xl mb-4">Tracker Mensuel</h2>
+                <input type="month" value="${currentMonthKey}" onchange="changeMonth(this.value)" class="p-2 bg-white rounded-xl text-indigo-600 font-bold shadow-sm"></div>
+                <div class="max-w-2xl mx-auto space-y-6">
                     ${['Créativité', 'Santé', 'Famille', 'Notes'].map((item, i) => `
-                        <div class="flex items-center gap-4 p-4 bg-white/50 rounded-2xl border border-white">
-                            <input type="checkbox" onchange="updateMonthly(${i})" ${ (state.monthlyData[i] || {}).check ? 'checked' : '' } class="w-6 h-6">
-                            <div class="flex-1"><label class="text-[10px] font-bold uppercase">${item}</label>
-                            <input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${(state.monthlyData[i] || {}).text || ''}" class="w-full bg-transparent border-none"></div>
+                        <div class="flex items-center gap-6 p-8 bg-white/40 rounded-[2rem] border border-white">
+                            <input type="checkbox" onchange="updateMonthlyCheck(${i})" ${data.checks[i]?'checked':''} class="w-6 h-6">
+                            <div class="flex-1"><label class="text-[10px] font-bold uppercase text-indigo-400">${item}</label>
+                            <input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${data.texts[i]||''}" class="w-full bg-transparent border-none text-xl"></div>
                         </div>`).join('')}
-                </div>`,
-
-            weekly: () => `
-                <h2 class="serif text-3xl text-center mb-8">Rituels Hebdomadaires</h2>
-                <div class="space-y-4 mb-8">
-                    ${['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'].map(day => `
-                        <div class="flex items-center gap-4 py-2 border-b border-indigo-100">
-                            <span class="w-20 font-bold text-xs text-gray-400">${day}</span>
-                            <div onclick="addSticker('${day}')" class="flex-1 min-h-[50px] bg-white/20 rounded-xl border border-dashed flex items-center px-4 gap-2">
-                                ${(state.weeklyRituals[day] || []).map((s, idx) => `<span onclick="removeSticker('${day}', ${idx}); event.stopPropagation();" class="text-xl cursor-pointer">${s}</span>`).join('')}
-                            </div>
-                        </div>`).join('')}
-                </div>
-                <div class="flex justify-center gap-4 p-4 bg-white/60 rounded-full">
-                    ${['🙏', '🏃', '🎨', '📖', '✨'].map(s => `<button onclick="pickSticker('${s}', this)" class="sticker-btn text-3xl p-2 rounded-full transition">${s}</button>`).join('')}
-                </div>`,
-
-            daily: () => {
-                const data = state.dailyLogs[currentDate] || { energy: 50, note: "" };
-                return `
-                <div class="flex justify-between items-center mb-8 p-6 bg-indigo-50 rounded-3xl">
-                    <div><h2 class="serif text-2xl">Daily Tracker</h2><input type="date" value="${currentDate}" onchange="changeDate(this.value)" class="mt-1 p-1 bg-white rounded"></div>
-                    <button onclick="changeDate(new Date().toISOString().split('T')[0])" class="p-2 bg-indigo-600 text-white rounded-lg text-xs">Aujourd'hui</button>
-                </div>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div><label class="block font-bold mb-4">Énergie : ${data.energy}%</label><input type="range" value="${data.energy}" onchange="updateDaily('energy', this.value)"></div>
-                    <textarea oninput="updateDaily('note', this.value)" class="w-full h-64 p-4 rounded-2xl border border-white bg-white" placeholder="Notes du jour...">${data.note || ""}</textarea>
                 </div>`;
             },
 
-            emotional: () => `
-                <h2 class="serif text-3xl text-center mb-8">Succès Émotionnel</h2>
-                <div class="max-w-xl mx-auto space-y-6">
-                    <div class="p-8 bg-indigo-950 rounded-[3rem] text-center"><div class="flex justify-around">${['🌈', '☀️', '☁️', '🌧️'].map(m => `<button onclick="saveMood('${m}')" class="text-4xl">${m}</button>`).join('')}</div></div>
-                    <div class="p-6 bg-white/40 rounded-2xl border border-white"><label class="font-bold block mb-2">Gratitude</label><textarea oninput="saveGlobal('grat', this.value)" class="w-full bg-transparent border-none">${state.globalVision.grat || ''}</textarea></div>
-                    <div class="p-6 bg-white/40 rounded-2xl border border-white"><label class="font-bold block mb-2">Affirmation</label><input type="text" oninput="saveGlobal('aff', this.value)" value="${state.globalVision.aff || ''}" class="w-full bg-transparent border-none"></div>
-                </div>`
-        };
-
-        // --- FONCTIONS ---
-        function save() { localStorage.setItem('faithJournal_v2026', JSON.stringify(state)); }
-        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
-        function saveGlobal(k, v) { state.globalVision[k] = v; save(); }
-        function updateDaily(k, v) { if(!state.dailyLogs[currentDate]) state.dailyLogs[currentDate] = {energy:50, note:""}; state.dailyLogs[currentDate][k] = (k==='energy'?parseInt(v):v); save(); if(k==='energy') showPage('daily'); }
-        function changeDate(d) { currentDate = d; showPage('daily'); }
-        function updateMonthly(i) { if(!state.monthlyData[i]) state.monthlyData[i] = {check:false, text:""}; state.monthlyData[i].check = !state.monthlyData[i].check; save(); showPage('monthly'); }
-        function updateMonthlyText(i, v) { if(!state.monthlyData[i]) state.monthlyData[i] = {check:false, text:""}; state.monthlyData[i].text = v; save(); }
-        function pickSticker(s, b) { selectedSticker = s; document.querySelectorAll('.sticker-btn').forEach(x => x.classList.remove('sticker-selected')); b.classList.add('sticker-selected'); }
-        function addSticker(day) { if(selectedSticker) { if(!state.weeklyRituals[day]) state.weeklyRituals[day] = []; state.weeklyRituals[day].push(selectedSticker); save(); showPage('weekly'); } }
-        function removeSticker(day, idx) { state.weeklyRituals[day].splice(idx, 1); save(); showPage('weekly'); }
-        function saveMood(m) { state.moodHistory.push({m, d: new Date().toLocaleDateString()}); save(); alert("Humeur enregistrée : " + m); }
-
-        // Lancement
-        window.onload = () => showPage('cover');
-    </script>
-</body>
-</html>
+            weekly: () => {
+                const wk = getWeekKey(currentViewDate);
+                const wkData = state.weeklyRituals[wk] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[] };
+                return `<h2 class="serif text-3xl text-center mb-8">Rituels – Semaine ${wk}</h2>
+                <div class="space-y-4 mb-10">
+                    ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => `
+                        <div class="flex items-center gap-4 py-3 border-b border-indigo-50">
+                            <span class="w-16 font-bold text-xs text-gray-300">${day}</span>
+                            <div onclick="addSticker('${day}')" class="flex-1 min-h-[50px] bg-white/30 rounded-2xl border border-dashed flex items-center px-6 gap-3">
+                                ${(wkData[day]||[]).map((s, idx) => `<span onclick="removeSticker('${day}', ${idx}); event.stopPropagation();" class="text-2xl cursor-pointer hover:opacity-40 transition">${s}</span>`).join('')}
+                            </div>
+                        </div>`).join('')}
+                </div>
+                <div class="flex justify-center gap-6 p-6 bg-white/80 rounded-[3rem] shadow-xl no-print">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map
