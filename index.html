@@ -106,11 +106,19 @@
 
         </div>
 
-        <div class="mt-auto pt-6 border-t border-indigo-100 no-print">
+        <div class="mt-auto pt-6 border-t border-indigo-100 no-print space-y-2">
+    <p class="text-[9px] font-black uppercase tracking-widest text-indigo-300 px-3 mb-2">Gestion des données</p>
+    
+    <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-emerald-600 bg-emerald-50/50 hover:bg-emerald-100">
+        <i data-lucide="download-cloud" size="18"></i> 
+        <span>Sauvegarder sur PC</span>
+    </button>
 
-            <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-400"><i data-lucide="download" size="18"></i> Sauvegarder JSON</button>
-
-        </div>
+    <button onclick="importData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-amber-600 bg-amber-50/50 hover:bg-amber-100">
+        <i data-lucide="upload-cloud" size="18"></i> 
+        <span>Charger un fichier</span>
+    </button>
+</div>
 
     </nav>
 
