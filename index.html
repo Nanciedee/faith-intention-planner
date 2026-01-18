@@ -99,31 +99,21 @@
         // --- LES PAGES ---
         const pages = {
             cover: () => `
-    <div class="text-center py-20">
-        <h1 class="serif text-9xl font-bold text-indigo-950 mb-4">2026</h1>
-        <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">
-            Mon Année d'Intention
-        </p>
-        
-        <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white">
-            <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">
-                Ma Pensée Maîtresse
-            </label>
-            
-            <textarea 
-                oninput="state.global.coverThought=this.value; save()" 
-                class="w-full bg-transparent border-none text-center serif italic text-4xl text-indigo-800 focus:ring-0 leading-snug" 
-                rows="3"
-            >${state.global.coverThought || ''}</textarea> 
-            </div>
-    </div>`,
+                <div class="text-center py-20">
+                    <h1 class="serif text-9xl font-bold text-indigo-950 mb-4">2026</h1>
+                    <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
+                    <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white">
+                        <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">Ma Pensée Maîtresse</label>
+                        <textarea oninput="state.global.coverThought=this.value; save()" class="w-full bg-transparent border-none text-center serif italic text-4xl text-indigo-800 focus:ring-0 leading-snug" rows="3" placeholder="Écrire ici...">${state.global.coverThought || ''}</textarea>
+                    </div>
+                </div>`,
 
             december: () => `
                 <h2 class="serif text-4xl mb-12 text-center text-indigo-900 font-bold">Bilan Décembre 2025</h2>
                 <div class="grid gap-8">
                     <div class="p-8 rounded-[3rem] bg-white/40 border border-white">
-                        <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion & Gratitude</label>
-                        <textarea oninput="state.global.decRef=this.value; save()" class="w-full h-48 bg-transparent border-none focus:ring-0 text-lg">${state.global.decRef || ''}</textarea>
+                        <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion sur l'année écoulée & Gratitude</label>
+                        <textarea oninput="state.global.decRef=this.value; save()" class="w-full h-48 bg-transparent border-none focus:ring-0 text-gray-700 text-lg leading-relaxed">${state.global.decRef || ''}</textarea>
                     </div>
                     <div class="grid md:grid-cols-2 gap-8">
                         <div class="p-8 rounded-[3rem] bg-purple-50/50 border border-white">
@@ -141,11 +131,53 @@
                 <h2 class="serif text-3xl text-center mb-10 text-indigo-900 uppercase font-black tracking-widest">Focus Trimestriel</h2>
                 <div class="grid md:grid-cols-3 gap-6">
                     ${[1,2,3].map(i => `
-                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg">
+                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg transition-all hover:scale-[1.02]">
                             <h3 class="serif text-2xl mb-6 text-indigo-800 italic border-b border-indigo-100 pb-2">Trimestre ${i}</h3>
-                            <textarea oninput="state.global['q'+${i}]=this.value; save()" class="w-full h-64 bg-transparent border-none text-sm focus:ring-0">${state.global['q'+i] || ''}</textarea>
-                        </div>`).join('')}
+                            <textarea oninput="state.global['q'+${i}]=this.value; save()" class="w-full h-64 bg-transparent border-none text-sm leading-relaxed focus:ring-0" placeholder="Mes visions...">${state.global['q'+i] || ''}</textarea>
+                        </div>
+                    `).join('')}
                 </div>`,
+
+            monthly: () => {
+                const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
+                const totalChecked = data.checks.filter(c => c).length;
+                const progress = (totalChecked / 4) * 100;
+                const now = new Date();
+                const [y, m] = currentMonth.split('-').map(Number);
+                const lastDay = new Date(y, m, 0);
+                const diffDays = Math.ceil((lastDay - now) / (1000 * 60 * 60 * 24));
+
+                return `
+                <div class="flex flex-col items-center mb-10 text-center">
+                    <h2 class="serif text-4xl mb-4 text-indigo-950 font-bold">Focus Mensuel</h2>
+                    <input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" class="p-2 glass rounded-xl font-bold text-indigo-600 no-print cursor-pointer">
+                </div>
+                <div class="max-w-xl mx-auto mb-12 bg-white/40 p-8 rounded-[3rem] border border-white shadow-sm">
+                    <div class="flex justify-between items-end mb-4 px-2">
+                        <div>
+                            <span class="text-[10px] font-black uppercase text-indigo-400 block tracking-widest">Progression</span>
+                            <span class="serif text-4xl italic text-indigo-600">${progress}%</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] font-black uppercase text-rose-400 block tracking-widest">Temps</span>
+                            <span class="font-bold text-slate-600 text-lg">${diffDays > 0 ? diffDays + ' jours restants' : 'Dernier jour !'}</span>
+                        </div>
+                    </div>
+                    <div class="w-full h-4 bg-gray-200/50 rounded-full overflow-hidden border border-white">
+                        <div class="h-full bg-indigo-500 transition-all duration-1000 ease-out" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    ${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `
+                        <div class="p-8 rounded-[3rem] border border-white shadow-sm flex items-start gap-5 transition-all ${data.checks[i] ? 'bg-indigo-50/60' : 'bg-white/40'}">
+                            <input type="checkbox" onchange="toggleMonthly(${i})" ${data.checks[i] ? 'checked' : ''} class="mt-1 w-7 h-7 rounded-full text-indigo-600 cursor-pointer">
+                            <div class="flex-1">
+                                <label class="text-[10px] font-black text-indigo-300 uppercase block mb-1">${item}</label>
+                                <input type="text" oninput="updateMonthlyText(${i}, this.value)" value="${data.texts[i] || ''}" class="w-full bg-transparent border-none p-0 text-xl font-medium focus:ring-0 text-indigo-900 placeholder-indigo-200" placeholder="...">
+                            </div>
+                        </div>`).join('')}
+                </div>`;
+            },
 
             weekly: () => {
                 const wkID = getWeekID(currentDay);
