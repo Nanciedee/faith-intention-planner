@@ -166,7 +166,7 @@
 
             let merged = {
 
-                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "" },
+                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", q4: "", grat: "", aff: "", coverThought: "" },
 
                 daily: {}, monthly: {}, weekly: {},
 
@@ -277,44 +277,35 @@
 
 
         function renderWheelSVG() {
+    const cats = Object.keys(state.wheel);
+    const center = 150, radius = 100;
+    let points = [], grid = "";
+    
+    // Cercles de fond (Toile d'araignée dorée)
+    [2, 4, 6, 8, 10].forEach(r => {
+        grid += `<circle cx="${center}" cy="${center}" r="${radius * r / 10}" fill="none" stroke="rgba(184, 134, 11, 0.1)" stroke-width="1"/>`;
+    });
 
-            const cats = Object.keys(state.wheel);
+    cats.forEach((cat, i) => {
+        const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
+        const val = state.wheel[cat];
+        const x = center + (radius * val / 10) * Math.cos(angle);
+        const y = center + (radius * val / 10) * Math.sin(angle);
+        points.push(`${x},${y}`);
+        
+        // Texte des catégories
+        const tx = center + (radius + 35) * Math.cos(angle);
+        const ty = center + (radius + 35) * Math.sin(angle);
+        grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="9" font-weight="bold" fill="#4f46e5" class="uppercase tracking-tighter">${cat}</text>`;
+        grid += `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="rgba(184, 134, 11, 0.1)" stroke-width="1"/>`;
+    });
 
-            const center = 150, radius = 100;
-
-            let points = [], grid = "";
-
-            cats.forEach((cat, i) => {
-
-                const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
-
-                const val = state.wheel[cat];
-
-                const x = center + (radius * val / 10) * Math.cos(angle);
-
-                const y = center + (radius * val / 10) * Math.sin(angle);
-
-                points.push(`${x},${y}`);
-
-                const tx = center + (radius + 35) * Math.cos(angle);
-
-                const ty = center + (radius + 35) * Math.sin(angle);
-
-                grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="10" font-weight="bold" fill="#6366f1">${cat}</text>`;
-
-                grid += `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="#E2E8F0" stroke-width="1"/>`;
-
-            });
-
-            return `<svg viewBox="0 0 300 300" class="w-full max-w-sm mx-auto">
-
-                ${grid}
-
-                <polygon points="${points.join(' ')}" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
-
-            </svg>`;
-
-        }
+    return `<svg viewBox="0 0 300 300" class="w-full max-w-sm mx-auto drop-shadow-xl">
+        ${grid}
+        <polygon points="${points.join(' ')}" fill="rgba(184, 134, 11, 0.2)" stroke="#B8860B" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="${center}" cy="${center}" r="3" fill="#B8860B"/>
+    </svg>`;
+}
 
 
 
@@ -374,23 +365,38 @@
 
             'q-focus': () => `
 
-                <h2 class="serif text-3xl text-center mb-10 text-indigo-900 font-bold uppercase">Focus Trimestriel</h2>
+                () => {
+    // 1. Définition des données des trimestres
+    const quarters = [
+        { name: "Trimestre 1", months: "Jan • Fév • Mar", key: "q1" },
+        { name: "Trimestre 2", months: "Avr • Mai • Juin", key: "q2" },
+        { name: "Trimestre 3", months: "Juil • Août • Sept", key: "q3" },
+        { name: "Trimestre 4", months: "Oct • Nov • Déc", key: "q4" }
+    ];
 
-                <div class="grid md:grid-cols-3 gap-6">
+    return `
+        <div class="text-center mb-10">
+            <h2 class="serif text-4xl text-indigo-950 font-bold uppercase tracking-widest">Focus Trimestriel</h2>
+            <div class="h-1 w-20 bg-amber-400 mx-auto mt-2 rounded-full opacity-40"></div>
+        </div>
 
-                    ${[1,2,3].map(i => `
-
-                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg relative overflow-hidden">
-
-                            <div class="absolute -top-4 -right-4 w-16 h-16 bg-indigo-50 rounded-full"></div>
-
-                            <h3 class="serif text-2xl mb-6 text-indigo-800 italic">Trimestre ${i}</h3>
-
-                            <textarea oninput="saveG('q${i}', this.value)" class="w-full h-64 bg-transparent border-none text-sm leading-relaxed" placeholder="Vos objectifs...">${state.global['q'+i] || ''}</textarea>
-
-                        </div>`).join('')}
-
-                </div>`,
+        <div class="grid md:grid-cols-2 gap-8">
+            ${quarters.map(q => `
+                <div class="flex flex-col">
+                    <div class="px-6 mb-3 flex justify-between items-end">
+                        <h3 class="serif text-2xl text-indigo-800 italic font-bold">${q.name}</h3>
+                        <span class="text-[10px] font-black text-amber-600 uppercase tracking-widest bg-amber-50/50 px-3 py-1 rounded-full border border-amber-100">
+                            ${q.months}
+                        </span>
+                    </div>
+                    
+                    <textarea oninput="saveG('${q.key}', this.value)" 
+                        class="w-full h-72 p-8 rounded-[2.5rem] focus:ring-2 focus:ring-amber-200 outline-none paper-effect handwritten shadow-sm transition-all text-3xl text-indigo-950" 
+                        placeholder="Mes visions...">${state.global[q.key] || ''}</textarea>
+                </div>
+            `).join('')}
+        </div>`;
+},
 
 
 
@@ -646,42 +652,46 @@
 
             emotional: () => `
 
-                <h2 class="serif text-4xl text-center mb-10">Succès Émotionnel</h2>
+                <div class="text-center mb-10">
+        <h2 class="serif text-4xl text-indigo-950 font-bold uppercase tracking-widest">Succès Émotionnel</h2>
+        <p class="handwritten text-2xl text-amber-600 italic">Équilibre & Harmonie</p>
+    </div>
 
-                <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 glass p-10 rounded-[4rem]">
+    <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 glass p-10 rounded-[4rem] border border-white/60 shadow-2xl">
+        <div id="wheel-container" class="bg-white/30 rounded-full p-4 shadow-inner">
+            ${renderWheelSVG()}
+        </div>
 
-                    <div id="wheel-container">${renderWheelSVG()}</div>
-
-                    <div class="grid grid-cols-2 gap-4">
-
-                        ${Object.keys(state.wheel).map(cat => `<div class="p-4 glass rounded-2xl"><label class="text-[9px] font-bold uppercase block">${cat}</label><input type="range" min="1" max="10" value="${state.wheel[cat]}" oninput="updateWheel('${cat}', this.value)"></div>`).join('')}
-
-                    </div>
-
+        <div class="grid grid-cols-2 gap-4">
+            ${Object.keys(state.wheel).map(cat => `
+                <div class="p-4 glass rounded-2xl border border-amber-100/50 hover:border-amber-400 transition-colors">
+                    <label class="text-[9px] font-black uppercase block text-indigo-400 mb-1 tracking-widest">${cat}</label>
+                    <input type="range" min="1" max="10" value="${state.wheel[cat]}" 
+                           class="accent-amber-500"
+                           oninput="updateWheel('${cat}', this.value)">
+                    <div class="text-right text-[10px] font-bold text-amber-600">${state.wheel[cat]}/10</div>
                 </div>
+            `).join('')}
+        </div>
+    </div>
 
-                <div class="grid md:grid-cols-2 gap-8">
-
-                    <div class="p-8 glass rounded-3xl">
-
-                        <label class="block text-xs font-bold mb-4 uppercase">Gratitude</label>
-
-                        <textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none serif italic text-2xl focus:ring-0" rows="3">${state.global.grat || ''}</textarea>
-
-                    </div>
-
-                    <div class="p-8 glass rounded-3xl">
-
-                        <label class="block text-xs font-bold mb-4 uppercase">Affirmation</label>
-
-                        <input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none text-xl font-bold text-indigo-600 focus:ring-0">
-
-                    </div>
-
-                </div>`
-
-        };
-
+    <div class="grid md:grid-cols-2 gap-8">
+        <div class="p-8 glass rounded-[3rem] border border-white paper-effect shadow-lg">
+            <label class="block text-[10px] font-black mb-4 uppercase tracking-[0.3em] text-indigo-300">Gratitude du Cœur</label>
+            <textarea oninput="state.global.grat=this.value; save()" 
+                      class="w-full bg-transparent border-none handwritten text-4xl focus:ring-0 text-indigo-900" 
+                      rows="3" placeholder="Aujourd'hui, je suis reconnaissante pour...">${state.global.grat || ''}</textarea>
+        </div>
+        
+        <div class="p-8 glass rounded-[3rem] border border-white shadow-lg flex flex-col justify-center bg-gradient-to-br from-white/40 to-amber-50/40">
+            <label class="block text-[10px] font-black mb-4 uppercase tracking-[0.3em] text-indigo-300">Mon Affirmation Maîtresse</label>
+            <input type="text" oninput="state.global.aff=this.value; save()" 
+                   value="${state.global.aff || ''}" 
+                   class="w-full bg-transparent border-none handwritten text-5xl text-indigo-900 focus:ring-0 text-center"
+                   placeholder="Je suis...">
+            <div class="h-px w-20 bg-amber-300 mx-auto mt-4"></div>
+        </div>
+    </div>`
 
 
         // --- Fonctions de Navigation et Action ---
