@@ -276,15 +276,38 @@
             },
 
             daily: () => {
-                const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
-                return `<div class="flex justify-between items-center mb-10"><h2 class="serif text-4xl">Le Quotidien</h2><input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl"></div>
-                <div class="grid md:grid-cols-2 gap-10">
-                    <div class="space-y-8 glass p-10 rounded-3xl">
-                        ${['energy', 'move', 'pray', 'conn'].map(k => `<div><label class="uppercase text-xs font-bold">${k}</label><input type="range" value="${d[k]}" onchange="updateDaily('${k}', this.value)"></div>`).join('')}
-                    </div>
-                    <textarea oninput="updateDaily('note', this.value)" class="glass p-10 rounded-3xl h-96 border-none focus:ring-0" placeholder="Notes...">${d.note || ""}</textarea>
-                </div>`;
-            },
+    const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
+    
+    // --- NOUVEAU : Logique pour trouver la dernière note enregistrée ---
+    const allDates = Object.keys(state.daily).sort().filter(date => date < currentDay);
+    const lastDate = allDates.length > 0 ? allDates[allDates.length - 1] : null;
+    const lastNote = lastDate ? state.daily[lastDate].note : "Aucun historique pour le moment...";
+
+    return `
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="serif text-4xl">Le Quotidien</h2>
+        <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl">
+    </div>
+
+    <div class="mb-8 p-6 bg-white/30 rounded-3xl border border-white/50 shadow-sm">
+        <label class="uppercase text-[9px] font-black tracking-widest text-indigo-400 block mb-2">Dernière pensée (${lastDate || 'N/A'})</label>
+        <p class="italic text-indigo-800/70 text-sm leading-relaxed">${lastNote}</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-10">
+        <div class="space-y-8 glass p-10 rounded-3xl">
+            ${['energy', 'move', 'pray', 'conn'].map(k => `
+                <div>
+                    <label class="uppercase text-xs font-bold text-indigo-900">${k}</label>
+                    <input type="range" value="${d[k]}" onchange="updateDaily('${k}', this.value)">
+                </div>`).join('')}
+        </div>
+        <textarea 
+            oninput="updateDaily('note', this.value)" 
+            class="glass p-10 rounded-3xl h-96 border-none focus:ring-0 italic text-indigo-900 text-lg" 
+            placeholder="Écrivez votre note du jour ici...">${d.note || ""}</textarea>
+    </div>`;
+},
 
             emotional: () => `
                 <h2 class="serif text-4xl text-center mb-10">Succès Émotionnel</h2>
