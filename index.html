@@ -99,21 +99,42 @@
         const pages = {
             cover: () => `
                 <div class="text-center py-20">
-                    <h1 class="serif text-8xl font-bold text-indigo-950 mb-4">2026</h1>
-                    <div class="max-w-md mx-auto p-10 glass rounded-[3rem] border border-white">
-                        <label class="block text-[10px] font-bold uppercase tracking-widest text-indigo-300 mb-4">Ma Pensée Directrice</label>
-                        <textarea oninput="state.global.coverThought=this.value; save()" class="w-full bg-transparent border-none text-center serif italic text-3xl text-indigo-800 focus:ring-0" rows="3">${state.global.coverThought || ''}</textarea>
+                    <h1 class="serif text-9xl font-bold text-indigo-950 mb-4">2026</h1>
+                    <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
+                    <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white">
+                        <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">Ma Pensée Maîtresse</label>
+                        <textarea oninput="state.global.coverThought=this.value; save()" class="w-full bg-transparent border-none text-center serif italic text-4xl text-indigo-800 focus:ring-0 leading-snug" rows="3" placeholder="Écrire ici...">${state.global.coverThought || ''}</textarea>
                     </div>
                 </div>`,
 
             december: () => `
-                <h2 class="serif text-3xl mb-8 text-center text-indigo-900">Bilan Décembre 2025</h2>
-                <textarea oninput="state.global.decRef=this.value; save()" class="w-full h-48 p-6 glass rounded-2xl mb-6 focus:ring-0 border-none" placeholder="Réflexion...">${state.global.decRef || ''}</textarea>`,
-
+                <h2 class="serif text-4xl mb-12 text-center text-indigo-900 font-bold">Bilan Décembre 2025</h2>
+                <div class="grid gap-8">
+                    <div class="p-8 rounded-[3rem] bg-white/40 border border-white">
+                        <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion & Gratitude</label>
+                        <textarea oninput="state.global.decRef=this.value; save()" class="w-full h-48 bg-transparent border-none focus:ring-0 text-gray-700 text-lg leading-relaxed">${state.global.decRef || ''}</textarea>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="p-8 rounded-[3rem] bg-purple-50/50 border border-white">
+                            <label class="font-black text-[10px] uppercase tracking-widest text-purple-500 mb-4 block">Intentions Clés 2026</label>
+                            <textarea oninput="state.global.decInt=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decInt || ''}</textarea>
+                        </div>
+                        <div class="p-8 rounded-[3rem] bg-blue-50/50 border border-white">
+                            <label class="font-black text-[10px] uppercase tracking-widest text-blue-500 mb-4 block">Objectifs Prioritaires</label>
+                            <textarea oninput="state.global.decGoals=this.value; save()" class="w-full h-40 bg-transparent border-none focus:ring-0 text-indigo-900">${state.global.decGoals || ''}</textarea>
+                        </div>
+                    </div>
+                </div>`,
+            
             'q-focus': () => `
-                <h2 class="serif text-3xl text-center mb-10 text-indigo-900 font-bold uppercase">Focus Trimestriel</h2>
+                <h2 class="serif text-3xl text-center mb-10 text-indigo-900 uppercase font-black tracking-widest">Focus Trimestriel</h2>
                 <div class="grid md:grid-cols-3 gap-6">
-                    ${[1,2,3].map(i => `<div class="p-6 glass rounded-3xl"><h3 class="serif text-xl mb-4">Trimestre ${i}</h3><textarea oninput="state.global['q'+${i}]=this.value; save()" class="w-full h-64 bg-transparent border-none focus:ring-0">${state.global['q'+i] || ''}</textarea></div>`).join('')}
+                    ${[1,2,3].map(i => `
+                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg transition-all hover:scale-[1.02]">
+                            <h3 class="serif text-2xl mb-6 text-indigo-800 italic border-b border-indigo-100 pb-2">Trimestre ${i}</h3>
+                            <textarea oninput="state.global['q'+${i}]=this.value; save()" class="w-full h-64 bg-transparent border-none text-sm leading-relaxed focus:ring-0" placeholder="Mes visions...">${state.global['q'+i] || ''}</textarea>
+                        </div>
+                    `).join('')}
                 </div>`,
 
             monthly: () => {
