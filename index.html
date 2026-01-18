@@ -12,7 +12,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -26,7 +26,21 @@
 
         /* Style Écolier / Script */
 
-        .handwritten { font-family: 'Caveat', cursive; font-weight: 500; }
+        .handwritten { 
+    font-family: 'Great Vibes', cursive; 
+    font-weight: 400;
+    /* On augmente la taille car cette police est naturellement plus petite */
+    font-size: 2.8rem; 
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+}
+
+/* On simplifie l'effet papier pour un look plus "Journal Intime" */
+.paper-effect {
+    background-color: #fdfaf0;
+    background-image: none; /* On enlève les lignes bleues d'écolier */
+    padding: 2rem;
+}
 
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
 
@@ -310,7 +324,9 @@
                     <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
                     <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white paper-effect">
                         <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6 font-bold">Ma Pensée Maîtresse</label>
-                        <textarea oninput="saveG('coverThought', this.value)" class="w-full bg-transparent border-none text-center focus:ring-0 leading-relaxed handwritten text-4xl text-indigo-900 italic" rows="4">${state.global.coverThought || ''}</textarea>
+                        <textarea oninput="updateDaily('note', this.value)" 
+    class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-5xl text-indigo-900 shadow-inner" 
+    placeholder="Cher journal...">${d.note || ""}</textarea>
                     </div>
                 </div>`,
 
