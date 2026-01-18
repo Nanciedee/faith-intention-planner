@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faith & Intention Journal 2026 - Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --cream: #FFF5E1; }
@@ -276,36 +276,30 @@
             },
 
             daily: () => {
-    const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
-    const allDates = Object.keys(state.daily).sort().filter(date => date < currentDay);
-    const lastDate = allDates.length > 0 ? allDates[allDates.length - 1] : null;
-    const lastNote = lastDate ? state.daily[lastDate].note : "Commencez à écrire votre histoire aujourd'hui...";
+                const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
+                const allDates = Object.keys(state.daily).sort().filter(date => date < currentDay);
+                const lastDate = allDates.length > 0 ? allDates[allDates.length - 1] : null;
+                const lastNote = lastDate ? state.daily[lastDate].note : "Commencez votre voyage...";
 
-    return `
-    <div class="flex justify-between items-center mb-10">
-        <h2 class="serif text-4xl text-indigo-950 font-bold">Journal du Jour</h2>
-        <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl no-print">
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-10 mb-16">
-        <div class="space-y-8 glass p-10 rounded-[3rem] border border-white">
-            ${['Energie', 'Mouvement', 'Prière', 'Connexion'].map((k, i) => {
-                const keys = ['energy', 'move', 'pray', 'conn'];
-                return `<div><label class="uppercase text-[10px] font-black text-indigo-400 block mb-2 tracking-widest">${k}</label><input type="range" value="${d[keys[i]]}" onchange="updateDaily('${keys[i]}', this.value)"></div>`;
-            }).join('')}
-        </div>
-
-        <textarea oninput="updateDaily('note', this.value)" 
-            class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-4xl text-indigo-900 shadow-inner" 
-            placeholder="Cher journal...">${d.note || ""}</textarea>
-    </div>
-
-    <div class="mt-10 p-10 rounded-[3rem] bg-[#f4f1ea] border-l-8 border-indigo-200 shadow-md relative">
-        <div class="absolute top-4 right-8 opacity-10 font-black text-6xl serif">2026</div>
-        <label class="block text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6 italic">Souvenir du ${lastDate || 'passé'}</label>
-        <p class="handwritten text-3xl text-slate-600 leading-relaxed">"${lastNote}"</p>
-    </div>`;
-},
+                return `
+                <div class="flex justify-between items-center mb-10"><h2 class="serif text-4xl text-indigo-950 font-bold">Journal du Jour</h2><input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl"></div>
+                <div class="grid md:grid-cols-2 gap-10 mb-16">
+                    <div class="space-y-8 glass p-10 rounded-[3rem] border border-white">
+                        ${['Energie', 'Mouvement', 'Prière', 'Connexion'].map((k, i) => {
+                            const keys = ['energy', 'move', 'pray', 'conn'];
+                            return `<div><label class="uppercase text-[10px] font-black text-indigo-400 block mb-2">${k}</label><input type="range" value="${d[keys[i]]}" onchange="updateDaily('${keys[i]}', this.value)"></div>`;
+                        }).join('')}
+                    </div>
+                    <textarea oninput="updateDaily('note', this.value)" 
+                        class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-4xl text-indigo-900 shadow-inner" 
+                        placeholder="Cher journal...">${d.note || ""}</textarea>
+                </div>
+                <div class="mt-10 p-10 rounded-[3rem] bg-[#f4f1ea] border-l-8 border-indigo-200 shadow-md relative">
+                    <div class="absolute top-4 right-8 opacity-10 font-black text-6xl serif">2026</div>
+                    <label class="block text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6 italic">Souvenir du ${lastDate || 'passé'}</label>
+                    <p class="handwritten text-3xl text-slate-600 leading-relaxed italic">"${lastNote}"</p>
+                </div>`;
+            },
 
             emotional: () => `
                 <h2 class="serif text-4xl text-center mb-10">Succès Émotionnel</h2>
