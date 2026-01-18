@@ -97,15 +97,31 @@
         }
 
         const pages = {
-            cover: () => `
-                <div class="text-center py-20">
-                    <h1 class="serif text-9xl font-bold text-indigo-950 mb-4">2026</h1>
-                    <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
-                    <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white">
-                        <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">Ma Pensée Maîtresse</label>
-                        <textarea oninput="state.global.coverThought=this.value; save()" class="w-full bg-transparent border-none text-center serif italic text-4xl text-indigo-800 focus:ring-0 leading-snug" rows="3" placeholder="Écrire ici...">${state.global.coverThought || ''}</textarea>
-                    </div>
-                </div>`,
+            cover: () => {
+    // On récupère la valeur actuelle dans la mémoire du journal
+    const maPensee = state.global.coverThought || '';
+    
+    return `
+        <div class="text-center py-20 animate-fade-in">
+            <h1 class="serif text-9xl font-bold text-indigo-950 mb-4">2026</h1>
+            <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">
+                Mon Année d'Intention
+            </p>
+            
+            <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white">
+                <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">
+                    Ma Pensée Maîtresse
+                </label>
+                
+                <textarea 
+                    oninput="state.global.coverThought = this.value; save()" 
+                    class="w-full bg-transparent border-none text-center serif italic text-4xl text-indigo-800 focus:ring-0 leading-snug" 
+                    rows="3" 
+                    placeholder="Écrivez votre intention ici..."
+                >${maPensee}</textarea>
+            </div>
+        </div>`;
+},
 
             december: () => `
                 <h2 class="serif text-4xl mb-12 text-center text-indigo-900 font-bold">Bilan Décembre 2025</h2>
