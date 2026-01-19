@@ -26,25 +26,19 @@
 
         /* Style Écolier / Script */
 
-        .paper-effect {
+    .handwritten { 
+    font-family: 'Caveat', cursive; 
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+/* On ajuste l'effet papier pour que les lettres tombent mieux sur les lignes */
+.paper-effect {
     background-color: #fdfaf0;
-    /* Lignes dorées horizontales */
-    background-image: linear-gradient(rgba(184, 134, 11, 0.15) 1px, transparent 1px);
-    background-size: 100% 2.85rem; 
-    line-height: 2.85rem;
-    padding-top: 0.5rem;
-    /* Bordure dorée fine et élégante */
-    border: 1px solid rgba(184, 134, 11, 0.4) !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05), inset 0 0 20px rgba(184, 134, 11, 0.05);
+    background-image: linear-gradient(#e1d9c3 1px, transparent 1px);
+    background-size: 100% 2.2rem;
+    line-height: 2.2rem;
 }
-
-.handwritten { 
-    font-family: 'Great Vibes', cursive; 
-    font-weight: 400;
-    font-size: 2.6rem; 
-    color: #1e1b4b; /* Indigo très foncé pour l'effet "encre" */
-}
-
 
 
         .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
