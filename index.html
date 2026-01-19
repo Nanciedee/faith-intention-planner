@@ -1,49 +1,815 @@
-// FONCTION : Exporter les données vers un fichier JSON
-function exportData() {
-    try {
-        const dataStr = JSON.stringify(state, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        const date = new Date().toISOString().split('T')[0];
+<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Faith & Intention Journal 2026 - Master</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+
+        :root { --cream: #FFF5E1; }
+
+        body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
+
+        .serif { font-family: 'Playfair Display', serif; }
+
+        /* Style Écolier / Script */
+.paper-effect {
+    background-color: #fdfaf0;
+    /* Lignes dorées horizontales */
+    background-image: linear-gradient(rgba(184, 134, 11, 0.15) 1px, transparent 1px);
+    background-size: 100% 2.85rem; 
+    line-height: 2.85rem;
+    padding-top: 0.5rem;
+    /* Bordure dorée fine et élégante */
+    border: 1px solid rgba(184, 134, 11, 0.4) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05), inset 0 0 20px rgba(184, 134, 11, 0.05);
+}
+
+.handwritten { 
+    font-family: 'Great Vibes', cursive; 
+    font-weight: 400;
+    font-size: 2.6rem; 
+    color: #1e1b4b; /* Indigo très foncé pour l'effet "encre" */
+}
+
+        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
+
+        .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
+
         
-        link.download = `Journal_Faith_2026_${date}.json`;
-        link.href = url;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    } catch (err) {
-        alert("Erreur lors de l'exportation : " + err);
-    }
-}
 
-// FONCTION : Importer les données depuis un fichier JSON
-function importData() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = e => {
-        const file = e.target.files[0];
-        if (!file) return;
+        /* Effet Papier Ligné */
 
-        const reader = new FileReader();
-        reader.onload = event => {
-            try {
-                const importedData = JSON.parse(event.target.result);
-                
-                // Confirmation avant d'écraser
-                if (confirm("Voulez-vous remplacer vos données actuelles par celles de ce fichier ?")) {
-                    state = importedData;
-                    save(); // Sauvegarde dans le LocalStorage
-                    showPage('cover'); // Rafraîchit l'affichage
-                    alert("Journal chargé avec succès !");
-                }
-            } catch (err) {
-                alert("Erreur : Le fichier n'est pas un journal valide.");
+        .paper-effect {
+
+            background-color: #fdfaf0;
+
+            background-image: linear-gradient(#e1d9c3 1px, transparent 1px);
+
+            background-size: 100% 2.2rem;
+
+            line-height: 2.2rem;
+
+            padding-top: 0.5rem;
+
+        }
+
+
+
+        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
+
+        .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
+
+        
+
+        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; width: 100%; }
+
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; }
+
+        @media print { .no-print { display: none !important; } body { overflow: visible !important; } }
+
+    </style>
+
+</head>
+
+<body class="min-h-screen flex flex-col md:flex-row">
+
+
+
+    <div class="watercolor w-96 h-96 bg-blue-300 -top-20 -right-20"></div>
+
+    <div class="watercolor w-80 h-80 bg-purple-300 bottom-10 -left-20"></div>
+
+
+
+    <nav class="w-full md:w-80 glass border-r p-6 flex flex-col z-10 overflow-y-auto no-print h-screen">
+
+        <div class="mb-10 px-2">
+
+            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
+
+            <p class="text-[10px] tracking-[0.3em] uppercase text-indigo-500 font-black mt-1">Master Edition 2026</p>
+
+        </div>
+
+        <div class="flex-1 space-y-1">
+
+            <button onclick="showPage('cover')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="book-open" size="18"></i> Couverture</button>
+
+            <button onclick="showPage('december')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button>
+
+            <button onclick="showPage('q-focus')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="target" size="18"></i> Focus Trimestriel</button>
+
+            <button onclick="showPage('monthly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="calendar" size="18"></i> Focus Mensuel</button>
+
+            <button onclick="showPage('weekly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
+
+            <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
+
+            <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
+
+        </div>
+
+        <div class="mt-auto pt-6 border-t border-indigo-100 no-print space-y-2">
+    <p class="text-[9px] font-black uppercase tracking-widest text-indigo-300 px-3 mb-2">Gestion des données</p>
+    
+    <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-emerald-600 bg-emerald-50/50 hover:bg-emerald-100">
+        <i data-lucide="download-cloud" size="18"></i> 
+        <span>Sauvegarder sur PC</span>
+    </button>
+
+    <button onclick="importData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-amber-600 bg-amber-50/50 hover:bg-amber-100">
+        <i data-lucide="upload-cloud" size="18"></i> 
+        <span>Charger un fichier</span>
+    </button>
+</div>
+
+    </nav>
+
+
+
+    <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
+    <button onclick="window.print()" class="no-print absolute top-6 right-10 p-4 bg-white/60 hover:bg-white rounded-full shadow-lg text-indigo-600 transition-all z-20">
+        <i data-lucide="printer"></i>
+    </button>
+    <div id="content-container" class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
+
+    </main>
+
+
+
+    <script>
+
+        const STORAGE_KEY = 'faithJournal_Master_2026';
+
+
+
+        // --- MOTEUR DE FUSION HISTORIQUE (Inspiré du CODE 1) ---
+
+        function initData() {
+
+            const legacyKeys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
+
+            
+
+            let merged = {
+
+                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", q4: "’, grat: "", aff: "", coverThought: "" },
+
+                daily: {}, monthly: {}, weekly: {},
+
+                wheel: { "Santé": 5, "Foi": 5, "Famille": 5, "Travail": 5, "Loisirs": 5, "Finance": 5, "Social": 5, "Mental": 5 }
+
+            };
+
+
+
+            // 1. Charger la sauvegarde principale actuelle si elle existe
+
+            const currentSaved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+            if (currentSaved) {
+
+                merged = { ...merged, ...currentSaved };
+
             }
+
+
+
+            // 2. Scanner les anciennes clés pour récupérer l'historique manquant
+
+            legacyKeys.forEach(k => {
+
+                const oldData = JSON.parse(localStorage.getItem(k));
+
+                if (oldData) {
+
+                    // Fusion des textes globaux (Cover, Décembre, Trimestre)
+
+                    const g = oldData.globalVision || oldData.global || {};
+
+                    if (g) {
+
+                        for (let key in merged.global) {
+
+                            if (!merged.global[key] && g[key]) merged.global[key] = g[key];
+
+                        }
+
+                    }
+
+                    // Récupération spécifique du format textData (Anciennes versions)
+
+                    if (oldData.textData) {
+
+                        if (!merged.global.decRef) merged.global.decRef = oldData.textData['t-dec-ref'] || "";
+
+                        if (!merged.global.q1) merged.global.q1 = oldData.textData['q-tx-0'] || "";
+
+                        if (!merged.global.q2) merged.global.q2 = oldData.textData['q-tx-1'] || "";
+
+                        if (!merged.global.q3) merged.global.q3 = oldData.textData['q-tx-2'] || "";
+
+                        if (!merged.global.q4) merged.global.q4 = oldData.textData['q-tx-3'] || "";
+
+                    }
+
+                    // Fusion des logs (Journal, Mois, Semaine)
+
+                    if (oldData.daily || oldData.dailyLogs) merged.daily = {...(oldData.daily || oldData.dailyLogs), ...merged.daily};
+
+                    if (oldData.monthly || oldData.monthlyData) merged.monthly = {...(oldData.monthly || oldData.monthlyData), ...merged.monthly};
+
+                    if (oldData.weekly || oldData.weeklyRituals) merged.weekly = {...(oldData.weekly || oldData.weeklyRituals), ...merged.weekly};
+
+                }
+
+            });
+
+
+
+            return merged;
+
+        }
+
+
+
+        let state = initData();
+
+        let currentDay = new Date().toISOString().split('T')[0];
+
+        let currentMonth = currentDay.substring(0, 7);
+
+        let selectedEmoji = null;
+
+
+
+        function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+        function saveG(key, val) { state.global[key] = val; save(); }
+
+
+
+        function getWeekID(date) {
+
+            let d = new Date(date);
+
+            let day = d.getDay();
+
+            let diff = d.getDate() - day + (day === 0 ? -6 : 1);
+
+            let monday = new Date(d.setDate(diff));
+
+            return monday.toISOString().split('T')[0];
+
+        }
+
+
+
+        function renderWheelSVG() {
+
+            const cats = Object.keys(state.wheel);
+
+            const center = 150, radius = 100;
+
+            let points = [], grid = "";
+
+            cats.forEach((cat, i) => {
+
+                const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
+
+                const val = state.wheel[cat];
+
+                const x = center + (radius * val / 10) * Math.cos(angle);
+
+                const y = center + (radius * val / 10) * Math.sin(angle);
+
+                points.push(`${x},${y}`);
+
+                const tx = center + (radius + 35) * Math.cos(angle);
+
+                const ty = center + (radius + 35) * Math.sin(angle);
+
+                grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="10" font-weight="bold" fill="#6366f1">${cat}</text>`;
+
+                grid += `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="#E2E8F0" stroke-width="1"/>`;
+
+            });
+
+            return `<svg viewBox="0 0 300 300" class="w-full max-w-sm mx-auto">
+
+                ${grid}
+
+                <polygon points="${points.join(' ')}" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+
+            </svg>`;
+
+        }
+
+
+
+        const pages = {
+
+            cover: () => `
+                <div class="text-center py-10">
+                    <h1 class="serif text-9xl font-bold text-indigo-950 mb-2">2026</h1>
+                    <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
+                    <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white paper-effect">
+                        <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6 font-bold">Ma Pensée Maîtresse</label>
+                        <textarea oninput="saveG('coverThought', this.value)" 
+    class="w-full bg-transparent border-none text-center focus:ring-0 handwritten text-indigo-900" 
+    rows="4">${state.global.coverThought || ''}</textarea>
+                    </div>
+                </div>`,
+
+
+
+            december: () => `
+
+                <h2 class="serif text-3xl mb-8 text-center text-indigo-900">Décembre 2025</h2>
+
+                <div class="grid gap-8">
+
+                    <div class="p-8 rounded-[2.5rem] bg-white/40 border border-white shadow-sm">
+
+                        <label class="serif text-xl italic text-indigo-700 block mb-4">Réflexion & Vision</label>
+
+                        <textarea oninput="saveG('decRef', this.value)" class="w-full h-48 bg-transparent border-none focus:ring-0 text-gray-700">${state.global.decRef || ''}</textarea>
+
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+
+                        <div class="p-8 rounded-[2.5rem] bg-[#D9C1EB]/30 border border-white">
+
+                            <label class="font-bold text-xs uppercase mb-4 block">Intentions 2026</label>
+
+                            <textarea oninput="saveG('decInt', this.value)" class="w-full h-40 bg-transparent border-none">${state.global.decInt || ''}</textarea>
+
+                        </div>
+
+                        <div class="p-8 rounded-[2.5rem] bg-[#BFD8EB]/30 border border-white">
+
+                            <label class="font-bold text-xs uppercase mb-4 block">Objectifs 2026</label>
+
+                            <textarea oninput="saveG('decGoals', this.value)" class="w-full h-40 bg-transparent border-none">${state.global.decGoals || ''}</textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>`,
+
+
+
+            'q-focus': () => `
+
+                <h2 class="serif text-3xl text-center mb-10 text-indigo-900 font-bold uppercase">Focus Trimestriel</h2>
+
+                <div class="grid md:grid-cols-3 gap-6">
+
+                    ${[1,2,3].map(i => `
+
+                        <div class="p-8 rounded-[3rem] border border-white bg-white/50 shadow-lg relative overflow-hidden">
+
+                            <div class="absolute -top-4 -right-4 w-16 h-16 bg-indigo-50 rounded-full"></div>
+
+                            <h3 class="serif text-2xl mb-6 text-indigo-800 italic">Trimestre ${i}</h3>
+
+                            <textarea oninput="saveG('q${i}', this.value)" class="w-full h-64 bg-transparent border-none text-sm leading-relaxed" placeholder="Vos objectifs...">${state.global['q'+i] || ''}</textarea>
+
+                        </div>`).join('')}
+
+                </div>`,
+
+
+
+            monthly: () => {
+
+                const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
+
+                const totalChecked = data.checks.filter(c => c).length;
+
+                const progress = (totalChecked / 4) * 100;
+
+                
+
+                // --- CORRECTION LOGIQUE TEMPS ---
+
+                const now = new Date();
+
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                const [y, m] = currentMonth.split('-').map(Number);
+
+                const lastDayOfMonth = new Date(y, m, 0); 
+
+                
+
+                // Calcul de la différence en jours
+
+                const diffTime = lastDayOfMonth - today;
+
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+
+
+                return `
+
+                <div class="flex flex-col items-center mb-10 text-center animate-fade-in">
+
+                    <h2 class="serif text-4xl mb-4 text-indigo-950 font-bold">Focus Mensuel</h2>
+
+                    <input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" 
+
+                           class="p-2 glass rounded-xl font-bold text-indigo-600 no-print cursor-pointer border-none shadow-sm">
+
+                </div>
+
+                
+
+                <div class="max-w-xl mx-auto mb-12 bg-white/40 p-8 rounded-[3rem] border border-white shadow-sm">
+
+                    <div class="flex justify-between items-end mb-4 px-2">
+
+                        <div>
+
+                            <span class="text-[10px] font-black uppercase text-indigo-400 block tracking-widest">Progression</span>
+
+                            <span class="serif text-4xl italic text-indigo-600">${progress}%</span>
+
+                        </div>
+
+                        <div class="text-right">
+
+                            <span class="text-[10px] font-black uppercase text-rose-400 block tracking-widest">Temps</span>
+
+                            <span class="font-bold text-slate-600 text-lg">
+
+                                ${diffDays > 0 ? diffDays + ' jours restants' : (diffDays === 0 ? "C'est aujourd'hui !" : "Mois passé")}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="w-full h-4 bg-gray-200/50 rounded-full overflow-hidden border border-white">
+
+                        <div class="h-full bg-indigo-500 transition-all duration-1000 ease-out" style="width: ${progress}%"></div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="grid md:grid-cols-2 gap-6">
+
+                    ${['Créativité', 'Santé', 'Famille & Foi', 'Notes'].map((item, i) => `
+
+                        <div class="p-8 rounded-[3rem] border border-white shadow-sm flex items-start gap-5 transition-all ${data.checks[i] ? 'bg-indigo-50/60' : 'bg-white/40'}">
+
+                            <input type="checkbox" onchange="toggleMonthly(${i})" ${data.checks[i] ? 'checked' : ''} 
+
+                                   class="mt-1 w-7 h-7 rounded-full text-indigo-600 cursor-pointer">
+
+                            <div class="flex-1">
+
+                                <label class="text-[10px] font-black text-indigo-300 uppercase block mb-1">${item}</label>
+
+                                <input type="text" oninput="updateMonthlyText(${i}, this.value)" 
+
+                                       value="${data.texts[i] || ''}" 
+
+                                       class="w-full bg-transparent border-none p-0 text-xl font-medium focus:ring-0 text-indigo-900 placeholder-indigo-200" 
+
+                                       placeholder="Inscrire ici...">
+
+                            </div>
+
+                        </div>`).join('')}
+
+                </div>`;
+
+            },
+
+
+
+            weekly: () => {
+
+                const wkID = getWeekID(currentDay);
+
+                const wData = state.weekly[wkID] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[], reflection: "" };
+
+                const days = [
+
+                    {label: 'Lun', key: 'Mon'}, {label: 'Mar', key: 'Tue'}, {label: 'Mer', key: 'Wed'},
+
+                    {label: 'Jeu', key: 'Thu'}, {label: 'Ven', key: 'Fri'}, {label: 'Sam', key: 'Sat'}, {label: 'Dim', key: 'Sun'}
+
+                ];
+
+
+
+                return `
+
+                <h2 class="serif text-4xl text-center mb-2 text-indigo-950 font-bold">Rituels Hebdo</h2>
+
+                <p class="text-center text-indigo-400 font-black uppercase text-[10px] tracking-widest mb-10">Semaine du ${wkID}</p>
+
+                
+
+                <div class="grid lg:grid-cols-2 gap-10 mb-10">
+
+                    <div class="space-y-4">
+
+                        ${days.map(d => `
+
+                            <div class="flex items-center gap-4 group">
+
+                                <span class="w-12 text-[10px] font-black text-indigo-300 uppercase">${d.label}</span>
+
+                                <div onclick="addEmoji('${d.key}')" 
+
+                                     class="flex-1 min-h-[64px] glass rounded-2xl border-2 border-dashed border-indigo-100 flex flex-wrap items-center px-4 py-2 gap-2 cursor-pointer hover:border-indigo-400 transition-all shadow-sm">
+
+                                    ${(wData[d.key] || []).map((s, i) => `
+
+                                        <span onclick="remEmoji('${d.key}',${i});event.stopPropagation()" 
+
+                                              class="text-3xl hover:scale-120 transition-transform">${s}</span>
+
+                                    `).join('')}
+
+                                    ${(wData[d.key] || []).length === 0 ? '<span class="text-indigo-200 text-xs italic">Ajouter...</span>' : ''}
+
+                                </div>
+
+                            </div>`).join('')}
+
+                    </div>
+
+                    <div class="bg-white/40 p-8 rounded-[3rem] border border-white flex flex-col shadow-sm">
+
+                        <label class="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4 block italic text-center">Bilan & Gratitude</label>
+
+                        <textarea oninput="updateWeeklyRef('${wkID}', this.value)" 
+
+                                  class="flex-1 w-full bg-transparent border-none focus:ring-0 text-gray-700 italic text-lg leading-relaxed" 
+
+                                  placeholder="Écrivez vos victoires de la semaine...">${wData.reflection || ''}</textarea>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="glass p-6 rounded-[2.5rem] flex flex-wrap justify-center gap-6 no-print shadow-inner border border-white">
+
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '🍎', '🧘'].map(s => `
+
+                        <button onclick="pickEmoji('${s}', this)" 
+
+                                class="emoji-btn text-4xl p-2 rounded-xl hover:bg-white transition-all duration-200 ${selectedEmoji === s ? 'bg-white shadow-md scale-110 ring-2 ring-indigo-200' : ''}">
+
+                            ${s}
+
+                        </button>`).join('')}
+
+                </div>`;
+
+            },
+
+
+
+            daily: () => {
+
+                const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
+
+                const allDates = Object.keys(state.daily).sort().filter(date => date < currentDay);
+
+                const lastDate = allDates.length > 0 ? allDates[allDates.length - 1] : null;
+
+                const lastNote = lastDate ? state.daily[lastDate].note : "Commencez votre voyage...";
+
+
+
+                return `
+
+                <div class="flex justify-between items-center mb-10"><h2 class="serif text-4xl text-indigo-950 font-bold">Journal du Jour</h2><input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl"></div>
+
+                <div class="grid md:grid-cols-2 gap-10 mb-16">
+
+                    <div class="space-y-8 glass p-10 rounded-[3rem] border border-white">
+
+                        ${['Energie', 'Mouvement', 'Prière', 'Connexion'].map((k, i) => {
+
+                            const keys = ['energy', 'move', 'pray', 'conn'];
+
+                            return `<div><label class="uppercase text-[10px] font-black text-indigo-400 block mb-2">${k}</label><input type="range" value="${d[keys[i]]}" onchange="updateDaily('${keys[i]}', this.value)"></div>`;
+
+                        }).join('')}
+
+                    </div>
+
+                    <textarea oninput="updateDaily('note', this.value)" 
+            class="w-full h-[550px] p-12 rounded-[2rem] focus:ring-2 focus:ring-amber-200 outline-none paper-effect handwritten shadow-inner transition-all" 
+            placeholder="Écrivez ici...">${d.note || ""}</textarea>
+
+                </div>
+
+                <div class="mt-10 p-10 rounded-[3rem] bg-[#f4f1ea] border-l-8 border-indigo-200 shadow-md relative">
+
+                    <div class="absolute top-4 right-8 opacity-10 font-black text-6xl serif">2026</div>
+
+                    <label class="block text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6 italic">Souvenir du ${lastDate || 'passé'}</label>
+
+                    <p class="handwritten text-3xl text-slate-600 leading-relaxed italic">"${lastNote}"</p>
+
+                </div>`;
+
+            },
+
+
+
+            emotional: () => `
+
+                <h2 class="serif text-4xl text-center mb-10">Succès Émotionnel</h2>
+
+                <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 glass p-10 rounded-[4rem]">
+
+                    <div id="wheel-container">${renderWheelSVG()}</div>
+
+                    <div class="grid grid-cols-2 gap-4">
+
+                        ${Object.keys(state.wheel).map(cat => `<div class="p-4 glass rounded-2xl"><label class="text-[9px] font-bold uppercase block">${cat}</label><input type="range" min="1" max="10" value="${state.wheel[cat]}" oninput="updateWheel('${cat}', this.value)"></div>`).join('')}
+
+                    </div>
+
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+
+                    <div class="p-8 glass rounded-3xl">
+
+                        <label class="block text-xs font-bold mb-4 uppercase">Gratitude</label>
+
+                        <textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none serif italic text-2xl focus:ring-0" rows="3">${state.global.grat || ''}</textarea>
+
+                    </div>
+
+                    <div class="p-8 glass rounded-3xl">
+
+                        <label class="block text-xs font-bold mb-4 uppercase">Affirmation</label>
+
+                        <input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none text-xl font-bold text-indigo-600 focus:ring-0">
+
+                    </div>
+
+                </div>`
+
         };
-        reader.readAsText(file);
-    };
-    input.click();
-}
+
+
+
+        // --- Fonctions de Navigation et Action ---
+
+        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); if (window.lucide) lucide.createIcons(); }
+
+        
+
+        function updateWheel(cat, val) { state.wheel[cat] = parseInt(val); save(); document.getElementById('wheel-container').innerHTML = renderWheelSVG(); }
+
+        
+
+        function toggleMonthly(i) { 
+
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+
+            state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; 
+
+            save(); showPage('monthly'); 
+
+        }
+
+
+
+        function updateMonthlyText(i, v) { 
+
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+
+            state.monthly[currentMonth].texts[i] = v; save(); 
+
+        }
+
+
+
+        function updateDaily(k, v) { 
+
+            if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""};
+
+            state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); save(); 
+
+            if(k !== 'note') showPage('daily'); 
+
+        }
+
+
+
+        function updateWeeklyRef(id, v) { 
+
+            if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+
+            state.weekly[id].reflection = v; save(); 
+
+        }
+
+
+
+        function pickEmoji(s, b) { 
+
+            selectedEmoji = s; 
+
+            document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md','ring-2','ring-indigo-200'));
+
+            b.classList.add('bg-white','shadow-md','ring-2','ring-indigo-200'); 
+
+        }
+
+
+
+        function addEmoji(day) { 
+
+            const wk = getWeekID(currentDay); 
+
+            if(!selectedEmoji) return;
+
+            if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+
+            state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); 
+
+        }
+
+
+
+        function remEmoji(day, i) { const wk = getWeekID(currentDay); state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
+
+
+
+        // --- IMPRESSION & APERÇU ---
+
+        function previewPrint() {
+
+            const modal = document.getElementById('print-modal');
+
+            const content = document.getElementById('print-content');
+
+            content.innerHTML = "";
+
+            ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(pageKey => {
+
+                const section = document.createElement('div');
+
+                section.className = "print-page glass mb-10 p-10 rounded-3xl";
+
+                section.innerHTML = pages[pageKey]();
+
+                content.appendChild(section);
+
+            });
+
+            modal.style.display = "block";
+
+            if (window.lucide) lucide.createIcons();
+
+        }
+
+
+
+        function closePreview() { document.getElementById('print-modal').style.display = "none"; }
+
+        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_Master_2026.json'; a.click(); }
+
+
+
+        window.onload = () => showPage('cover');
+
+    </script>
+
+</body>
+
+</html>
