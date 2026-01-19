@@ -26,29 +26,21 @@
 
         /* Style Écolier / Script */
 
-        .handwritten { font-family: 'Caveat', cursive; font-weight: 500; }
+        .handwritten { 
+    font-family: 'Great Vibes', cursive; 
+    font-weight: 400;
+    /* On augmente la taille car cette police est naturellement plus petite */
+    font-size: 2.8rem; 
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+}
 
-        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
-
-        .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
-
-        
-
-        /* Effet Papier Ligné */
-
-        .paper-effect {
-
-            background-color: #fdfaf0;
-
-            background-image: linear-gradient(#e1d9c3 1px, transparent 1px);
-
-            background-size: 100% 2.2rem;
-
-            line-height: 2.2rem;
-
-            padding-top: 0.5rem;
-
-        }
+/* On simplifie l'effet papier pour un look plus "Journal Intime" */
+.paper-effect {
+    background-color: #fdfaf0;
+    background-image: none; /* On enlève les lignes bleues d'écolier */
+    padding: 2rem;
+}
 
 
 
