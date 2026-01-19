@@ -1,185 +1,49 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Journal 2026 - Master</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root { --cream: #FFF5E1; }
-        body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
-        .serif { font-family: 'Playfair Display', serif; }
-        .handwritten { font-family: 'Caveat', cursive; font-weight: 500; }
-        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
-        .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
+// FONCTION : Exporter les données vers un fichier JSON
+function exportData() {
+    try {
+        const dataStr = JSON.stringify(state, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
         
-        .paper-effect {
-            background-color: #fdfaf0;
-            background-image: linear-gradient(#e1d9c3 1px, transparent 1px);
-            background-size: 100% 2.2rem;
-            line-height: 2.2rem;
-            padding-top: 0.5rem;
-        }
+        link.download = `Journal_Faith_2026_${date}.json`;
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    } catch (err) {
+        alert("Erreur lors de l'exportation : " + err);
+    }
+}
 
-        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
-        .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
-        
-        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; }
-        
-        @media print { 
-            .no-print { display: none !important; } 
-            body { overflow: visible !important; background: white; }
-            .glass { border: none; backdrop-filter: none; background: white; }
-            main { padding: 0; }
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col md:flex-row">
+// FONCTION : Importer les données depuis un fichier JSON
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    <div class="watercolor w-96 h-96 bg-blue-300 -top-20 -right-20"></div>
-    <div class="watercolor w-80 h-80 bg-purple-300 bottom-10 -left-20"></div>
-
-    <nav class="w-full md:w-80 glass border-r p-6 flex flex-col z-10 overflow-y-auto no-print h-screen">
-        <div class="mb-10 px-2">
-            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
-            <p class="text-[10px] tracking-[0.3em] uppercase text-indigo-500 font-black mt-1">Master Edition 2026</p>
-        </div>
-        <div class="flex-1 space-y-1">
-            <button onclick="showPage('cover')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="book-open" size="18"></i> Couverture</button>
-            <button onclick="showPage('december')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button>
-            <button onclick="showPage('q-focus')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="target" size="18"></i> Focus Trimestriel</button>
-            <button onclick="showPage('monthly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="calendar" size="18"></i> Focus Mensuel</button>
-            <button onclick="showPage('weekly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
-            <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
-            <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
-        </div>
-        <div class="mt-auto pt-6 border-t border-indigo-100 no-print">
-            <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-400"><i data-lucide="download" size="18"></i> Sauvegarder JSON</button>
-        </div>
-    </nav>
-
-    <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
-        <button onclick="window.print()" class="no-print absolute top-6 right-10 p-4 bg-white/60 hover:bg-white rounded-full shadow-lg text-indigo-600 transition-all z-20">
-            <i data-lucide="printer"></i>
-        </button>
-        <div id="content-container" class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
-    </main>
-
-    <script>
-        const STORAGE_KEY = 'faithJournal_Master_2026';
-
-        function initData() {
-            let merged = {
-                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "" },
-                daily: {}, monthly: {}, weekly: {},
-                wheel: { "Santé": 5, "Foi": 5, "Famille": 5, "Travail": 5, "Loisirs": 5, "Finance": 5, "Social": 5, "Mental": 5 }
-            };
-            const currentSaved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-            if (currentSaved) merged = { ...merged, ...currentSaved };
-            return merged;
-        }
-
-        let state = initData();
-        let currentDay = new Date().toISOString().split('T')[0];
-        let currentMonth = currentDay.substring(0, 7);
-        let selectedEmoji = null;
-
-        function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-        function saveG(key, val) { state.global[key] = val; save(); }
-
-        function renderWheelSVG() {
-            const cats = Object.keys(state.wheel);
-            const center = 150, radius = 100;
-            let points = [], grid = "";
-            cats.forEach((cat, i) => {
-                const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
-                const val = state.wheel[cat];
-                const x = center + (radius * val / 10) * Math.cos(angle);
-                const y = center + (radius * val / 10) * Math.sin(angle);
-                points.push(`${x},${y}`);
-                const tx = center + (radius + 35) * Math.cos(angle);
-                const ty = center + (radius + 35) * Math.sin(angle);
-                grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="10" font-weight="bold" fill="#6366f1">${cat}</text>`;
-                grid += `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="#E2E8F0" stroke-width="1"/>`;
-            });
-            return `<svg viewBox="0 0 300 300" class="w-full max-w-sm mx-auto">${grid}<polygon points="${points.join(' ')}" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/></svg>`;
-        }
-
-        const pages = {
-            cover: () => `
-                <div class="text-center py-10">
-                    <h1 class="serif text-9xl font-bold text-indigo-950 mb-2">2026</h1>
-                    <p class="text-2xl text-indigo-400 italic serif mb-12 uppercase tracking-widest">Mon Année d'Intention</p>
-                    <div class="max-w-lg mx-auto p-12 rounded-[3.5rem] bg-white/60 shadow-xl border border-white paper-effect">
-                        <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6 font-bold">Ma Pensée Maîtresse</label>
-                        <textarea oninput="saveG('coverThought', this.value)" class="w-full bg-transparent border-none text-center focus:ring-0 leading-relaxed handwritten text-4xl text-indigo-900 italic" rows="4">${state.global.coverThought || ''}</textarea>
-                    </div>
-                </div>`,
-
-            daily: () => {
-                const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
-                const allDates = Object.keys(state.daily).sort().filter(date => date < currentDay);
-                const lastDate = allDates.length > 0 ? allDates[allDates.length - 1] : null;
-                const lastNote = lastDate ? state.daily[lastDate].note : "Commencez votre voyage...";
-
-                return `
-                <div class="flex justify-between items-center mb-10"><h2 class="serif text-4xl text-indigo-950 font-bold">Journal du Jour</h2><input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl no-print"></div>
-                <div class="grid md:grid-cols-2 gap-10 mb-16">
-                    <div class="space-y-8 glass p-10 rounded-[3rem] border border-white">
-                        ${['Energie', 'Mouvement', 'Prière', 'Connexion'].map((k, i) => {
-                            const keys = ['energy', 'move', 'pray', 'conn'];
-                            return `<div><label class="uppercase text-[10px] font-black text-indigo-400 block mb-2 tracking-widest">${k}</label><input type="range" value="${d[keys[i]]}" onchange="updateDaily('${keys[i]}', this.value)"></div>`;
-                        }).join('')}
-                    </div>
-                    <textarea oninput="updateDaily('note', this.value)" 
-                        class="w-full h-[450px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-4xl text-indigo-900 shadow-inner italic" 
-                        placeholder="Cher journal...">${d.note || ""}</textarea>
-                </div>
-                <div class="mt-10 p-10 rounded-[3rem] bg-[#f4f1ea] border-l-8 border-indigo-200 shadow-md relative">
-                    <div class="absolute top-4 right-8 opacity-10 font-black text-6xl serif">2026</div>
-                    <label class="block text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-6 italic">Souvenir du ${lastDate || 'passé'}</label>
-                    <p class="handwritten text-3xl text-slate-600 leading-relaxed italic">"${lastNote}"</p>
-                </div>`;
-            },
-
-            emotional: () => `
-                <h2 class="serif text-4xl text-center mb-10 text-indigo-950 font-bold">Succès Émotionnel</h2>
-                <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 glass p-10 rounded-[4rem]">
-                    <div id="wheel-container">${renderWheelSVG()}</div>
-                    <div class="grid grid-cols-2 gap-4">
-                        ${Object.keys(state.wheel).map(cat => `<div class="p-4 glass rounded-2xl"><label class="text-[9px] font-bold uppercase block text-indigo-400">${cat}</label><input type="range" min="1" max="10" value="${state.wheel[cat]}" oninput="updateWheel('${cat}', this.value)"></div>`).join('')}
-                    </div>
-                </div>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="p-8 glass rounded-3xl"><label class="block text-xs font-bold mb-4 uppercase text-indigo-300">Gratitude Permanente</label><textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none handwritten text-4xl focus:ring-0 italic text-indigo-900" rows="3">${state.global.grat || ''}</textarea></div>
-                    <div class="p-8 glass rounded-3xl"><label class="block text-xs font-bold mb-4 uppercase text-indigo-300">Affirmation</label><input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none text-xl font-bold text-indigo-600 focus:ring-0"></div>
-                </div>`,
-
-            december: () => `<h2 class="serif text-3xl mb-8 text-center text-indigo-900 font-bold">Bilan Décembre</h2><div class="p-10 glass rounded-[3rem] shadow-xl"><textarea oninput="saveG('decRef', this.value)" class="w-full h-96 bg-transparent border-none focus:ring-0 handwritten text-4xl italic text-indigo-900" placeholder="Réflexions...">${state.global.decRef || ''}</textarea></div>`,
-            
-            'q-focus': () => `
-                <h2 class="serif text-3xl text-center mb-10 text-indigo-950 font-bold uppercase">Focus Trimestriel</h2>
-                <div class="grid md:grid-cols-3 gap-6">
-                    ${[1,2,3].map(i => `<div class="p-8 glass rounded-[2.5rem] shadow-lg border border-white"><h3 class="serif text-xl mb-4 italic text-indigo-600 font-bold">Trimestre ${i}</h3><textarea oninput="saveG('q${i}', this.value)" class="w-full h-64 bg-transparent border-none handwritten text-3xl focus:ring-0 italic text-indigo-900">${state.global['q'+i] || ''}</textarea></div>`).join('')}
-                </div>`,
-
-            monthly: () => `<div class="text-center py-20"><h2 class="serif text-4xl mb-4 text-indigo-900 font-bold">Focus Mensuel</h2><p class="text-indigo-400 italic">Configurez vos objectifs de ${currentMonth} ici.</p></div>`,
-            weekly: () => `<div class="text-center py-20"><h2 class="serif text-4xl mb-4 text-indigo-900 font-bold">Rituels Hebdo</h2><p class="text-indigo-400 italic">Suivez vos habitudes de la semaine.</p></div>`
+        const reader = new FileReader();
+        reader.onload = event => {
+            try {
+                const importedData = JSON.parse(event.target.result);
+                
+                // Confirmation avant d'écraser
+                if (confirm("Voulez-vous remplacer vos données actuelles par celles de ce fichier ?")) {
+                    state = importedData;
+                    save(); // Sauvegarde dans le LocalStorage
+                    showPage('cover'); // Rafraîchit l'affichage
+                    alert("Journal chargé avec succès !");
+                }
+            } catch (err) {
+                alert("Erreur : Le fichier n'est pas un journal valide.");
+            }
         };
-
-        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); if (window.lucide) lucide.createIcons(); }
-        function updateWheel(cat, val) { state.wheel[cat] = parseInt(val); save(); document.getElementById('wheel-container').innerHTML = renderWheelSVG(); }
-        function updateDaily(k, v) { 
-            if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""};
-            state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); save(); 
-            if(k !== 'note') showPage('daily'); 
-        }
-        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_2026.json'; a.click(); }
-
-        window.onload = () => showPage('cover');
-    </script>
-</body>
-</html>
+        reader.readAsText(file);
+    };
+    input.click();
+}
