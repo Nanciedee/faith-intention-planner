@@ -41,24 +41,6 @@
         #wheel-container svg text {
             font-family: 'Lato', sans-serif;
         }
-        @media print {
-    /* Hide the sidebar and the active screen container */
-    .no-print { display: none !important; }
-    #content-container { display: none !important; }
-    
-    /* Show the print-all area and make it visible */
-    #print-all-area { 
-        display: block !important; 
-        width: 100%; 
-        background: white !important;
-    }
-    
-    /* Force a new piece of paper for every major section */
-    .print-page-break { 
-        page-break-after: always; 
-        padding: 40px; 
-    }
-}
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row">
@@ -80,14 +62,11 @@
             <button onclick="showPage('weekly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
             <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
             <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
-<button onclick="prepareAndPrint()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-600 font-bold">
-    <i data-lucide="printer" size="18"></i> Imprimer TOUT le journal
-</button>
         </div>
     </nav>
 
     <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
-        <div id="print-all-area" style="display:none;"></div>
+        <div id="content-container" class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
     </main>
 
     <script>
@@ -138,33 +117,7 @@ const progressToDash = (percent) => {
         save();
         document.getElementById('wheel-container').innerHTML = renderWheelSVG();
     }
-        
-function prepareAndPrint() {
-    const printArea = document.getElementById('print-all-area');
-    if (!printArea) return;
-    
-    // 1. Clear any previous print data
-    printArea.innerHTML = ''; 
-    
-    // 2. Define the order of pages you want to print
-    const pageOrder = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
-    
-    // 3. Loop through each page and "copy" its HTML into the print area
-    pageOrder.forEach(key => {
-        if (pages[key]) {
-            const section = document.createElement('div');
-            section.className = 'print-page-break';
-            // This runs the function for each page (e.g., pages.cover())
-            section.innerHTML = pages[key](); 
-            printArea.appendChild(section);
-        }
-    });
-    
-    // 4. Open the print dialog
-    setTimeout(() => { 
-        window.print(); 
-    }, 500); // Small delay to ensure icons/text are rendered
-}
+
     function renderWheelSVG() {
         const cats = Object.keys(state.wheel);
         const center = 150, radius = 100;
@@ -430,57 +383,20 @@ function prepareAndPrint() {
         </div>`;
     }
 };
-    // --- FONCTIONS ACTIONS (Modifiées pour être complètes) ---
-        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
-        function changeD(d) { currentDay = d; currentMonth = d.substring(0,7); showPage('daily'); }
-        function changeM(m) { currentMonth = m; showPage('monthly'); }
-        function upD(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
-        function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
-        function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
-        function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.style.background = 'transparent'); b.style.background = 'white'; }
-        function addEmoji(day) { const wk = getWeekRange(currentDay).id; if(selectedEmoji) { if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); } }
-        function remEmoji(day, i) { const wk = getWeekRange(currentDay).id; state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
+    // --- FONCTIONS ---
+    function save() { localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state)); }
+    function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
+    function saveG(k, v) { state.global[k] = v; save(); }
+    function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
+    function changeD(d) { currentDay = d; currentMonth = d.substring(0,7); showPage('daily'); }
+    function changeM(m) { currentMonth = m; showPage('monthly'); }
+    function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
+    function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
+    function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('sticker-selected')); b.classList.add('sticker-selected'); }
+    function addEmoji(day) { const wk = getWeekRange(currentDay).id; if(selectedEmoji) { if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); } }
+    function remEmoji(day, i) { const wk = getWeekRange(currentDay).id; state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
 
-        // --- SAUVEGARDE ET IMPRESSION ---
-        function exportData() {
-            const dataStr = JSON.stringify(state, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const dlAnchor = document.createElement('a');
-            dlAnchor.href = url;
-            dlAnchor.download = "journal_faith_2026.json";
-            dlAnchor.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importData(e) {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                try {
-                    const imported = JSON.parse(ev.target.result);
-                    if(confirm("Voulez-vous charger cette sauvegarde ? Les données actuelles seront remplacées.")) {
-                        state = imported; save(); location.reload();
-                    }
-                } catch(err) { alert("Fichier JSON invalide."); }
-            };
-            reader.readAsText(e.target.files[0]);
-        }
-
-        function prepareAndPrint() {
-            const printArea = document.getElementById('print-all-area');
-            printArea.innerHTML = '';
-            // Liste l'ordre des pages à générer pour l'impression
-            const pageOrder = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
-            pageOrder.forEach(key => {
-                const section = document.createElement('div');
-                section.className = 'print-page-break';
-                section.innerHTML = pages[key]();
-                printArea.appendChild(section);
-            });
-            setTimeout(() => { window.print(); }, 700);
-        }
-
-        window.onload = () => showPage('cover');
-    </script>
+    window.onload = () => showPage('cover');
+</script>
 </body>
 </html>
