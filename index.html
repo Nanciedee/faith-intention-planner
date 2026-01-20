@@ -1,43 +1,46 @@
 <!DOCTYPE html>
-
 <html lang="fr">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Faith & Intention Journal 2026 - Master</title>
-
+    <title>Faith & Intention Journal 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-
-        :root { --cream: #FFF5E1; }
-
+        :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
-
         .serif { font-family: 'Playfair Display', serif; }
-
-        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
-
         .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
-
-        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
-
+        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; }
         .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
+        .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
+        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        .handwritten { 
+            font-family: 'Great Vibes', cursive; 
+        }
 
-        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; width: 100%; }
+   .handwritten { 
+    font-family: 'Great Vibes', cursive; 
+    font-weight: 400;
+    /* On augmente la taille car cette police est naturellement plus petite */
+    font-size: 2.8rem; 
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+}
 
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; }
+/* On simplifie l'effet papier pour un look plus "Journal Intime" */
+.paper-effect {
+    background-color: #fdfaf0;
+    background-image: none; /* On enlève les lignes bleues d'écolier */
+    padding: 2rem;
+}
 
-        @media print { .no-print { display: none !important; } body { overflow: visible !important; } }
-
+        /* Style spécifique pour les textes de la roue */
+        #wheel-container svg text {
+            font-family: 'Lato', sans-serif;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row">
