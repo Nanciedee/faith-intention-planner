@@ -116,6 +116,17 @@
 
     <script>
     // --- MOTEUR DE RÉCUPÉRATION ---
+        function printAll() {
+        const container = document.getElementById('content-container');
+        const sections = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
+        let fullJournalHTML = "";
+        sections.forEach(id => {
+            fullJournalHTML += `<div class="print-page-break">${pages[id]()}</div>`;
+        });
+        container.innerHTML = fullJournalHTML;
+        lucide.createIcons();
+        setTimeout(() => { window.print(); location.reload(); }, 1000);
+    }
     function initData() {
         const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
         let merged = {
