@@ -159,39 +159,34 @@ const progressToDash = (percent) => {
         </svg>`;
     }
         
-function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "mon_journal_2026.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-}
-        function importData() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    
-    input.onchange = e => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = event => {
-            try {
-                const importedData = JSON.parse(event.target.result);
-                // On remplace les données actuelles par celles du fichier
-                state = importedData;
-                // On enregistre dans la mémoire du navigateur
-                save(); 
-                // On recharge la page pour tout mettre à jour visuellement
-                location.reload();
-                alert("Journal chargé avec succès !");
-            } catch (err) {
-                alert("Erreur : Le fichier n'est pas un journal valide.");
-            }
+function importData() {
+        console.log("Fonction importData appelée");
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    state = JSON.parse(ev.target.result);
+                    localStorage.setItem('faithJournal_2026_Master', JSON.stringify(state));
+                    location.reload();
+                } catch (err) {
+                    alert("Fichier invalide");
+                }
+            };
+            reader.readAsText(e.target.files[0]);
         };
+        input.click();
+    }
+
+    function exportData() {
+        const blob = new Blob([JSON.stringify(state)], {type: 'application/json'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'Journal_2026.json';
+        a.click();
+    }
         
    const pages = {
     // --- PAGE COUVERTURE ---
