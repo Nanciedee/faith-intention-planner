@@ -50,19 +50,17 @@
     <div class="watercolor w-64 h-64 bg-pink-200 top-1/2 left-1/4"></div>
 
     <nav class="w-full md:w-80 glass border-r p-6 flex flex-col z-10 overflow-y-auto no-print">
-        <div class="mb-10">
-            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
-            <p class="text-[10px] tracking-[0.3em] uppercase text-indigo-500 font-bold">Journal 2026</p>
-        </div>
-        <div class="flex-1 space-y-1">
-            <button onclick="showPage('cover')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="book-open" size="18"></i> Couverture</button>
-            <button onclick="showPage('december')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button>
-            <button onclick="showPage('q-focus')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="target" size="18"></i> Focus Trimestriel</button>
-            <button onclick="showPage('monthly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="calendar" size="18"></i> Focus Mensuel</button>
-            <button onclick="showPage('weekly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
-            <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
-            <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
-        </div>
+        <div class="pt-6 mt-6 border-t border-indigo-100 space-y-2">
+    <button onclick="window.print()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-600 font-bold">
+        <i data-lucide="printer" size="18"></i> Imprimer le Journal
+    </button>
+    <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-emerald-600 font-bold">
+        <i data-lucide="download" size="18"></i> Sauvegarder (Fichier)
+    </button>
+    <button onclick="importData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-amber-600 font-bold">
+        <i data-lucide="upload" size="18"></i> Restaurer
+    </button>
+</div>
     </nav>
 
     <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
