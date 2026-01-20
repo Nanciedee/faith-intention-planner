@@ -79,61 +79,14 @@
     </nav>
 
     <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
-    <button onclick="printAll()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-600 font-bold">
-    <i data-lucide="printer" size="18"></i> Imprimer le Livre Complet
-</button>
+    <button onclick="window.print()" class="no-print absolute top-6 right-10 p-4 bg-white/60 hover:bg-white rounded-full shadow-lg text-indigo-600 transition-all z-20">
         <i data-lucide="printer"></i>
     </button>
     <div id="content-container" class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
     </main>
-    function printAll() {
-    const container = document.getElementById('content-container');
-    // On prépare une liste de toutes les pages à la suite
-    const sections = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
-    
-    let fullJournalHTML = "";
-    
-    // On génère le contenu de chaque page
-    sections.forEach(pageId => {
-        fullJournalHTML += `<div class="print-page-break" style="margin-bottom: 50px;">
-                                ${pages[pageId]()}
-                            </div>`;
-    });
-
-    // On remplace le contenu actuel par tout le journal
-    container.innerHTML = fullJournalHTML;
-    
-    // On demande à Lucide de générer les icônes pour les nouvelles pages injectées
-    lucide.createIcons();
-
-    // On lance l'impression après un petit délai pour le rendu
-    setTimeout(() => {
-        window.print();
-        // Optionnel : on recharge la page pour revenir à l'état normal
-        location.reload();
-    }, 1000);
-}
 
     <script>
     // --- MOTEUR DE RÉCUPÉRATION ---
-        function printAll() {
-        const container = document.getElementById('content-container');
-        const sections = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
-        let fullJournalHTML = "";
-        
-        sections.forEach(id => {
-            // Le style ici assure que chaque partie commence sur une nouvelle page à l'impression
-            fullJournalHTML += `<div class="print-page-break" style="margin-bottom: 50px;">${pages[id]()}</div>`;
-        });
-
-        container.innerHTML = fullJournalHTML;
-        lucide.createIcons();
-
-        setTimeout(() => {
-            window.print();
-            location.reload(); 
-        }, 1000);
-    }
     function initData() {
         const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
         let merged = {
@@ -447,71 +400,141 @@ const progressToDash = (percent) => {
             </div>
         </div>
         <div class="grid md:grid-cols-2 gap-8">
-            <div class="p-12 rounded-[3.5rem] paper-effect shadow-lg relative min-h-[380px] flex flex-col">
-                <span class="absolute top-8 left-12 text-[10px] font-black uppercase text-amber-600/50 tracking-[0.3em]">Gratitude</span>
-                <textarea oninput="state.global.grat=this.value; save()" 
-                    class="w-full flex-1 bg-transparent border-none handwritten text-4xl text-indigo-900 focus:ring-0 mt-8 resize-none leading-relaxed">${state.global.grat || ''}</textarea>
+            <div class="p-10 rounded-[3.5rem] paper-effect shadow-lg relative min-h-[250px]">
+                <span class="absolute top-6 left-10 text-[9px] font-black uppercase text-amber-600/50 tracking-widest">Gratitude</span>
+                <textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none handwritten text-4xl text-indigo-900 focus:ring-0 mt-4 overflow-hidden" rows="3">${state.global.grat || ''}</textarea>
             </div>
-            
-            <div class="p-12 rounded-[3.5rem] bg-gradient-to-br from-indigo-900 to-indigo-950 shadow-2xl relative min-h-[380px] flex flex-col justify-center text-center">
-                <span class="absolute top-8 left-0 right-0 text-[10px] font-black uppercase text-amber-200/40 tracking-[0.4em]">Mon Affirmation</span>
-                <textarea oninput="state.global.aff=this.value; save()" 
-                    class="w-full bg-transparent border-none handwritten text-5xl text-amber-100 focus:ring-0 text-center resize-none leading-tight" 
-                    placeholder="Je suis...">${state.global.aff || ''}</textarea>
+            <div class="p-10 rounded-[3.5rem] bg-gradient-to-br from-indigo-900 to-indigo-950 flex flex-col justify-center text-center">
+                <span class="text-[9px] font-black uppercase text-amber-200/40 mb-4 tracking-[0.4em]">Mon Affirmation</span>
+                <input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none handwritten text-5xl text-amber-100 focus:ring-0 text-center" placeholder="Je suis la paix">
             </div>
         </div>`;
     }
 };
-// --- 4. FONCTIONS TECHNIQUES ---
-    function save() { localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state)); }
-    function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
-    function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
-    function changeD(d) { currentDay = d; showPage('daily'); }
-    function changeM(m) { currentMonth = m; showPage('monthly'); }
-    function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
-    function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
-    function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('sticker-selected')); b.classList.add('sticker-selected'); }
-    function addEmoji(day) { const wk = getWeekRange(currentDay).id; if(selectedEmoji) { if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); } }
-    function remEmoji(day, i) { const wk = getWeekRange(currentDay).id; state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
-    function updateWheel(cat, val) { state.wheel[cat] = parseInt(val); save(); document.getElementById('wheel-container').innerHTML = renderWheelSVG(); }
-    
-    function renderWheelSVG() {
-        const cats = Object.keys(state.wheel); const center = 150, radius = 100;
-        let points = [], grid = "";
-        [2, 4, 6, 8, 10].forEach(r => { grid += `<circle cx="${center}" cy="${center}" r="${radius * r / 10}" fill="none" stroke="rgba(184,134,11,0.15)"/>`; });
-        cats.forEach((cat, i) => {
-            const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
-            const val = state.wheel[cat];
-            const x = center + (radius * val / 10) * Math.cos(angle); const y = center + (radius * val / 10) * Math.sin(angle);
-            points.push(`${x},${y}`);
-            grid += `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="rgba(184,134,11,0.1)"/>`;
-            grid += `<text x="${center + (radius + 35) * Math.cos(angle)}" y="${center + (radius + 35) * Math.sin(angle)}" text-anchor="middle" font-size="9" fill="#312e81">${cat}</text>`;
-        });
-        return `<svg viewBox="0 0 300 300" class="w-full max-w-sm mx-auto"><polygon points="${points.join(' ')}" fill="rgba(184,134,11,0.25)" stroke="#B8860B" stroke-width="2"/>${grid}</svg>`;
-    }
+        // --- Fonctions de Navigation et Action ---
 
-    function getWeekRange(date) {
-        let d = new Date(date); let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1);
-        let start = new Date(d.setDate(diff)), end = new Date(d.setDate(start.getDate() + 6));
-        return { id: `${start.getFullYear()}-W${Math.ceil(diff/7)}`, display: `Du ${start.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})} au ${end.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}` };
-    }
+        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); if (window.lucide) lucide.createIcons(); }
 
-    function exportData() {
-        const dataStr = JSON.stringify(state, null, 2);
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `mon-journal-2026.json`; link.click();
-    }
+        
 
-    function importData() {
-        const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
-        input.onchange = e => {
-            const reader = new FileReader(); reader.onload = event => { state = JSON.parse(event.target.result); save(); location.reload(); };
-            reader.readAsText(e.target.files[0]);
-        };
-        input.click();
-    }
+        function updateWheel(cat, val) { state.wheel[cat] = parseInt(val); save(); document.getElementById('wheel-container').innerHTML = renderWheelSVG(); }
 
-    window.onload = () => showPage('cover');
+        
+
+        function toggleMonthly(i) { 
+
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+
+            state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; 
+
+            save(); showPage('monthly'); 
+
+        }
+
+
+
+        function updateMonthlyText(i, v) { 
+
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+
+            state.monthly[currentMonth].texts[i] = v; save(); 
+
+        }
+
+
+
+        function updateDaily(k, v) { 
+
+            if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""};
+
+            state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); save(); 
+
+            if(k !== 'note') showPage('daily'); 
+
+        }
+
+
+
+        function updateWeeklyRef(id, v) { 
+
+            if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+
+            state.weekly[id].reflection = v; save(); 
+
+        }
+
+
+
+        function pickEmoji(s, b) { 
+
+            selectedEmoji = s; 
+
+            document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md','ring-2','ring-indigo-200'));
+
+            b.classList.add('bg-white','shadow-md','ring-2','ring-indigo-200'); 
+
+        }
+
+
+
+        function addEmoji(day) { 
+
+            const wk = getWeekID(currentDay); 
+
+            if(!selectedEmoji) return;
+
+            if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+
+            state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); 
+
+        }
+
+
+
+        function remEmoji(day, i) { const wk = getWeekID(currentDay); state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
+
+
+
+        // --- IMPRESSION & APERÇU ---
+
+        function previewPrint() {
+
+            const modal = document.getElementById('print-modal');
+
+            const content = document.getElementById('print-content');
+
+            content.innerHTML = "";
+
+            ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(pageKey => {
+
+                const section = document.createElement('div');
+
+                section.className = "print-page glass mb-10 p-10 rounded-3xl";
+
+                section.innerHTML = pages[pageKey]();
+
+                content.appendChild(section);
+
+            });
+
+            modal.style.display = "block";
+
+            if (window.lucide) lucide.createIcons();
+
+        }
+
+
+
+        function closePreview() { document.getElementById('print-modal').style.display = "none"; }
+
+        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_Master_2026.json'; a.click(); }
+
+
+
+        window.onload = () => showPage('cover');
+
     </script>
+
 </body>
+
 </html>
