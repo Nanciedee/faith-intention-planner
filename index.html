@@ -261,22 +261,27 @@
 
     // --- PAGE JOURNAL QUOTIDIEN ---
     daily: () => {
-        const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
-        return `
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="serif text-4xl text-indigo-950 font-bold italic">Journal Intime</h2>
-            <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl no-print text-indigo-600 font-bold border-none outline-none">
+    const d = state.daily[currentDay] || { energy:50, move:50, pray:50, conn:50, note: "" };
+
+    return `
+    <div class="flex justify-between items-center mb-10">
+        <h2 class="serif text-4xl text-indigo-950 font-bold italic">Journal Intime</h2>
+        <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl no-print text-indigo-600 font-bold border-none outline-none">
+    </div>
+    <div class="grid md:grid-cols-2 gap-10 mb-10">
+        <div class="space-y-8 glass p-10 rounded-[3rem] border border-white/60">
+            ${['Énergie', 'Mouvement', 'Prière', 'Connexion'].map((k, i) => {
+                const keys = ['energy', 'move', 'pray', 'conn'];
+                return `<div><label class="uppercase text-[10px] font-black text-indigo-400 block mb-2 tracking-[0.2em]">${k}</label><input type="range" value="${d[keys[i]]}" onchange="updateDaily('${keys[i]}', this.value)" class="w-full accent-indigo-500"></div>`;
+            }).join('')}
         </div>
-        <div class="grid md:grid-cols-2 gap-10 mb-10">
-            <div class="space-y-8 glass p-10 rounded-[3rem] border border-white/60">
-                ${['Énergie', 'Mouvement', 'Prière', 'Connexion'].map((k, i) => {
-                    const keys = ['energy', 'move', 'pray', 'conn'];
-                    return `<div><label class="uppercase text-[10px] font-black text-indigo-400 block mb-2 tracking-[0.2em]">${k}</label><input type="range" value="${d[keys[i]]}" onchange="updateDaily('${keys[i]}', this.value)" class="w-full accent-indigo-500"></div>`;
-                }).join('')}
-            </div>
-            <textarea oninput="updateDaily('note', this.value)" class="w-full h-[500px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-indigo-950 shadow-inner resize-none" placeholder="Commencez à écrire ici...">${d.note || ""}</textarea>
-        </div>`;
-    },
+        
+        <textarea oninput="updateDaily('note', this.value)" 
+            class="w-full h-[500px] p-10 rounded-[3rem] border-none focus:ring-0 paper-effect handwritten text-xl text-indigo-950 shadow-inner resize-none leading-relaxed" 
+            placeholder="Commencez à écrire ici...">${d.note || ""}</textarea>
+    </div>
+    `;
+}
 
     // --- PAGE SUCCÈS ÉMOTIONNEL ---
     emotional: () => {
