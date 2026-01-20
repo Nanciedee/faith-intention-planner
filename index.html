@@ -120,12 +120,19 @@
         const container = document.getElementById('content-container');
         const sections = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
         let fullJournalHTML = "";
+        
         sections.forEach(id => {
-            fullJournalHTML += `<div class="print-page-break">${pages[id]()}</div>`;
+            // Le style ici assure que chaque partie commence sur une nouvelle page à l'impression
+            fullJournalHTML += `<div class="print-page-break" style="margin-bottom: 50px;">${pages[id]()}</div>`;
         });
+
         container.innerHTML = fullJournalHTML;
         lucide.createIcons();
-        setTimeout(() => { window.print(); location.reload(); }, 1000);
+
+        setTimeout(() => {
+            window.print();
+            location.reload(); 
+        }, 1000);
     }
     function initData() {
         const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
