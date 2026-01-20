@@ -537,7 +537,33 @@ const progressToDash = (percent) => {
 
         function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_Master_2026.json'; a.click(); }
 
-
+// --- FONCTION D'IMPORTATION MANQUANTE ---
+    function importData() {
+        // Crée un sélecteur de fichier invisible
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = event => {
+                try {
+                    const importedState = JSON.parse(event.target.result);
+                    // On fusionne ou remplace l'état actuel
+                    state = importedState;
+                    save(); // On enregistre dans le navigateur
+                    location.reload(); // On recharge pour afficher les nouvelles données
+                    alert("Journal chargé avec succès !");
+                } catch (err) {
+                    alert("Erreur : Le fichier n'est pas un journal valide.");
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    }
 
         window.onload = () => showPage('cover');
 
