@@ -430,19 +430,17 @@ function prepareAndPrint() {
         </div>`;
     }
 };
-    // --- FONCTIONS ---
-    function save() { localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state)); }
-    function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
-    function saveG(k, v) { state.global[k] = v; save(); }
-    function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
-    function changeD(d) { currentDay = d; currentMonth = d.substring(0,7); showPage('daily'); }
-    function changeM(m) { currentMonth = m; showPage('monthly'); }
-    function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
-    function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
-    function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('sticker-selected')); b.classList.add('sticker-selected'); }
-    function addEmoji(day) { const wk = getWeekRange(currentDay).id; if(selectedEmoji) { if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); } }
-    function remEmoji(day, i) { const wk = getWeekRange(currentDay).id; state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
-        
+    // --- FONCTIONS ACTIONS (Modifiées pour être complètes) ---
+        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
+        function changeD(d) { currentDay = d; currentMonth = d.substring(0,7); showPage('daily'); }
+        function changeM(m) { currentMonth = m; showPage('monthly'); }
+        function upD(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
+        function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
+        function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
+        function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.style.background = 'transparent'); b.style.background = 'white'; }
+        function addEmoji(day) { const wk = getWeekRange(currentDay).id; if(selectedEmoji) { if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); } }
+        function remEmoji(day, i) { const wk = getWeekRange(currentDay).id; state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
+
         // --- SAUVEGARDE ET IMPRESSION ---
         function exportData() {
             const dataStr = JSON.stringify(state, null, 2);
@@ -482,7 +480,7 @@ function prepareAndPrint() {
             setTimeout(() => { window.print(); }, 700);
         }
 
-    window.onload = () => showPage('cover');
-</script>
+        window.onload = () => showPage('cover');
+    </script>
 </body>
 </html>
