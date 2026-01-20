@@ -158,6 +158,44 @@ const progressToDash = (percent) => {
             <circle cx="${center}" cy="${center}" r="4" fill="#B8860B"/>
         </svg>`;
     }
+        // --- 1. FONCTION D'IMPRESSION TOTALE ---
+    function printAll() {
+        const container = document.getElementById('content-container');
+        const sections = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
+        let fullJournalHTML = "";
+        sections.forEach(id => {
+            fullJournalHTML += `<div class="print-page-break">${pages[id]()}</div>`;
+        });
+        container.innerHTML = fullJournalHTML;
+        lucide.createIcons();
+        setTimeout(() => { window.print(); location.reload(); }, 1000);
+    }
+
+    // --- 2. DONNÉES ET ÉTAT ---
+    function initData() {
+        const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vFinal'];
+        let merged = {
+            global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", q4: "", grat: "", aff: "", coverThought: "" },
+            daily: {}, monthly: {}, weekly: {},
+            wheel: { "Santé": 5, "Loisirs": 5, "Croissance": 5, "Finance": 5, "Carrière": 5, "Famille": 5, "Amour": 5, "Social": 5 }
+        };
+        keys.forEach(k => {
+            const d = JSON.parse(localStorage.getItem(k));
+            if (d) {
+                if (d.global) merged.global = {...merged.global, ...d.global};
+                if (d.daily) merged.daily = {...merged.daily, ...d.daily};
+                if (d.monthly) merged.monthly = {...merged.monthly, ...d.monthly};
+                if (d.weekly) merged.weekly = {...merged.weekly, ...d.weekly};
+                if (d.wheel) merged.wheel = {...merged.wheel, ...d.wheel};
+            }
+        });
+        return merged;
+    }
+
+    let state = initData();
+    let currentDay = new Date().toISOString().split('T')[0];
+    let currentMonth = currentDay.substring(0, 7);
+    let selectedEmoji = null;
 
    const pages = {
     // --- PAGE COUVERTURE ---
