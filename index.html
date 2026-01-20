@@ -404,7 +404,7 @@ const progressToDash = (percent) => {
                 <span class="absolute top-6 left-10 text-[9px] font-black uppercase text-amber-600/50 tracking-widest">Gratitude</span>
                 <textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none handwritten text-4xl text-indigo-900 focus:ring-0 mt-4 overflow-hidden" rows="3">${state.global.grat || ''}</textarea>
             </div>
-            <div class="p-10 rounded-[3.5rem] bg-gradient-to-br from-indigo-900 to-indigo-950 flex flex-col justify-center text-center">
+            <div class="p-6 md:p-10 rounded-[3.5rem] bg-gradient-to-br from-indigo-900 to-indigo-950 flex flex-col justify-center text-center min-h-[250px]">
                 <span class="text-[9px] font-black uppercase text-amber-200/40 mb-4 tracking-[0.4em]">Mon Affirmation</span>
                 <input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="w-full bg-transparent border-none handwritten text-5xl text-amber-100 focus:ring-0 text-center" placeholder="Je suis la paix">
             </div>
