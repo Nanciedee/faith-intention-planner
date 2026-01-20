@@ -12,39 +12,34 @@
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
         .serif { font-family: 'Playfair Display', serif; }
         .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
-        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
+        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; }
         .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; border: 2px solid white; }
-        
         .handwritten { 
             font-family: 'Great Vibes', cursive; 
-            font-weight: 400;
-            font-size: 2.8rem; 
-            line-height: 1.2;
-            letter-spacing: 0.5px;
         }
 
-        .paper-effect {
-            background-color: #fdfaf0;
-            background-image: none; 
-            padding: 2rem;
-        }
+   .handwritten { 
+    font-family: 'Great Vibes', cursive; 
+    font-weight: 400;
+    /* On augmente la taille car cette police est naturellement plus petite */
+    font-size: 2.8rem; 
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+}
 
+/* On simplifie l'effet papier pour un look plus "Journal Intime" */
+.paper-effect {
+    background-color: #fdfaf0;
+    background-image: none; /* On enlève les lignes bleues d'écolier */
+    padding: 2rem;
+}
+
+        /* Style spécifique pour les textes de la roue */
         #wheel-container svg text {
             font-family: 'Lato', sans-serif;
-        }
-
-        /* --- STYLE POUR L'IMPRESSION --- */
-        @media print {
-            .no-print { display: none !important; }
-            nav { display: none !important; }
-            body { background: white !important; overflow: visible !important; }
-            main { padding: 0 !important; overflow: visible !important; height: auto !important; }
-            .glass { border: none !important; box-shadow: none !important; backdrop-filter: none !important; }
-            #content-container { width: 100% !important; max-width: none !important; padding: 0 !important; }
-            .print-page-break { page-break-after: always; border-bottom: 1px solid #eee; padding-bottom: 2rem; }
         }
     </style>
 </head>
@@ -55,17 +50,19 @@
     <div class="watercolor w-64 h-64 bg-pink-200 top-1/2 left-1/4"></div>
 
     <nav class="w-full md:w-80 glass border-r p-6 flex flex-col z-10 overflow-y-auto no-print">
-        <div class="pt-6 mt-6 border-t border-indigo-100 space-y-2">
-    <button onclick="window.print()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-600 font-bold">
-        <i data-lucide="printer" size="18"></i> Imprimer le Journal
-    </button>
-    <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-emerald-600 font-bold">
-        <i data-lucide="download" size="18"></i> Sauvegarder (Fichier)
-    </button>
-    <button onclick="importData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-amber-600 font-bold">
-        <i data-lucide="upload" size="18"></i> Restaurer
-    </button>
-</div>
+        <div class="mb-10">
+            <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
+            <p class="text-[10px] tracking-[0.3em] uppercase text-indigo-500 font-bold">Journal 2026</p>
+        </div>
+        <div class="flex-1 space-y-1">
+            <button onclick="showPage('cover')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="book-open" size="18"></i> Couverture</button>
+            <button onclick="showPage('december')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sparkles" size="18"></i> Décembre 2025</button>
+            <button onclick="showPage('q-focus')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="target" size="18"></i> Focus Trimestriel</button>
+            <button onclick="showPage('monthly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="calendar" size="18"></i> Focus Mensuel</button>
+            <button onclick="showPage('weekly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
+            <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
+            <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
+        </div>
     </nav>
 
     <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
@@ -149,42 +146,22 @@ const progressToDash = (percent) => {
    const pages = {
     // --- PAGE COUVERTURE ---
     cover: () => `
-        <div class="relative overflow-hidden min-h-[85vh] flex flex-col justify-center items-center rounded-[4rem]">
-            
-            <div class="absolute inset-0 -z-10" 
-                 style="background: radial-gradient(circle at 50% 30%, rgba(255, 243, 205, 1) 0%, rgba(255, 255, 255, 0) 70%), 
-                            linear-gradient(to bottom, #FFF9F0, #FFF5E1);">
-            </div>
-            
-            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-100/40 blur-[120px] rounded-full -z-10"></div>
-
-            <div class="relative z-10 text-center px-6">
-                <div class="flex justify-center mb-6">
-                    <div class="p-4 bg-white/50 rounded-full shadow-sm backdrop-blur-sm border border-amber-100">
-                        <i data-lucide="sun" class="text-amber-500 w-10 h-10 animate-[pulse_4s_infinite]"></i>
-                    </div>
-                </div>
-
-                <h1 class="serif text-[10rem] font-bold text-indigo-950/90 leading-none tracking-tighter drop-shadow-sm">
-                    2026
-                </h1>
-                
-                <p class="handwritten text-5xl text-amber-700 mt-2 mb-12">Mon Année d'Intention</p>
-
-                <div class="max-w-xl mx-auto p-12 rounded-[4rem] glass shadow-2xl border border-white/80 relative group transition-all hover:scale-[1.02] duration-500">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-50 px-6 py-2 rounded-full border border-amber-200 shadow-sm flex items-center gap-2">
+        <div class="text-center py-16 relative overflow-hidden min-h-[80vh] flex flex-col justify-center">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-200/30 blur-[100px] rounded-full -z-10"></div>
+            <div class="relative z-10">
+                <h1 class="serif text-8xl font-bold text-indigo-950 mb-2 tracking-tighter drop-shadow-sm">2026</h1>
+                <p class="handwritten text-4xl text-amber-600 mb-16">Mon Année d'Intention</p>
+                <div class="max-w-lg mx-auto p-12 rounded-[4rem] glass shadow-2xl border border-white/80 relative group transition-all hover:shadow-indigo-100">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-white px-4 py-1 rounded-full border border-amber-200 shadow-sm">
                         <i data-lucide="sparkles" class="text-amber-500 w-4 h-4"></i>
-                        <span class="text-[10px] font-black uppercase tracking-[0.3em] text-amber-700">Vision & Lumière</span>
                     </div>
-                    
+                    <label class="block text-[10px] font-black uppercase tracking-[0.4em] text-indigo-300 mb-6">Vision & Lumière</label>
                     <textarea 
                         oninput="state.global.coverThought = this.value; save()" 
-                        class="w-full bg-transparent border-none text-center handwritten text-4xl text-indigo-900 placeholder-indigo-200/50 focus:ring-0 resize-none leading-tight mt-4" 
-                        rows="3" 
+                        class="w-full bg-transparent border-none text-center handwritten text-4xl text-indigo-900 placeholder-indigo-200 focus:ring-0 resize-none leading-snug" 
+                        rows="4" 
                         placeholder="Écrivez ici la pensée qui guidera votre année...">${state.global.coverThought || ''}</textarea>
                 </div>
-                
-                <p class="mt-12 text-[10px] font-black uppercase tracking-[0.5em] text-indigo-300">Respirer . Choisir . Croître</p>
             </div>
         </div>`,
 
@@ -288,72 +265,71 @@ const progressToDash = (percent) => {
     },
 
     // --- PAGE JOURNAL QUOTIDIEN ---
-  daily: () => {
-        // Sécurité : on récupère les données ou des valeurs par défaut
-        if (!state.daily[currentDay]) {
-            state.daily[currentDay] = { energy: 50, move: 50, pray: 50, conn: 50, note: "" };
-        }
-        const d = state.daily[currentDay];
-        
-        // Calcul de la moyenne sécurisé
-        const val = (k) => parseInt(d[k] || 50);
-        const average = Math.round((val('energy') + val('move') + val('pray') + val('conn')) / 4);
+    daily: () => {
+            // Sécurité : on récupère les données ou des valeurs par défaut
+            const d = state.daily[currentDay] || { energy: 50, move: 50, pray: 50, conn: 50, note: "" };
+            
+            // Calcul de la moyenne sécurisé
+            const val = (k) => parseInt(d[k] || 50);
+            const average = Math.round((val('energy') + val('move') + val('pray') + val('conn')) / 4);
 
-        return `
-        <div class="flex justify-between items-center mb-10">
-            <div>
-                <h2 class="serif text-4xl text-indigo-950 font-bold italic">Journal du Jour</h2>
-                <p class="text-indigo-400 text-[10px] uppercase tracking-[0.3em] mt-1 text-left">Équilibre & Connexion</p>
-            </div>
-            <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" 
-                   class="p-3 glass rounded-2xl border-none outline-none font-bold text-indigo-600 shadow-sm">
-        </div>
-
-        <div class="grid lg:grid-cols-5 gap-8 items-start">
-            <div class="lg:col-span-2 space-y-6">
-                <div class="glass p-8 rounded-[3rem] border border-white/60 shadow-xl flex flex-col items-center">
-                    <div class="relative w-40 h-40 mb-4">
-                        <svg viewBox="0 0 100 100" class="w-full h-full">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e7ff" stroke-width="8" />
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#818cf8" stroke-width="8" 
-                                    stroke-dasharray="${progressToDash(average)}" stroke-linecap="round" 
-                                    transform="rotate(-90 50 50)" />
-                            <text x="50" y="55" text-anchor="middle" class="serif text-2xl font-black" fill="#312e81">${average}%</text>
-                        </svg>
-                    </div>
-                    <span class="text-[9px] font-black uppercase text-indigo-300 tracking-[0.2em]">Moyenne Bien-être</span>
+            return `
+            <div class="flex justify-between items-center mb-10">
+                <div>
+                    <h2 class="serif text-4xl text-indigo-950 font-bold italic">Journal du Jour</h2>
+                    <p class="text-indigo-400 text-[10px] uppercase tracking-[0.3em] mt-1 text-left">Équilibre & Connexion</p>
                 </div>
+                <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" 
+                       class="p-3 glass rounded-2xl border-none outline-none font-bold text-indigo-600 shadow-sm">
+            </div>
 
-                <div class="glass p-8 rounded-[3rem] border border-white/60 shadow-lg space-y-5">
-                    ${[
-                        { label: 'Énergie', key: 'energy' },
-                        { label: 'Mouvement', key: 'move' },
-                        { label: 'Prière', key: 'pray' },
-                        { label: 'Connexion', key: 'conn' }
-                    ].map(item => `
-                        <div>
-                            <div class="flex justify-between mb-1">
-                                <label class="uppercase text-[9px] font-black text-indigo-400">${item.label}</label>
-                                <span class="text-[9px] font-bold text-indigo-900">${d[item.key] || 50}%</span>
-                            </div>
-                            <input type="range" min="0" max="100" value="${d[item.key] || 50}" 
-                                   oninput="updateDaily('${item.key}', this.value)" 
-                                   class="w-full h-1.5 accent-indigo-600 bg-indigo-50 rounded-lg appearance-none cursor-pointer">
+            <div class="grid lg:grid-cols-5 gap-8 items-start">
+                
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <div class="glass p-8 rounded-[3rem] border border-white/60 shadow-xl flex flex-col items-center">
+                        <div class="relative w-40 h-40 mb-4">
+                            <svg viewBox="0 0 100 100" class="w-full h-full">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e7ff" stroke-width="8" />
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#818cf8" stroke-width="8" 
+                                        stroke-dasharray="${progressToDash(average)}" stroke-linecap="round" 
+                                        transform="rotate(-90 50 50)" />
+                                <text x="50" y="55" text-anchor="middle" class="serif text-2xl font-black" fill="#312e81">${average}%</text>
+                            </svg>
                         </div>
-                    `).join('')}
-                </div>
-            </div>
+                        <span class="text-[9px] font-black uppercase text-indigo-300 tracking-[0.2em]">Moyenne Bien-être</span>
+                    </div>
 
-            <div class="lg:col-span-3">
-                <div class="relative group">
-                    <div class="absolute top-6 left-10 z-10 text-[9px] font-black uppercase text-amber-600/30 tracking-[0.4em]">Notes du jour</div>
-                    <textarea oninput="updateDaily('note', this.value)" 
-                        class="w-full h-[620px] p-12 pt-16 rounded-[3.5rem] border-none focus:ring-0 paper-effect shadow-2xl resize-none handwritten text-xl text-indigo-950 leading-relaxed" 
-                        placeholder="Écrivez vos pensées ici...">${d.note || ""}</textarea>
+                    <div class="glass p-8 rounded-[3rem] border border-white/60 shadow-lg space-y-5">
+                        ${[
+                            { label: 'Énergie', key: 'energy' },
+                            { label: 'Mouvement', key: 'move' },
+                            { label: 'Prière', key: 'pray' },
+                            { label: 'Connexion', key: 'conn' }
+                        ].map(item => `
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <label class="uppercase text-[9px] font-black text-indigo-400">${item.label}</label>
+                                    <span class="text-[9px] font-bold text-indigo-900">${d[item.key] || 50}%</span>
+                                </div>
+                                <input type="range" min="0" max="100" value="${d[item.key] || 50}" 
+                                       oninput="updateDaily('${item.key}', this.value)" 
+                                       class="w-full h-1.5 accent-indigo-600 bg-indigo-50 rounded-lg appearance-none cursor-pointer">
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
-            </div>
-        </div>`;
-    },
+
+                <div class="lg:col-span-3">
+                    <div class="relative group">
+                        <div class="absolute top-6 left-10 z-10 text-[9px] font-black uppercase text-amber-600/30 tracking-[0.4em]">Notes du jour</div>
+                        <textarea oninput="updateDaily('note', this.value)" 
+                            class="w-full h-[620px] p-12 pt-16 rounded-[3.5rem] border-none focus:ring-0 paper-effect shadow-2xl resize-none handwritten text-xl text-indigo-950 leading-relaxed" 
+                            placeholder="Écrivez vos pensées ici...">${d.note || ""}</textarea>
+                    </div>
+                </div>
+            </div>`;
+        },
     // --- PAGE SUCCÈS ÉMOTIONNEL ---
     emotional: () => {
         if (!state.wheel) state.wheel = { "Santé": 5, "Loisirs": 5, "Croissance": 5, "Finance": 5, "Carrière": 5, "Famille": 5, "Amour": 5, "Social": 5 };
@@ -387,7 +363,18 @@ const progressToDash = (percent) => {
         </div>`;
     }
 };
-    
+    // --- FONCTIONS ---
+    function save() { localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state)); }
+    function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
+    function saveG(k, v) { state.global[k] = v; save(); }
+    function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
+    function changeD(d) { currentDay = d; currentMonth = d.substring(0,7); showPage('daily'); }
+    function changeM(m) { currentMonth = m; showPage('monthly'); }
+    function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
+    function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
+    function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('sticker-selected')); b.classList.add('sticker-selected'); }
+    function addEmoji(day) { const wk = getWeekRange(currentDay).id; if(selectedEmoji) { if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); } }
+    function remEmoji(day, i) { const wk = getWeekRange(currentDay).id; state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
 
     window.onload = () => showPage('cover');
 </script>
