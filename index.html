@@ -1,46 +1,43 @@
 <!DOCTYPE html>
+
 <html lang="fr">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faith & Intention Journal 2026</title>
+
+    <title>Faith & Intention Journal 2026 - Master</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-        :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
+
+        :root { --cream: #FFF5E1; }
+
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
+
         .serif { font-family: 'Playfair Display', serif; }
-        .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
-        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; }
-        .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
+
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
-        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; border: 2px solid white; }
-        .handwritten { 
-            font-family: 'Great Vibes', cursive; 
-        }
 
-   .handwritten { 
-    font-family: 'Great Vibes', cursive; 
-    font-weight: 400;
-    /* On augmente la taille car cette police est naturellement plus petite */
-    font-size: 2.8rem; 
-    line-height: 1.2;
-    letter-spacing: 0.5px;
-}
+        .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
 
-/* On simplifie l'effet papier pour un look plus "Journal Intime" */
-.paper-effect {
-    background-color: #fdfaf0;
-    background-image: none; /* On enlève les lignes bleues d'écolier */
-    padding: 2rem;
-}
+        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
 
-        /* Style spécifique pour les textes de la roue */
-        #wheel-container svg text {
-            font-family: 'Lato', sans-serif;
-        }
+        .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
+
+        input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; width: 100%; }
+
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 22px; width: 22px; background: #6366f1; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); cursor: pointer; }
+
+        @media print { .no-print { display: none !important; } body { overflow: visible !important; } }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row">
@@ -280,7 +277,7 @@ const progressToDash = (percent) => {
                 </div>`).join('')}
         </div>
         <div class="glass p-6 rounded-[3rem] flex justify-center gap-6">
-            ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl p-2 transition-transform hover:scale-125">${s}</button>`).join('')}
+            ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '💰', '🍎'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl p-2 transition-transform hover:scale-125">${s}</button>`).join('')}
         </div>`;
     },
 
@@ -383,90 +380,130 @@ const progressToDash = (percent) => {
         </div>`;
     }
 };
-// --- FONCTIONS ACTIONS & NAVIGATION ---
-        function showPage(id) { 
-            document.getElementById('content-container').innerHTML = pages[id](); 
-            if (window.lucide) lucide.createIcons(); 
-            window.scrollTo(0,0);
-        }
+        // --- Fonctions de Navigation et Action ---
+
+        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); if (window.lucide) lucide.createIcons(); }
+
         
+
+        function updateWheel(cat, val) { state.wheel[cat] = parseInt(val); save(); document.getElementById('wheel-container').innerHTML = renderWheelSVG(); }
+
+        
+
         function toggleMonthly(i) { 
-            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; 
+
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+
             state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; 
+
             save(); showPage('monthly'); 
+
         }
+
+
 
         function updateMonthlyText(i, v) { 
-            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; 
-            state.monthly[currentMonth].texts[i] = v; 
-            save(); 
+
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+
+            state.monthly[currentMonth].texts[i] = v; save(); 
+
         }
+
+
 
         function updateDaily(k, v) { 
-            if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""}; 
-            state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); 
-            save(); if(k !== 'note') showPage('daily'); 
+
+            if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note: ""};
+
+            state.daily[currentDay][k] = (k === 'note' ? v : parseInt(v)); save(); 
+
+            if(k !== 'note') showPage('daily'); 
+
         }
+
+
 
         function updateWeeklyRef(id, v) { 
-            if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""}; 
+
+            if(!state.weekly[id]) state.weekly[id] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+
             state.weekly[id].reflection = v; save(); 
+
         }
+
+
 
         function pickEmoji(s, b) { 
+
             selectedEmoji = s; 
-            document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md')); 
-            b.classList.add('bg-white','shadow-md'); 
+
+            document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('bg-white','shadow-md','ring-2','ring-indigo-200'));
+
+            b.classList.add('bg-white','shadow-md','ring-2','ring-indigo-200'); 
+
         }
+
+
 
         function addEmoji(day) { 
+
             const wk = getWeekID(currentDay); 
-            if(!selectedEmoji) return; 
-            if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""}; 
-            state.weekly[wk][day].push(selectedEmoji); 
-            save(); showPage('weekly'); 
+
+            if(!selectedEmoji) return;
+
+            if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[],reflection:""};
+
+            state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); 
+
         }
 
-        function remEmoji(day, i) { 
-            const wk = getWeekID(currentDay); 
-            state.weekly[wk][day].splice(i,1); 
-            save(); showPage('weekly'); 
+
+
+        function remEmoji(day, i) { const wk = getWeekID(currentDay); state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
+
+
+
+        // --- IMPRESSION & APERÇU ---
+
+        function previewPrint() {
+
+            const modal = document.getElementById('print-modal');
+
+            const content = document.getElementById('print-content');
+
+            content.innerHTML = "";
+
+            ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(pageKey => {
+
+                const section = document.createElement('div');
+
+                section.className = "print-page glass mb-10 p-10 rounded-3xl";
+
+                section.innerHTML = pages[pageKey]();
+
+                content.appendChild(section);
+
+            });
+
+            modal.style.display = "block";
+
+            if (window.lucide) lucide.createIcons();
+
         }
 
-        function exportData() { 
-            const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); 
-            const a = document.createElement('a'); 
-            a.href = URL.createObjectURL(blob); 
-            a.download = `Faith_Journal_Export_${currentDay}.json`; 
-            a.click(); 
-        }
 
-        function importData(e) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                if(confirm("Écraser les données actuelles avec ce fichier ?")) {
-                    state = JSON.parse(ev.target.result); save(); location.reload();
-                }
-            };
-            reader.readAsText(e.target.files[0]);
-        }
 
-        function prepareAndPrint() { 
-            const area = document.getElementById('print-all-area'); 
-            area.innerHTML = ''; 
-            const pageKeys = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
-            pageKeys.forEach(k => { 
-                const s = document.createElement('div'); 
-                s.className = 'print-page-break'; 
-                s.innerHTML = pages[k](); 
-                area.appendChild(s); 
-            }); 
-            if (window.lucide) lucide.createIcons(); 
-            setTimeout(() => { window.print(); }, 1000); 
-        }
+        function closePreview() { document.getElementById('print-modal').style.display = "none"; }
 
-        // Chargement initial
+        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_Master_2026.json'; a.click(); }
+
+
+
         window.onload = () => showPage('cover');
+
     </script>
+
 </body>
+
 </html>
