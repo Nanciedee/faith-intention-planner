@@ -17,29 +17,38 @@
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        
         .handwritten { 
             font-family: 'Great Vibes', cursive; 
+            font-weight: 400;
+            /* On augmente la taille car cette police est naturellement plus petite */
+            font-size: 2.8rem; 
+            line-height: 1.2;
+            letter-spacing: 0.5px;
         }
 
-   .handwritten { 
-    font-family: 'Great Vibes', cursive; 
-    font-weight: 400;
-    /* On augmente la taille car cette police est naturellement plus petite */
-    font-size: 2.8rem; 
-    line-height: 1.2;
-    letter-spacing: 0.5px;
-}
-
-/* On simplifie l'effet papier pour un look plus "Journal Intime" */
-.paper-effect {
-    background-color: #fdfaf0;
-    background-image: none; /* On enlève les lignes bleues d'écolier */
-    padding: 2rem;
-}
+        /* On simplifie l'effet papier pour un look plus "Journal Intime" */
+        .paper-effect {
+            background-color: #fdfaf0;
+            background-image: none; /* On enlève les lignes bleues d'écolier */
+            padding: 2rem;
+        }
 
         /* Style spécifique pour les textes de la roue */
         #wheel-container svg text {
             font-family: 'Lato', sans-serif;
+        }
+
+        /* --- NOUVEAU CODE : STYLE POUR L'IMPRESSION --- */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; overflow: visible !important; }
+            main { padding: 0 !important; overflow: visible !important; height: auto !important; }
+            .glass { border: none !important; box-shadow: none !important; backdrop-filter: none !important; }
+            #content-container { width: 100% !important; max-width: none !important; padding: 0 !important; }
+            .print-page-break { page-break-after: always; margin-bottom: 2rem; }
+            /* Empêche les images/couleurs de fond de disparaître à l'impression */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
 </head>
