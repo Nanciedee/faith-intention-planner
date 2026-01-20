@@ -158,6 +158,61 @@ const progressToDash = (percent) => {
             <circle cx="${center}" cy="${center}" r="4" fill="#B8860B"/>
         </svg>`;
     }
+        // --- BLOC DE RÉPARATION : IMPORT ET IMPRESSION ---
+
+// 1. Correction de l'erreur "importData is not defined"
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            try {
+                state = JSON.parse(ev.target.result);
+                localStorage.setItem('faithJournal_vFinal', JSON.stringify(state));
+                location.reload();
+            } catch (err) { alert("Fichier invalide"); }
+        };
+        reader.readAsText(e.target.files[0]);
+    };
+    input.click();
+}
+
+// 2. Correction de l'impression (Imprimer tout le carnet)
+function printAll() {
+    const container = document.getElementById('content-container');
+    // Liste de toutes vos sections
+    const sections = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
+    
+    // On prépare une version longue avec toutes les pages
+    let tempContent = "";
+    sections.forEach(id => {
+        if (pages[id]) {
+            // On ajoute un saut de page après chaque section
+            tempContent += `<div style="page-break-after: always; display: block; clear: both;">${pages[id]()}</div>`;
+        }
+    });
+
+    // On remplace le contenu, on imprime, puis on recharge pour revenir à la normale
+    container.innerHTML = tempContent;
+    
+    // On attend que les icônes Lucide se dessinent dans la nouvelle vue
+    if (window.lucide) lucide.createIcons();
+    
+    setTimeout(() => {
+        window.print();
+        location.reload(); // Relance la page pour retrouver le menu et la vue normale
+    }, 800);
+}
+
+function exportData() {
+    const blob = new Blob([JSON.stringify(state)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Mon_Journal_2026.json';
+    a.click();
+}
         
 function importData() {
         console.log("Fonction importData appelée");
