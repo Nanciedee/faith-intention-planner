@@ -54,7 +54,28 @@
     <main class="flex-1 p-6 md:p-12 overflow-y-auto h-screen">
         <div id="content-container" class="max-w-4xl mx-auto"></div>
     </main>
-
+    
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = event => {
+            try {
+                state = JSON.parse(event.target.result);
+                localStorage.setItem('faithJournal_vFinal', JSON.stringify(state));
+                location.reload();
+                alert("Journal chargé !");
+            } catch (err) {
+                alert("Erreur de lecture du fichier.");
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
     <script>
     // --- ÉTAT INITIAL ---
     let state = {
