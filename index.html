@@ -41,6 +41,14 @@
         #wheel-container svg text {
             font-family: 'Lato', sans-serif;
         }
+        @media print {
+            .no-print, nav, .watercolor, button { display: none !important; }
+            body { background: white !important; overflow: visible !important; }
+            main { padding: 0 !important; overflow: visible !important; height: auto !important; }
+            .glass { border: none !important; box-shadow: none !important; backdrop-filter: none !important; }
+            #content-container { width: 100% !important; max-width: none !important; padding: 0 !important; }
+            .print-page-break { page-break-after: always !important; break-after: page !important; display: block; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row">
