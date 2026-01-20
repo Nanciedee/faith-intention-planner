@@ -12,34 +12,39 @@
         body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
         .serif { font-family: 'Playfair Display', serif; }
         .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
-        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; }
+        .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; cursor: pointer; }
         .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        
         .handwritten { 
             font-family: 'Great Vibes', cursive; 
+            font-weight: 400;
+            font-size: 2.8rem; 
+            line-height: 1.2;
+            letter-spacing: 0.5px;
         }
 
-   .handwritten { 
-    font-family: 'Great Vibes', cursive; 
-    font-weight: 400;
-    /* On augmente la taille car cette police est naturellement plus petite */
-    font-size: 2.8rem; 
-    line-height: 1.2;
-    letter-spacing: 0.5px;
-}
+        .paper-effect {
+            background-color: #fdfaf0;
+            background-image: none; 
+            padding: 2rem;
+        }
 
-/* On simplifie l'effet papier pour un look plus "Journal Intime" */
-.paper-effect {
-    background-color: #fdfaf0;
-    background-image: none; /* On enlève les lignes bleues d'écolier */
-    padding: 2rem;
-}
-
-        /* Style spécifique pour les textes de la roue */
         #wheel-container svg text {
             font-family: 'Lato', sans-serif;
+        }
+
+        /* --- STYLE POUR L'IMPRESSION --- */
+        @media print {
+            .no-print { display: none !important; }
+            nav { display: none !important; }
+            body { background: white !important; overflow: visible !important; }
+            main { padding: 0 !important; overflow: visible !important; height: auto !important; }
+            .glass { border: none !important; box-shadow: none !important; backdrop-filter: none !important; }
+            #content-container { width: 100% !important; max-width: none !important; padding: 0 !important; }
+            .print-page-break { page-break-after: always; border-bottom: 1px solid #eee; padding-bottom: 2rem; }
         }
     </style>
 </head>
@@ -382,18 +387,43 @@ const progressToDash = (percent) => {
         </div>`;
     }
 };
-    // --- FONCTIONS ---
-    function save() { localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state)); }
-    function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); lucide.createIcons(); }
-    function saveG(k, v) { state.global[k] = v; save(); }
-    function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
-    function changeD(d) { currentDay = d; currentMonth = d.substring(0,7); showPage('daily'); }
-    function changeM(m) { currentMonth = m; showPage('monthly'); }
-    function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
-    function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
-    function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('sticker-selected')); b.classList.add('sticker-selected'); }
-    function addEmoji(day) { const wk = getWeekRange(currentDay).id; if(selectedEmoji) { if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); } }
-    function remEmoji(day, i) { const wk = getWeekRange(currentDay).id; state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
+    // --- FONCTIONS IMPORT/EXPORT/PRINT ---
+    function exportData() {
+        const dataStr = JSON.stringify(state, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `mon-journal-2026.json`;
+        link.click();
+    }
+
+    function importData() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const reader = new FileReader();
+            reader.onload = event => {
+                state = JSON.parse(event.target.result);
+                save();
+                location.reload();
+            };
+            reader.readAsText(e.target.files[0]);
+        };
+        input.click();
+    }
+
+    function printAll() {
+        const container = document.getElementById('content-container');
+        let allHTML = "";
+        ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(id => {
+            allHTML += `<div class="print-page-break">${pages[id]()}</div>`;
+        });
+        container.innerHTML = allHTML;
+        lucide.createIcons();
+        setTimeout(() => { window.print(); location.reload(); }, 800);
+    }
 
     window.onload = () => showPage('cover');
 </script>
