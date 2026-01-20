@@ -387,43 +387,7 @@ const progressToDash = (percent) => {
         </div>`;
     }
 };
-    // --- FONCTIONS IMPORT/EXPORT/PRINT ---
-    function exportData() {
-        const dataStr = JSON.stringify(state, null, 2);
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `mon-journal-2026.json`;
-        link.click();
-    }
-
-    function importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = e => {
-            const reader = new FileReader();
-            reader.onload = event => {
-                state = JSON.parse(event.target.result);
-                save();
-                location.reload();
-            };
-            reader.readAsText(e.target.files[0]);
-        };
-        input.click();
-    }
-
-    function printAll() {
-        const container = document.getElementById('content-container');
-        let allHTML = "";
-        ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(id => {
-            allHTML += `<div class="print-page-break">${pages[id]()}</div>`;
-        });
-        container.innerHTML = allHTML;
-        lucide.createIcons();
-        setTimeout(() => { window.print(); location.reload(); }, 800);
-    }
+    
 
     window.onload = () => showPage('cover');
 </script>
