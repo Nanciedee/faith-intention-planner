@@ -86,6 +86,33 @@
     </button>
     <div id="content-container" class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
     </main>
+    function printAll() {
+    const container = document.getElementById('content-container');
+    // On prépare une liste de toutes les pages à la suite
+    const sections = ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'];
+    
+    let fullJournalHTML = "";
+    
+    // On génère le contenu de chaque page
+    sections.forEach(pageId => {
+        fullJournalHTML += `<div class="print-page-break" style="margin-bottom: 50px;">
+                                ${pages[pageId]()}
+                            </div>`;
+    });
+
+    // On remplace le contenu actuel par tout le journal
+    container.innerHTML = fullJournalHTML;
+    
+    // On demande à Lucide de générer les icônes pour les nouvelles pages injectées
+    lucide.createIcons();
+
+    // On lance l'impression après un petit délai pour le rendu
+    setTimeout(() => {
+        window.print();
+        // Optionnel : on recharge la page pour revenir à l'état normal
+        location.reload();
+    }, 1000);
+}
 
     <script>
     // --- MOTEUR DE RÉCUPÉRATION ---
