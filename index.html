@@ -17,6 +17,23 @@
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; border: 2px solid white; }
+        .handwritten { 
+            font-family: 'Great Vibes', cursive; 
+        }
+
+        .paper-effect {
+            background-color: #fdfaf0;
+            /* Fines lignes dorées */
+            background-image: linear-gradient(rgba(184, 134, 11, 0.15) 1px, transparent 1px);
+            background-size: 100% 2.85rem;
+            line-height: 2.85rem;
+            border: 1px solid rgba(184, 134, 11, 0.3) !important;
+        }
+
+        /* Style spécifique pour les textes de la roue */
+        #wheel-container svg text {
+            font-family: 'Lato', sans-serif;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col md:flex-row">
@@ -48,28 +65,25 @@
     <script>
         // --- MOTEUR DE RÉCUPÉRATION DE TOUTES LES VERSIONS ---
         function initData() {
-            const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
-            let merged = {
-                global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", grat: "", aff: "", coverThought: "" },
-                daily: {}, monthly: {}, weekly: {}
-            };
-            keys.forEach(k => {
-                const d = JSON.parse(localStorage.getItem(k));
-                if (d) {
-                    if (d.globalVision || d.global) merged.global = {...merged.global, ...(d.globalVision || d.global)};
-                    if (d.dailyLogs || d.daily) merged.daily = {...merged.daily, ...(d.dailyLogs || d.daily)};
-                    if (d.monthlyData || d.monthly) merged.monthly = {...merged.monthly, ...(d.monthlyData || d.monthly)};
-                    if (d.weeklyRituals || d.weekly) merged.weekly = {...merged.weekly, ...(d.weeklyRituals || d.weekly)};
-                    if (d.textData) {
-                        if (d.textData['t-dec-ref']) merged.global.decRef = d.textData['t-dec-ref'];
-                        if (d.textData['q-tx-0']) merged.global.q1 = d.textData['q-tx-0'];
-                        if (d.textData['q-tx-1']) merged.global.q2 = d.textData['q-tx-1'];
-                        if (d.textData['q-tx-2']) merged.global.q3 = d.textData['q-tx-2'];
-                    }
-                }
-            });
-            return merged;
+    const keys = ['faithJournal_vFinal_Master', 'faithJournal_v2026', 'faithJournal_vDateSafe', 'faithJournal_vFinal', 'faithTextData_vFinal'];
+    let merged = {
+        global: { decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", q4: "", grat: "", aff: "", coverThought: "" },
+        daily: {}, monthly: {}, weekly: {},
+        // Initialisation de la roue par défaut
+        wheel: { "Santé": 5, "Loisirs": 5, "Croissance": 5, "Finance": 5, "Carrière": 5, "Famille": 5, "Amour": 5, "Social": 5 }
+    };
+    keys.forEach(k => {
+        const d = JSON.parse(localStorage.getItem(k));
+        if (d) {
+            if (d.global) merged.global = {...merged.global, ...d.global};
+            if (d.daily) merged.daily = {...merged.daily, ...d.daily};
+            if (d.monthly) merged.monthly = {...merged.monthly, ...d.monthly};
+            if (d.weekly) merged.weekly = {...merged.weekly, ...d.weekly};
+            if (d.wheel) merged.wheel = {...merged.wheel, ...d.wheel};
         }
+    });
+    return merged;
+}
 
         let state = initData();
         let currentDay = new Date().toISOString().split('T')[0];
@@ -240,7 +254,11 @@
                 </div>`;
             },
 
-            emotional: () => `
+            emotional: () => {
+    // Sécurité : au cas où wheel ne serait pas chargé
+    if (!state.wheel) state.wheel = { "Santé": 5, "Loisirs": 5, "Croissance": 5, "Finance": 5, "Carrière": 5, "Famille": 5, "Amour": 5, "Social": 5 };
+
+    return `
     <div class="text-center mb-10">
         <h2 class="serif text-4xl text-indigo-950 font-bold uppercase tracking-widest">Succès Émotionnel</h2>
         <p class="handwritten text-3xl text-amber-600 italic mt-2">Équilibre & Harmonie</p>
@@ -262,6 +280,24 @@
             `).join('')}
         </div>
     </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <div class="p-10 rounded-[3.5rem] paper-effect shadow-lg relative min-h-[250px]">
+            <span class="absolute top-6 left-10 text-[9px] font-black uppercase text-amber-600/50 tracking-widest">Gratitude</span>
+            <textarea oninput="state.global.grat=this.value; save()" 
+                      class="w-full bg-transparent border-none handwritten text-4xl text-indigo-900 focus:ring-0 mt-4 overflow-hidden" 
+                      rows="3" placeholder="Aujourd'hui, je remercie pour...">${state.global.grat || ''}</textarea>
+        </div>
+        
+        <div class="p-10 rounded-[3.5rem] bg-gradient-to-br from-indigo-900 to-indigo-950 shadow-xl border-4 border-amber-100/10 flex flex-col justify-center text-center">
+            <span class="text-[9px] font-black uppercase text-amber-200/40 mb-4 tracking-[0.4em]">Mon Affirmation</span>
+            <input type="text" oninput="state.global.aff=this.value; save()" 
+                   value="${state.global.aff || ''}" 
+                   class="w-full bg-transparent border-none handwritten text-5xl text-amber-100 focus:ring-0 text-center"
+                   placeholder="Je suis la paix">
+        </div>
+    </div>`;
+}
 
     <div class="grid md:grid-cols-2 gap-8">
         <div class="p-10 rounded-[3.5rem] paper-effect shadow-lg relative">
