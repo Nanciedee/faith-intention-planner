@@ -158,7 +158,41 @@ const progressToDash = (percent) => {
             <circle cx="${center}" cy="${center}" r="4" fill="#B8860B"/>
         </svg>`;
     }
+        
+function exportData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "mon_journal_2026.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+        function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
 
+        const reader = new FileReader();
+        reader.onload = event => {
+            try {
+                const importedData = JSON.parse(event.target.result);
+                // On remplace les données actuelles par celles du fichier
+                state = importedData;
+                // On enregistre dans la mémoire du navigateur
+                save(); 
+                // On recharge la page pour tout mettre à jour visuellement
+                location.reload();
+                alert("Journal chargé avec succès !");
+            } catch (err) {
+                alert("Erreur : Le fichier n'est pas un journal valide.");
+            }
+        };
+        
    const pages = {
     // --- PAGE COUVERTURE ---
     cover: () => `
