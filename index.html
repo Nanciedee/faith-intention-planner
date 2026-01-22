@@ -178,9 +178,7 @@
                         </span>
                     </div>
                     
-                    <textarea oninput="saveG('${q.key}', this.value)" 
-                        class="w-full h-72 p-8 rounded-[2.5rem] focus:ring-2 focus:ring-amber-200 outline-none paper-effect handwritten shadow-sm transition-all text-3xl text-indigo-950" 
-                        placeholder="Mes visions...">${state.global[q.key] || ''}</textarea>
+                    <textarea oninput="state.global['${q.key}'] = this.value; save()" class="w-full h-72 p-8 rounded-[2.5rem] focus:ring-2 focus:ring-amber-200 outline-none paper-effect handwritten shadow-sm text-3xl text-indigo-950 border-none" placeholder="Mes visions...">${state.global[q.key] || ''}</textarea>
                 </div>
             `).join('')}
         </div>`;
