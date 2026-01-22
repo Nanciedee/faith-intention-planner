@@ -40,7 +40,6 @@
             <button onclick="showPage('weekly')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="list-checks" size="18"></i> Rituels Hebdo</button>
             <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
             <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
-            <button onclick="showPage('reflexion')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sunrise" size="18"></i> Réflexion Matinale</button>
         </div>
         <div class="mt-auto pt-6 border-t border-indigo-100 space-y-2">
             <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-emerald-600 bg-emerald-50/50 hover:bg-emerald-100"><i data-lucide="download-cloud" size="18"></i> Sauvegarder</button>
@@ -179,7 +178,9 @@
                         </span>
                     </div>
                     
-                    <textarea oninput="state.global['${q.key}'] = this.value; save()" class="w-full h-72 p-8 rounded-[2.5rem] focus:ring-2 focus:ring-amber-200 outline-none paper-effect handwritten shadow-sm text-3xl text-indigo-950 border-none" placeholder="Mes visions...">${state.global[q.key] || ''}</textarea>
+                    <textarea oninput="saveG('${q.key}', this.value)" 
+                        class="w-full h-72 p-8 rounded-[2.5rem] focus:ring-2 focus:ring-amber-200 outline-none paper-effect handwritten shadow-sm transition-all text-3xl text-indigo-950" 
+                        placeholder="Mes visions...">${state.global[q.key] || ''}</textarea>
                 </div>
             `).join('')}
         </div>`;
@@ -280,59 +281,8 @@
                 </div>`
         };
 
-        reflection: () => {
-        const d = state.daily[currentDay] || {};
-        return `
-        <div class="space-y-8">
-            <div class="flex justify-between items-center border-b border-indigo-100 pb-6">
-                <div>
-                    <h2 class="serif text-3xl text-indigo-950 font-bold">Réflexion Matinale</h2>
-                    <p class="text-amber-600 italic">"Ne vous inquiétez de rien..." - Phil 4:6</p>
-                </div>
-                <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('reflection')" class="p-2 rounded-xl border-none bg-white/50 font-bold text-indigo-600 shadow-sm">
-            </div>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="space-y-6">
-                    <div class="p-6 shadow-sm" style="background-color: #fdfaf0; border-radius: 2rem; border: 1px solid #faedcd;">
-                        <h3 class="font-bold text-indigo-800 flex items-center gap-2 mb-3"><i data-lucide="book" size="16"></i> Verset du Jour</h3>
-                        <p class="text-lg text-gray-700 italic text-center" style="font-family: 'Delius', cursive;">"Ne vous inquiétez de rien ; mais en toute chose faites connaître vos besoins à Dieu par des prières et des supplications, avec des actions de grâces."</p>
-                        <p class="text-right text-xs mt-2 font-bold text-indigo-400">Philippiens 4:6</p>
-                    </div>
-                    <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
-                        <h3 class="font-bold text-indigo-800 flex items-center gap-2 mb-3"><i data-lucide="message-circle" size="16"></i> Ma Prière</h3>
-                        <textarea oninput="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].prayer = this.value; save()" class="w-full h-32 bg-transparent border-none focus:ring-0 text-gray-700" placeholder="Seigneur...">${d.prayer || ''}</textarea>
-                    </div>
-                </div>
-                <div class="space-y-6">
-                    <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
-                        <h3 class="font-bold text-indigo-800 mb-3">😊 Humeur</h3>
-                        <div class="flex justify-around text-3xl">
-                            ${['🤩','✨','💛','😄','😔','😴'].map(e => `<button onclick="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].mood = '${e}'; save(); showPage('reflection')" class="${d.mood === e ? 'scale-125' : 'grayscale opacity-50'}">${e}</button>`).join('')}
-                        </div>
-                    </div>
-                    <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
-                        <h3 class="font-bold text-indigo-800 mb-2">💛 Gratitude</h3>
-                        <textarea oninput="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].gratitude = this.value; save()" class="w-full h-24 bg-transparent border-none focus:ring-0 text-gray-700 italic" placeholder="Merci pour...">${d.gratitude || ''}</textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="space-y-4">
-                <h3 class="font-bold text-indigo-800 flex items-center gap-2"><i data-lucide="palette" size="18"></i> Dessin</h3>
-                <canvas id="drawingCanvas" class="w-full h-48 bg-white rounded-3xl border-2 border-dashed border-indigo-100"></canvas>
-            </div>
-        </div>`;
-    },
-            
         // --- FONCTIONS ACTIONS ---
-        function showPage(id) {
-    document.getElementById('content-container').innerHTML = pages[id]();
-    if (window.lucide) lucide.createIcons();
-    
-    // Si on va sur réflexion, on active le dessin
-    if (id === 'reflection') {
-        setTimeout(initCanvas, 100); 
-    }
-}
+        function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); if (window.lucide) lucide.createIcons(); }
         function toggleM(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
         function updateMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
         function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
@@ -373,70 +323,7 @@
             w.document.close();
             setTimeout(() => { w.print(); w.close(); }, 1500);
         }
-function initCanvas() {
-    const canvas = document.getElementById('drawingCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    
-    // Ajuste la taille du canvas à son conteneur
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    
-    // Charger le dessin sauvegardé si existant
-    const savedImg = state.daily[currentDay]?.drawing;
-    if (savedImg) {
-        const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0);
-        img.src = savedImg;
-    }
 
-    let isDrawing = false;
-    
-    // Fonctions de dessin
-    const start = (e) => {
-        isDrawing = true;
-        ctx.beginPath();
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches[0].clientY) - rect.top;
-        ctx.moveTo(x, y);
-    };
-
-    const draw = (e) => {
-        if (!isDrawing) return;
-        if (e.touches) e.preventDefault(); // Empêche le scroll sur mobile
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
-        const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
-        
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = document.getElementById('penColor')?.value || '#4f46e5';
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.stroke();
-    };
-
-    const stop = () => {
-        if (isDrawing) {
-            isDrawing = false;
-            // Sauvegarde automatique dans le state
-            if (!state.daily[currentDay]) state.daily[currentDay] = {};
-            state.daily[currentDay].drawing = canvas.toDataURL();
-            save();
-        }
-    };
-
-    // Événements Souris
-    canvas.onmousedown = start;
-    canvas.onmousemove = draw;
-    canvas.onmouseup = stop;
-    
-    // Événements Tactiles (Tablette/Mobile)
-    canvas.ontouchstart = start;
-    canvas.ontouchmove = draw;
-    canvas.ontouchend = stop;
-}
-        
         window.onload = () => showPage('cover');
     </script>
 </body>
