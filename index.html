@@ -619,8 +619,11 @@ function importData() {
 
         // --- INITIALISATION FINALE ---
         let selectedEmoji = null; // Important pour les rituels hebdo
-        window.onload = () => showPage('cover');
+       window.onload = () => {
+            if (typeof showPage === 'function') {
+                showPage('cover');
+            }
+        };
     </script>
 </body>
-</html>
 </html>
