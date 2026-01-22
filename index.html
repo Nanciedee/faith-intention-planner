@@ -9,16 +9,16 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --p-blue: #BFD8EB; --p-lilac: #D9C1EB; --blush: #F6D1D1; --cream: #FFF5E1; }
-        body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow-x: hidden; }
+        body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: #4A4A4A; overflow: hidden; }
         .serif { font-family: 'Playfair Display', serif; }
         .watercolor { position: fixed; filter: blur(70px); opacity: 0.3; z-index: -1; border-radius: 50%; }
         .nav-btn { transition: all 0.3s; border-radius: 15px; margin-bottom: 4px; }
         .nav-btn:hover { background: white; padding-left: 20px; color: #4f46e5; }
         .glass { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.6); }
+        .handwritten { font-family: 'Great Vibes', cursive; font-weight: 400; font-size: 2.8rem; line-height: 1.2; }
+        .paper-effect { background-color: #fdfaf0; padding: 2rem; border-radius: 2rem; }
         input[type=range] { -webkit-appearance: none; background: #e2e8f0; height: 8px; border-radius: 10px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; background: #6366f1; border-radius: 50%; cursor: pointer; border: 2px solid white; }
-        .handwritten { font-family: 'Great Vibes', cursive; font-weight: 400; font-size: 2.5rem; line-height: 1.2; }
-        .paper-effect { background-color: #fdfaf0; padding: 2rem; border-radius: 2rem; }
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
@@ -28,7 +28,7 @@
     <div class="watercolor w-80 h-80 bg-purple-300 bottom-10 -left-20"></div>
 
     <nav class="w-full md:w-80 glass border-r p-6 flex flex-col z-10 overflow-y-auto no-print">
-        <div class="mb-10 text-center md:text-left">
+        <div class="mb-10">
             <h1 class="serif text-2xl font-bold text-indigo-900 leading-tight">Faith & Intention</h1>
             <p class="text-[10px] tracking-[0.3em] uppercase text-indigo-500 font-bold">Journal 2026</p>
         </div>
@@ -41,159 +41,218 @@
             <button onclick="showPage('daily')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="sun" size="18"></i> Journal du Jour</button>
             <button onclick="showPage('emotional')" class="nav-btn w-full text-left p-3 flex items-center gap-3"><i data-lucide="heart" size="18"></i> Succès Émotionnel</button>
         </div>
-        
         <div class="mt-auto pt-6 border-t border-indigo-100 space-y-2">
-            <button onclick="printAll()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-indigo-600 bg-indigo-50/50">
-                <i data-lucide="printer" size="18"></i> <span>Imprimer Tout</span>
-            </button>
-            <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-emerald-600 bg-emerald-50/50">
-                <i data-lucide="download-cloud" size="18"></i> <span>Sauvegarder</span>
-            </button>
-            <button onclick="importData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-amber-600 bg-amber-50/50">
-                <i data-lucide="upload-cloud" size="18"></i> <span>Charger</span>
-            </button>
+            <button onclick="exportData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-emerald-600 bg-emerald-50/50 hover:bg-emerald-100"><i data-lucide="download-cloud" size="18"></i> Sauvegarder</button>
+            <button onclick="importData()" class="nav-btn w-full text-left p-3 flex items-center gap-3 text-amber-600 bg-amber-50/50 hover:bg-amber-100"><i data-lucide="upload-cloud" size="18"></i> Charger</button>
         </div>
     </nav>
 
     <main class="flex-1 p-4 md:p-10 overflow-y-auto h-screen relative">
+        <button onclick="printAll()" class="no-print absolute top-6 right-10 p-4 bg-white/60 hover:bg-white rounded-full shadow-lg text-indigo-600 z-20"><i data-lucide="printer"></i></button>
         <div id="content-container" class="max-w-5xl mx-auto glass rounded-[3rem] p-8 md:p-12 min-h-[90vh] shadow-2xl border border-white/60"></div>
     </main>
 
     <script>
-        // --- ÉTAT INITIAL ---
+        // --- LOGIQUE CORE ---
         let selectedEmoji = null;
         let currentDay = new Date().toISOString().split('T')[0];
         let currentMonth = currentDay.substring(0, 7);
 
         function initData() {
-            const saved = localStorage.getItem('faithJournal_vFinal_Master');
-            if (saved) return JSON.parse(saved);
-            return {
+            const keys = ['faithJournal_vFinal_Master', 'faithJournal_2026_Master'];
+            let merged = {
                 global: { coverThought: "", decRef: "", decInt: "", decGoals: "", q1: "", q2: "", q3: "", q4: "", grat: "", aff: "" },
                 daily: {}, monthly: {}, weekly: {},
                 wheel: { "Santé": 5, "Loisirs": 5, "Croissance": 5, "Finance": 5, "Carrière": 5, "Famille": 5, "Amour": 5, "Social": 5 }
             };
+            keys.forEach(k => {
+                const d = JSON.parse(localStorage.getItem(k));
+                if (d) Object.assign(merged, d);
+            });
+            return merged;
         }
         let state = initData();
+        const save = () => localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state));
 
-        function save() { localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state)); }
+        // --- HELPERS ---
+        const progressToDash = (p) => { const r = 45; const c = 2 * Math.PI * r; return `${(p * c) / 100} ${c}`; };
+        const getWeekID = (date) => {
+            let d = new Date(date);
+            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1);
+            let start = new Date(d.setDate(diff));
+            return `${start.getFullYear()}-W${Math.ceil(diff/7)}`;
+        };
+        const getWeekRange = (date) => {
+            let d = new Date(date);
+            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1);
+            let start = new Date(d.setDate(diff));
+            let end = new Date(d.setDate(start.getDate() + 6));
+            return `Du ${start.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})} au ${end.toLocaleDateString('fr-FR', {day:'numeric', month:'short'})}`;
+        };
 
-        // --- NAVIGATION & PAGES ---
+        // --- MOTEUR DE RENDU DES PAGES ---
         const pages = {
-            cover: () => `<div class="text-center py-20">
-                <h1 class="serif text-9xl font-bold text-indigo-950">2026</h1>
-                <p class="handwritten text-5xl text-amber-700 mt-4">Mon Année d'Intention</p>
-                <div class="mt-12 max-w-lg mx-auto p-10 glass rounded-[3rem]">
-                    <textarea oninput="state.global.coverThought = this.value; save()" class="w-full bg-transparent border-none text-center handwritten text-3xl text-indigo-900 focus:ring-0 resize-none" rows="3" placeholder="Ma pensée guide...">${state.global.coverThought || ''}</textarea>
-                </div>
-            </div>`,
-
-            december: () => `<div class="space-y-8">
-                <h2 class="serif text-4xl text-center text-indigo-950 font-bold uppercase tracking-widest">Décembre 2025</h2>
-                <div class="p-10 paper-effect shadow-lg">
-                    <label class="text-xs font-bold text-amber-600 uppercase">Bilan & Réflexion</label>
-                    <textarea oninput="state.global.decRef = this.value; save()" class="w-full bg-transparent border-none handwritten text-3xl text-indigo-900 focus:ring-0 mt-4 resize-none" rows="8">${state.global.decRef || ''}</textarea>
-                </div>
-            </div>`,
-
-            'q-focus': () => `<div class="grid md:grid-cols-2 gap-8">
-                ${['q1','q2','q3','q4'].map(q => `
-                    <div class="flex flex-col">
-                        <h3 class="serif text-2xl text-indigo-800 mb-2">${q.toUpperCase()}</h3>
-                        <textarea oninput="state.global['${q}']=this.value; save()" class="w-full h-64 p-8 paper-effect handwritten text-2xl focus:ring-0 border-none shadow-sm">${state.global[q] || ''}</textarea>
+            cover: () => `
+                <div class="relative min-h-[80vh] flex flex-col justify-center items-center text-center">
+                    <h1 class="serif text-[10rem] font-bold text-indigo-950 leading-none">2026</h1>
+                    <p class="handwritten text-5xl text-amber-700 mt-2">Mon Année d'Intention</p>
+                    <div class="mt-12 max-w-xl w-full p-12 glass rounded-[4rem] shadow-2xl border border-white/80">
+                        <textarea oninput="state.global.coverThought = this.value; save()" class="w-full bg-transparent border-none text-center handwritten text-4xl text-indigo-900 focus:ring-0 resize-none">${state.global.coverThought || ''}</textarea>
                     </div>
-                `).join('')}
-            </div>`,
+                </div>`,
+
+            december: () => `
+                <div class="text-center mb-10">
+                    <h2 class="serif text-4xl text-indigo-950 font-bold uppercase tracking-widest">Décembre 2025</h2>
+                    <p class="handwritten text-3xl text-indigo-400 mt-2">Clôturer avec Gratitude</p>
+                </div>
+                <div class="grid gap-8">
+                    <div class="p-10 paper-effect shadow-lg min-h-[300px]">
+                        <textarea oninput="state.global.decRef = this.value; save()" class="w-full bg-transparent border-none handwritten text-3xl text-indigo-900 focus:ring-0 resize-none" rows="8">${state.global.decRef || ''}</textarea>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="p-8 glass rounded-[3rem] shadow-xl">
+                            <label class="font-black text-[10px] uppercase text-purple-400 tracking-widest mb-4 block">Intentions 2026</label>
+                            <textarea oninput="state.global.decInt = this.value; save()" class="w-full bg-transparent border-none focus:ring-0 text-gray-700 italic serif text-lg h-32">${state.global.decInt || ''}</textarea>
+                        </div>
+                        <div class="p-8 glass rounded-[3rem] shadow-xl">
+                            <label class="font-black text-[10px] uppercase text-blue-400 tracking-widest mb-4 block">Objectifs Clés</label>
+                            <textarea oninput="state.global.decGoals = this.value; save()" class="w-full bg-transparent border-none focus:ring-0 text-gray-700 h-32">${state.global.decGoals || ''}</textarea>
+                        </div>
+                    </div>
+                </div>`,
+
+            'q-focus': () => `
+                <div class="text-center mb-10"><h2 class="serif text-4xl text-indigo-950 font-bold">Focus Trimestriel</h2></div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    ${['q1', 'q2', 'q3', 'q4'].map((q, i) => `
+                        <div class="flex flex-col">
+                            <div class="flex justify-between px-6 mb-2"><h3 class="serif text-2xl text-indigo-800 italic">Trimestre ${i+1}</h3></div>
+                            <textarea oninput="state.global['${q}'] = this.value; save()" class="w-full h-64 p-8 rounded-[2.5rem] paper-effect handwritten shadow-sm text-3xl text-indigo-950 border-none focus:ring-2 focus:ring-amber-200 outline-none">${state.global[q] || ''}</textarea>
+                        </div>
+                    `).join('')}
+                </div>`,
 
             monthly: () => {
-                const data = state.monthly[currentMonth] || { checks: [false,false,false,false], texts: {} };
-                return `<div class="text-center mb-8">
-                    <h2 class="serif text-4xl text-indigo-950 font-bold">Focus Mensuel</h2>
-                    <input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" class="mt-4 p-2 glass rounded-xl text-indigo-600 font-bold">
+                const data = state.monthly[currentMonth] || { checks: [false, false, false, false], texts: {} };
+                const prog = (data.checks.filter(c => c).length / 4) * 100;
+                return `
+                <div class="flex flex-col items-center mb-10">
+                    <h2 class="serif text-4xl text-indigo-950 font-bold uppercase tracking-widest">Focus Mensuel</h2>
+                    <input type="month" value="${currentMonth}" onchange="currentMonth=this.value; showPage('monthly')" class="mt-4 p-2 glass rounded-2xl text-indigo-600 font-bold border-none">
+                </div>
+                <div class="max-w-xl mx-auto mb-10 glass p-6 rounded-[2.5rem] shadow-lg">
+                    <div class="flex justify-between text-[10px] font-black uppercase mb-2 text-indigo-400"><span>Accomplissement</span><span>${prog}%</span></div>
+                    <div class="w-full h-3 bg-indigo-50 rounded-full overflow-hidden border"><div class="h-full bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-1000" style="width: ${prog}%"></div></div>
                 </div>
                 <div class="grid md:grid-cols-2 gap-6">
-                    ${['Priorité','Santé','Famille','Notes'].map((l, i) => `
-                        <div class="p-6 glass rounded-3xl flex gap-4">
-                            <input type="checkbox" onchange="upMC(${i})" ${data.checks[i]?'checked':''} class="w-6 h-6">
-                            <input type="text" oninput="upMT(${i}, this.value)" value="${data.texts[i]||''}" class="bg-transparent border-none w-full font-bold" placeholder="${l}...">
+                    ${['Priorité Créative', 'Objectif Santé', 'Harmonie Familiale', 'Notes'].map((label, i) => `
+                        <div class="p-8 rounded-[3rem] border shadow-sm flex items-start gap-4 ${data.checks[i] ? 'bg-indigo-50' : 'bg-white/40'}">
+                            <input type="checkbox" onchange="toggleM(${i})" ${data.checks[i] ? 'checked' : ''} class="w-6 h-6 rounded-full border-indigo-200 text-indigo-500">
+                            <div class="flex-1">
+                                <label class="text-[9px] font-black text-indigo-300 uppercase block tracking-widest">${label}</label>
+                                <input type="text" oninput="updateMT(${i}, this.value)" value="${data.texts[i] || ''}" class="w-full bg-transparent border-none p-0 text-xl font-medium focus:ring-0 text-indigo-900" placeholder="Définir...">
+                            </div>
                         </div>
                     `).join('')}
                 </div>`;
             },
 
             weekly: () => {
-                const wkId = getWeekID(currentDay);
-                const wData = state.weekly[wkId] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[] };
-                return `<div class="text-center mb-10"><h2 class="serif text-3xl text-indigo-900">Rituels Hebdo</h2></div>
+                const wk = getWeekID(currentDay);
+                const wData = state.weekly[wk] || { Mon:[], Tue:[], Wed:[], Thu:[], Fri:[], Sat:[], Sun:[] };
+                return `
+                <div class="text-center mb-8">
+                    <h2 class="serif text-3xl text-indigo-900">Rituels Hebdomadaires</h2>
+                    <p class="text-indigo-400 uppercase text-[10px] mt-2">${getWeekRange(currentDay)}</p>
+                </div>
                 <div class="space-y-3 mb-10">
                     ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => `
-                        <div class="flex items-center gap-4">
-                            <span class="w-12 font-bold text-indigo-300">${day}</span>
-                            <div onclick="addEmoji('${day}')" class="flex-1 min-h-[50px] glass rounded-2xl border-dashed border-2 flex items-center px-4 gap-2 cursor-pointer">
-                                ${(wData[day]||[]).map((s, idx) => `<span onclick="remEmoji('${day}', ${idx}); event.stopPropagation();" class="text-2xl">${s}</span>`).join('')}
+                        <div class="flex items-center gap-6 p-4">
+                            <span class="w-16 font-bold text-xs text-indigo-300">${day}</span>
+                            <div onclick="addEmoji('${day}')" class="flex-1 min-h-[60px] glass rounded-[1.5rem] border-dashed border-2 flex items-center px-6 gap-3 cursor-pointer">
+                                ${(wData[day]||[]).map((s, idx) => `<span onclick="remEmoji('${day}', ${idx}); event.stopPropagation();" class="text-3xl">${s}</span>`).join('')}
                             </div>
-                        </div>
-                    `).join('')}
+                        </div>`).join('')}
                 </div>
-                <div class="glass p-4 rounded-3xl flex justify-center gap-4">
-                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-3xl transition-transform hover:scale-125">${s}</button>`).join('')}
+                <div class="glass p-6 rounded-[3rem] flex justify-center gap-6">
+                    ${['🙏', '🏃', '🎨', '📖', '✨', '🌿', '💰', '🍎'].map(s => `<button onclick="pickEmoji('${s}', this)" class="emoji-btn text-4xl transition-transform hover:scale-125">${s}</button>`).join('')}
                 </div>`;
             },
 
             daily: () => {
-                const d = state.daily[currentDay] || { energy: 50, note: "" };
-                return `<div class="flex justify-between items-center mb-8">
-                    <h2 class="serif text-3xl font-bold">Journal du Jour</h2>
-                    <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-2 glass rounded-xl">
+                const d = state.daily[currentDay] || { energy: 50, move: 50, pray: 50, conn: 50, note: "" };
+                const avg = Math.round((parseInt(d.energy) + parseInt(d.move) + parseInt(d.pray) + parseInt(d.conn)) / 4);
+                return `
+                <div class="flex justify-between items-center mb-10 text-left">
+                    <div><h2 class="serif text-4xl text-indigo-950 font-bold italic text-left">Journal du Jour</h2></div>
+                    <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('daily')" class="p-3 glass rounded-2xl border-none font-bold text-indigo-600">
                 </div>
-                <div class="grid lg:grid-cols-2 gap-8">
-                    <div class="glass p-8 rounded-[2rem]">
-                        <label class="block mb-4 font-bold uppercase text-[10px]">Énergie: ${d.energy}%</label>
-                        <input type="range" oninput="updateDaily('energy', this.value)" value="${d.energy}" class="w-full">
+                <div class="grid lg:grid-cols-5 gap-8 items-start">
+                    <div class="lg:col-span-2 space-y-6 text-center">
+                        <div class="glass p-8 rounded-[3rem] shadow-xl flex flex-col items-center">
+                            <svg viewBox="0 0 100 100" class="w-32 h-32 mb-4">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e7ff" stroke-width="8" />
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#818cf8" stroke-width="8" stroke-dasharray="${progressToDash(avg)}" stroke-linecap="round" transform="rotate(-90 50 50)" />
+                                <text x="50" y="55" text-anchor="middle" class="serif text-2xl font-black" fill="#312e81">${avg}%</text>
+                            </svg>
+                            <span class="text-[9px] font-black uppercase text-indigo-300">Bien-être Global</span>
+                        </div>
+                        <div class="glass p-8 rounded-[3rem] shadow-lg space-y-6">
+                            ${['energy', 'move', 'pray', 'conn'].map(k => `
+                                <div><div class="flex justify-between text-[9px] font-black uppercase text-indigo-400 mb-1"><span>${k}</span><span>${d[k]}%</span></div>
+                                <input type="range" value="${d[k]}" oninput="updateDaily('${k}', this.value)" class="w-full h-1.5 accent-indigo-600"></div>
+                            `).join('')}
+                        </div>
                     </div>
-                    <textarea oninput="updateDaily('note', this.value)" class="w-full h-96 p-8 paper-effect handwritten text-2xl border-none focus:ring-0 resize-none shadow-xl" placeholder="Cher journal...">${d.note || ""}</textarea>
+                    <div class="lg:col-span-3">
+                        <textarea oninput="updateDaily('note', this.value)" class="w-full h-[600px] p-12 rounded-[3.5rem] border-none paper-effect shadow-2xl resize-none handwritten text-2xl text-indigo-950 leading-relaxed">${d.note || ""}</textarea>
+                    </div>
                 </div>`;
             },
 
-            emotional: () => `<div class="text-center mb-10"><h2 class="serif text-4xl">Succès Émotionnel</h2></div>
-                <div class="grid lg:grid-cols-2 gap-10">
-                    <div id="wheel-container">${renderWheelSVG()}</div>
-                    <div class="space-y-4">
+            emotional: () => `
+                <div class="text-center mb-10"><h2 class="serif text-4xl text-indigo-950 font-bold">Succès Émotionnel</h2><p class="handwritten text-3xl text-amber-600 mt-2">Équilibre & Harmonie</p></div>
+                <div class="grid lg:grid-cols-2 gap-12 items-center mb-12 glass p-10 rounded-[4rem] border border-white">
+                    <div id="wheel-container" class="bg-white/40 rounded-full p-6 shadow-inner">${renderWheelSVG()}</div>
+                    <div class="grid grid-cols-2 gap-4">
                         ${Object.keys(state.wheel).map(cat => `
-                            <div class="p-4 glass rounded-2xl">
-                                <label class="text-[10px] font-bold block mb-1 uppercase">${cat}</label>
-                                <input type="range" min="1" max="10" value="${state.wheel[cat]}" class="w-full" oninput="updateWheel('${cat}', this.value)">
-                            </div>
+                            <div class="p-4 glass rounded-3xl"><label class="text-[9px] font-black uppercase block text-indigo-400 mb-1 text-center">${cat}</label>
+                            <input type="range" min="1" max="10" value="${state.wheel[cat]}" class="w-full h-1.5 accent-amber-500" oninput="updateWheel('${cat}', this.value)"></div>
                         `).join('')}
                     </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="p-10 rounded-[3.5rem] paper-effect shadow-lg min-h-[250px] relative"><span class="absolute top-6 left-10 text-[9px] font-black uppercase text-amber-600/50">Gratitude</span><textarea oninput="state.global.grat=this.value; save()" class="w-full bg-transparent border-none handwritten text-4xl text-indigo-900 mt-4 h-32 resize-none">${state.global.grat || ''}</textarea></div>
+                    <div class="p-10 rounded-[3.5rem] bg-indigo-950 flex flex-col justify-center text-center"><span class="text-[9px] font-black uppercase text-amber-200/40 mb-4">Affirmation</span><input type="text" oninput="state.global.aff=this.value; save()" value="${state.global.aff || ''}" class="bg-transparent border-none handwritten text-5xl text-amber-100 focus:ring-0 text-center" placeholder="Je suis la paix"></div>
                 </div>`
         };
 
-        // --- FONCTIONS LOGIQUES ---
+        // --- FONCTIONS ACTIONS ---
         function showPage(id) { document.getElementById('content-container').innerHTML = pages[id](); if (window.lucide) lucide.createIcons(); }
-        function upMC(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
-        function upMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
-        function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
-        function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.style.transform = 'scale(1)'); b.style.transform = 'scale(1.4)'; }
+        function toggleM(i) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; save(); showPage('monthly'); }
+        function updateMT(i, v) { if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}}; state.monthly[currentMonth].texts[i] = v; save(); }
+        function updateDaily(k, v) { if(!state.daily[currentDay]) state.daily[currentDay] = {energy:50, move:50, pray:50, conn:50, note:""}; state.daily[currentDay][k] = (k==='note'?v:parseInt(v)); save(); if(k!=='note') showPage('daily'); }
+        function pickEmoji(s, b) { selectedEmoji = s; document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('ring-2','ring-indigo-200','bg-white')); b.classList.add('ring-2','ring-indigo-200','bg-white'); }
         function addEmoji(day) { const wk = getWeekID(currentDay); if(!selectedEmoji) return; if(!state.weekly[wk]) state.weekly[wk] = {Mon:[],Tue:[],Wed:[],Thu:[],Fri:[],Sat:[],Sun:[]}; state.weekly[wk][day].push(selectedEmoji); save(); showPage('weekly'); }
         function remEmoji(day, i) { const wk = getWeekID(currentDay); state.weekly[wk][day].splice(i,1); save(); showPage('weekly'); }
-        function getWeekID(date) { let d = new Date(date); let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1); let start = new Date(d.setDate(diff)); return `${start.getFullYear()}-W${Math.ceil(diff/7)}`; }
-        
         function updateWheel(cat, val) { state.wheel[cat] = parseInt(val); save(); document.getElementById('wheel-container').innerHTML = renderWheelSVG(); }
+        
         function renderWheelSVG() {
-            const cats = Object.keys(state.wheel); const center = 150, radius = 100; let points = [], grid = "";
+            const cats = Object.keys(state.wheel); const center = 150, radius = 100; let pts = [], grid = "";
             cats.forEach((cat, i) => {
                 const angle = (Math.PI * 2 * i) / cats.length - Math.PI / 2;
                 const x = center + (radius * state.wheel[cat] / 10) * Math.cos(angle);
                 const y = center + (radius * state.wheel[cat] / 10) * Math.sin(angle);
-                points.push(`${x},${y}`);
-                grid += `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="#ddd" />`;
+                pts.push(`${x},${y}`);
+                grid += `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="rgba(0,0,0,0.05)" />`;
+                const tx = center + (radius + 35) * Math.cos(angle); const ty = center + (radius + 35) * Math.sin(angle);
+                grid += `<text x="${tx}" y="${ty}" text-anchor="middle" font-size="8" font-weight="bold" fill="#6366f1" class="uppercase">${cat}</text>`;
             });
-            return `<svg viewBox="0 0 300 300" class="w-full max-w-xs mx-auto">${grid}<polygon points="${points.join(' ')}" fill="rgba(99, 102, 241, 0.3)" stroke="#6366f1" stroke-width="2"/></svg>`;
+            return `<svg viewBox="0 0 300 300" class="w-full drop-shadow-lg">${grid}<polygon points="${pts.join(' ')}" fill="rgba(184, 134, 11, 0.2)" stroke="#B8860B" stroke-width="2"/></svg>`;
         }
 
-        // --- IMPORT / EXPORT / PRINT ---
-        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Journal_2026.json'; a.click(); }
+        function exportData() { const blob = new Blob([JSON.stringify(state, null, 2)], {type: 'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Faith_Journal_2026.json'; a.click(); }
         function importData() {
             const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
             input.onchange = e => {
@@ -204,14 +263,12 @@
         }
 
         function printAll() {
-            const printWindow = window.open('', '_blank');
-            let content = "";
-            ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(id => {
-                content += `<div style="page-break-after: always; padding: 40px;">${pages[id]()}</div>`;
-            });
-            printWindow.document.write(`<html><head><script src="https://cdn.tailwindcss.com"><\/script><style>body{background:white;color:black;} .no-print, button, input[type=range]{display:none !important;} textarea{border:none;width:100%;height:auto;overflow:visible;}</style></head><body>${content}</body></html>`);
-            printWindow.document.close();
-            setTimeout(() => { printWindow.print(); printWindow.close(); }, 1000);
+            const w = window.open('', '_blank');
+            let html = "";
+            ['cover', 'december', 'q-focus', 'monthly', 'weekly', 'daily', 'emotional'].forEach(k => html += `<div style="page-break-after:always; padding:40px;">${pages[k]()}</div>`);
+            w.document.write(`<html><head><script src="https://cdn.tailwindcss.com"><\/script><style>body{background:white;color:black;} .no-print, button, input[type=range]{display:none !important;} textarea{border:none;width:100%;height:auto;overflow:visible; font-size: 1.5rem;}</style></head><body>${html}</body></html>`);
+            w.document.close();
+            setTimeout(() => { w.print(); w.close(); }, 1500);
         }
 
         window.onload = () => showPage('cover');
