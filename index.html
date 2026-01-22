@@ -280,61 +280,48 @@
                 </div>`
         };
 
-        reflextion: () => {
-    const d = state.daily[currentDay] || {};
-            return `
-            <div class="space-y-8">
-                <div class="flex justify-between items-center border-b border-indigo-100 pb-6">
-                    <div>
-                        <h2 class="serif text-3xl text-indigo-950 font-bold">Réflexion Matinale</h2>
-                        <p class="text-amber-600 italic">"Ne vous inquiétez de rien..." - Phil 4:6</p>
-                    </div>
-                    <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('reflection')" class="p-2 rounded-xl border-none bg-white/50 font-bold text-indigo-600 shadow-sm">
+        reflection: () => {
+        const d = state.daily[currentDay] || {};
+        return `
+        <div class="space-y-8">
+            <div class="flex justify-between items-center border-b border-indigo-100 pb-6">
+                <div>
+                    <h2 class="serif text-3xl text-indigo-950 font-bold">Réflexion Matinale</h2>
+                    <p class="text-amber-600 italic">"Ne vous inquiétez de rien..." - Phil 4:6</p>
                 </div>
-
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="space-y-6">
-                        <div class="p-6 shadow-sm" style="background-color: #fdfaf0; border-radius: 2rem; border: 1px solid #faedcd;">
-                            <h3 class="font-bold text-indigo-800 flex items-center gap-2 mb-3"><i data-lucide="book" size="16"></i> Verset du Jour</h3>
-                            <p class="text-lg text-gray-700 italic text-center" style="font-family: 'Delius', cursive;">"Ne vous inquiétez de rien ; mais en toute chose faites connaître vos besoins à Dieu par des prières et des supplications, avec des actions de grâces."</p>
-                            <p class="text-right text-xs mt-2 font-bold text-indigo-400 font-sans">Philippiens 4:6</p>
-                        </div>
-
-                        <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
-                            <h3 class="font-bold text-indigo-800 flex items-center gap-2 mb-3"><i data-lucide="message-circle" size="16"></i> Ma Prière</h3>
-                            <textarea oninput="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].prayer = this.value; save()" class="w-full h-32 bg-transparent border-none focus:ring-0 text-gray-700" placeholder="Seigneur, aujourd'hui je Te confie...">${d.prayer || ''}</textarea>
-                        </div>
+                <input type="date" value="${currentDay}" onchange="currentDay=this.value; showPage('reflection')" class="p-2 rounded-xl border-none bg-white/50 font-bold text-indigo-600 shadow-sm">
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <div class="p-6 shadow-sm" style="background-color: #fdfaf0; border-radius: 2rem; border: 1px solid #faedcd;">
+                        <h3 class="font-bold text-indigo-800 flex items-center gap-2 mb-3"><i data-lucide="book" size="16"></i> Verset du Jour</h3>
+                        <p class="text-lg text-gray-700 italic text-center" style="font-family: 'Delius', cursive;">"Ne vous inquiétez de rien ; mais en toute chose faites connaître vos besoins à Dieu par des prières et des supplications, avec des actions de grâces."</p>
+                        <p class="text-right text-xs mt-2 font-bold text-indigo-400">Philippiens 4:6</p>
                     </div>
-
-                    <div class="space-y-6">
-                        <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
-                            <h3 class="font-bold text-indigo-800 mb-3">😊 Comment je me sens ?</h3>
-                            <div class="flex justify-around text-3xl">
-                                ${['🤩','✨','💛','😄','😔','😴'].map(e => `
-                                    <button onclick="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].mood = '${e}'; save(); showPage('reflection')" 
-                                    class="hover:scale-125 transition ${d.mood === e ? 'grayscale-0 scale-125' : 'grayscale opacity-50'}">
-                                        ${e}
-                                    </button>`).join('')}
-                            </div>
-                        </div>
-                        
-                        <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
-                            <h3 class="font-bold text-indigo-800 mb-2">💛 Gratitude</h3>
-                            <textarea oninput="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].gratitude = this.value; save()" class="w-full h-24 bg-transparent border-none focus:ring-0 text-gray-700 italic" placeholder="Trois raisons de dire merci...">${d.gratitude || ''}</textarea>
-                        </div>
+                    <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
+                        <h3 class="font-bold text-indigo-800 flex items-center gap-2 mb-3"><i data-lucide="message-circle" size="16"></i> Ma Prière</h3>
+                        <textarea oninput="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].prayer = this.value; save()" class="w-full h-32 bg-transparent border-none focus:ring-0 text-gray-700" placeholder="Seigneur...">${d.prayer || ''}</textarea>
                     </div>
                 </div>
-
-                <div class="space-y-4">
-                    <h3 class="font-bold text-indigo-800 flex items-center gap-2"><i data-lucide="palette" size="18"></i> Espace Visuel (Dessin)</h3>
-                    <div class="flex gap-2 mb-2 no-print">
-                        <input type="color" id="penColor" class="w-8 h-8 rounded cursor-pointer" value="#4f46e5">
-                        <button onclick="ctx.clearRect(0,0,canvas.width,canvas.height); state.daily[currentDay].drawing=null; save();" class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-bold shadow-sm">Effacer</button>
+                <div class="space-y-6">
+                    <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
+                        <h3 class="font-bold text-indigo-800 mb-3">😊 Humeur</h3>
+                        <div class="flex justify-around text-3xl">
+                            ${['🤩','✨','💛','😄','😔','😴'].map(e => `<button onclick="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].mood = '${e}'; save(); showPage('reflection')" class="${d.mood === e ? 'scale-125' : 'grayscale opacity-50'}">${e}</button>`).join('')}
+                        </div>
                     </div>
-                    <canvas id="drawingCanvas" class="w-full h-64 bg-white rounded-3xl border-2 border-dashed border-indigo-100 shadow-inner"></canvas>
+                    <div class="p-6 bg-white/40 rounded-3xl border border-white/60">
+                        <h3 class="font-bold text-indigo-800 mb-2">💛 Gratitude</h3>
+                        <textarea oninput="if(!state.daily[currentDay])state.daily[currentDay]={}; state.daily[currentDay].gratitude = this.value; save()" class="w-full h-24 bg-transparent border-none focus:ring-0 text-gray-700 italic" placeholder="Merci pour...">${d.gratitude || ''}</textarea>
+                    </div>
                 </div>
-            </div>`;
-        },
+            </div>
+            <div class="space-y-4">
+                <h3 class="font-bold text-indigo-800 flex items-center gap-2"><i data-lucide="palette" size="18"></i> Dessin</h3>
+                <canvas id="drawingCanvas" class="w-full h-48 bg-white rounded-3xl border-2 border-dashed border-indigo-100"></canvas>
+            </div>
+        </div>`;
+    },
             
         // --- FONCTIONS ACTIONS ---
         function showPage(id) {
