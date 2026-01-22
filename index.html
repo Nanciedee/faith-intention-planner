@@ -185,38 +185,7 @@
             `).join('')}
         </div>`;
 
-            'q-focus': () => {
-    // 1. Définition des données des trimestres
-    const quarters = [
-        { name: "Trimestre 1", months: "Jan • Fév • Mar", key: "q1" },
-        { name: "Trimestre 2", months: "Avr • Mai • Juin", key: "q2" },
-        { name: "Trimestre 3", months: "Juil • Août • Sept", key: "q3" },
-        { name: "Trimestre 4", months: "Oct • Nov • Déc", key: "q4" }
-    ];
-
-    return `
-        <div class="text-center mb-10">
-            <h2 class="serif text-4xl text-indigo-950 font-bold uppercase tracking-widest">Focus Trimestriel</h2>
-            <div class="h-1 w-20 bg-amber-400 mx-auto mt-2 rounded-full opacity-40"></div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8">
-            ${quarters.map(q => `
-                <div class="flex flex-col">
-                    <div class="px-6 mb-3 flex justify-between items-end">
-                        <h3 class="serif text-2xl text-indigo-800 italic font-bold">${q.name}</h3>
-                        <span class="text-[10px] font-black text-amber-600 uppercase tracking-widest bg-amber-50/50 px-3 py-1 rounded-full border border-amber-100">
-                            ${q.months}
-                        </span>
-                    </div>
-                    
-                    <textarea oninput="saveG('${q.key}', this.value)" 
-                        class="w-full h-72 p-8 rounded-[2.5rem] focus:ring-2 focus:ring-amber-200 outline-none paper-effect handwritten shadow-sm transition-all text-3xl text-indigo-950" 
-                        placeholder="Mes visions...">${state.global[q.key] || ''}</textarea>
-                </div>
-            `).join('')}
-        </div>`;
-},
+   },
             monthly: () => {
                 const data = state.monthly[currentMonth] || { checks: [false, false, false, false], texts: {} };
                 const prog = (data.checks.filter(c => c).length / 4) * 100;
