@@ -599,7 +599,7 @@ function importData() {
             a.click(); 
         }
 
-        function importData() {
+function importData() {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
@@ -608,7 +608,7 @@ function importData() {
                 reader.onload = ev => {
                     try {
                         state = JSON.parse(ev.target.result);
-                        localStorage.setItem('faithJournal_2026_Master', JSON.stringify(state));
+                        save();
                         location.reload();
                     } catch (err) { alert("Fichier invalide"); }
                 };
@@ -617,12 +617,32 @@ function importData() {
             input.click();
         }
 
-        // --- INITIALISATION FINALE ---
-        let selectedEmoji = null; // Important pour les rituels hebdo
-       window.onload = () => {
-            if (typeof showPage === 'function') {
-                showPage('cover');
-            }
+        // --- FONCTIONS INDISPENSABLES ---
+        function save() {
+            localStorage.setItem('faithJournal_vFinal_Master', JSON.stringify(state));
+        }
+
+        function saveG(k, v) { state.global[k] = v; save(); }
+        function changeM(v) { currentMonth = v; showPage('monthly'); }
+        function upMC(i) { 
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+            state.monthly[currentMonth].checks[i] = !state.monthly[currentMonth].checks[i]; 
+            save(); showPage('monthly'); 
+        }
+        function upMT(i, v) { 
+            if(!state.monthly[currentMonth]) state.monthly[currentMonth] = {checks:[false,false,false,false], texts:{}};
+            state.monthly[currentMonth].texts[i] = v; save(); 
+        }
+        function getWeekID(date) {
+            let d = new Date(date);
+            let day = d.getDay(), diff = d.getDate() - day + (day == 0 ? -6 : 1);
+            let start = new Date(d.setDate(diff));
+            return `${start.getFullYear()}-W${Math.ceil(diff/7)}`;
+        }
+
+        // --- DÉMARRAGE ---
+        window.onload = () => {
+            showPage('cover');
         };
     </script>
 </body>
